@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://sdk.twilio.com https://*.twilio.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; connect-src *;">
+    <title>Softphone Twilio</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://sdk.twilio.com/js/client/releases/1.13.1/twilio.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-phone"></i> Softphone Twilio</h1>
+            <div class="status-indicator">
+                <span id="connection-status" class="status offline">Déconnecté</span>
+                <span id="config-status" class="config-badge" style="display: none;">
+                    <i class="fas fa-check-circle"></i> Auto-configuré
+                </span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dialer Section -->
+            <section class="dialer-section">
+                <div class="phone-display">
+                    <input type="text" id="phone-number" placeholder="Numéro de téléphone" maxlength="20">
+                    <div class="call-info" id="call-info" style="display: none;">
+                        <span id="call-status">En cours...</span>
+                        <span id="call-duration">00:00</span>
+                    </div>
+                </div>
+
+                <!-- Keypad -->
+                <div class="keypad">
+                    <div class="keypad-row">
+                        <button class="key" data-number="1">1</button>
+                        <button class="key" data-number="2">2 <span class="letters">ABC</span></button>
+                        <button class="key" data-number="3">3 <span class="letters">DEF</span></button>
+                    </div>
+                    <div class="keypad-row">
+                        <button class="key" data-number="4">4 <span class="letters">GHI</span></button>
+                        <button class="key" data-number="5">5 <span class="letters">JKL</span></button>
+                        <button class="key" data-number="6">6 <span class="letters">MNO</span></button>
+                    </div>
+                    <div class="keypad-row">
+                        <button class="key" data-number="7">7 <span class="letters">PQRS</span></button>
+                        <button class="key" data-number="8">8 <span class="letters">TUV</span></button>
+                        <button class="key" data-number="9">9 <span class="letters">WXYZ</span></button>
+                    </div>
+                    <div class="keypad-row">
+                        <button class="key" data-number="*">*</button>
+                        <button class="key" data-number="0">0 <span class="letters">+</span></button>
+                        <button class="key" data-number="#">#</button>
+                    </div>
+                </div>
+
+                <!-- Call Controls -->
+                <div class="call-controls">
+                    <button id="call-btn" class="call-button">
+                        <i class="fas fa-phone"></i>
+                    </button>
+                    <button id="hangup-btn" class="hangup-button" style="display: none;">
+                        <i class="fas fa-phone-slash"></i>
+                    </button>
+                    <button id="clear-btn" class="clear-button">
+                        <i class="fas fa-backspace"></i>
+                    </button>
+                </div>
+
+                <!-- Audio Controls (visible pendant l'appel) -->
+                <div class="audio-controls" id="audio-controls" style="display: none;">
+                    <div class="audio-row">
+                        <button id="mute-btn" class="audio-button" title="Muet">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button id="pause-btn" class="audio-button" title="Mettre en pause">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                        <button id="hold-btn" class="audio-button" title="Mettre en attente">
+                            <i class="fas fa-clock"></i>
+                        </button>
+                    </div>
+                    <div class="audio-row">
+                        <button id="speaker-btn" class="audio-button" title="Haut-parleur">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <button id="transfer-btn" class="audio-button" title="Transférer">
+                            <i class="fas fa-exchange-alt"></i>
+                        </button>
+                        <button id="record-btn" class="audio-button" title="Enregistrer">
+                            <i class="fas fa-circle"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Audio Settings -->
+                <div class="audio-settings" id="audio-settings">
+                    <div class="audio-device">
+                        <label for="input-device">Microphone:</label>
+                        <select id="input-device" class="audio-select">
+                            <option value="">Chargement...</option>
+                        </select>
+                    </div>
+                    <div class="audio-device">
+                        <label for="output-device">Haut-parleur:</label>
+                        <select id="output-device" class="audio-select">
+                            <option value="">Chargement...</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Call History Section -->
+            <section class="history-section">
+                <h3><i class="fas fa-history"></i> Historique des appels</h3>
+                <div class="history-list" id="call-history">
+                    <div class="no-calls">Aucun appel récent</div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Configuration</h2>
+                <form id="settings-form">
+                    <div class="form-group">
+                        <label for="identity">Identité:</label>
+                        <input type="text" id="identity" placeholder="Votre nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="from-number">Numéro d'origine:</label>
+                        <input type="text" id="from-number" placeholder="+1234567890" required>
+                    </div>
+                    <button type="submit" class="save-btn">Sauvegarder</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Incoming Call Modal -->
+        <div id="incoming-call-modal" class="modal incoming-call-modal">
+            <div class="modal-content incoming-call-content">
+                <div class="incoming-call-header">
+                    <i class="fas fa-phone-volume ringing-icon"></i>
+                    <h2>Appel Entrant</h2>
+                </div>
+                <div class="incoming-call-info">
+                    <div class="caller-number" id="caller-number">+1234567890</div>
+                    <div class="caller-info" id="caller-info">Appel entrant...</div>
+                </div>
+                <div class="incoming-call-controls">
+                    <button class="btn-accept-call" id="btn-accept-call">
+                        <i class="fas fa-phone"></i>
+                        <span>Accepter</span>
+                    </button>
+                    <button class="btn-reject-call" id="btn-reject-call">
+                        <i class="fas fa-phone-slash"></i>
+                        <span>Rejeter</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Button -->
+        <button id="settings-btn" class="settings-button">
+            <i class="fas fa-cog"></i>
+        </button>
+
+        <!-- Microphone Access Button -->
+        <button id="mic-access-btn" class="mic-access-button" style="display: none;">
+            <i class="fas fa-microphone-slash"></i>
+            <span>Activer Microphone</span>
+        </button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html> 
