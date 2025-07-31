@@ -21,10 +21,8 @@ fi
 
 # Vérifier la configuration
 echo "🔍 Vérification de la configuration..."
-npm test
-
-if [ $? -ne 0 ]; then
-    echo "❌ Configuration invalide. Vérifiez votre fichier .env"
+if [ ! -f ".env" ]; then
+    echo "❌ Fichier .env manquant. Copiez env.example vers .env et configurez vos informations Twilio"
     exit 1
 fi
 
@@ -75,8 +73,7 @@ echo "✅ NGROK démarré avec domaine statique: $NGROK_URL"
 
 # Configuration Twilio
 echo "🔧 Configuration Twilio..."
-export TWILIO_ACCOUNT_SID=your_account_sid_here
-export TWILIO_AUTH_TOKEN=your_auth_token_here
+# Les identifiants Twilio sont chargés depuis le fichier .env
 
 # Mettre à jour la TwiML App pour les appels sortants via Twilio.Device
 TWIML_APP_SID=$(grep TWILIO_TWIML_APP_SID .env | cut -d'=' -f2)

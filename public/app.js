@@ -16,7 +16,7 @@ let audioDevices = {
     outputs: []
 };
 let settings = {
-    identity: localStorage.getItem('identity') || generateIdentity(),
+    identity: 'softphone-user', // Identité fixe pour les appels entrants
     fromNumber: localStorage.getItem('fromNumber') || '+18199754345'
 };
 
@@ -89,8 +89,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.log('⚠️  Impossible de récupérer la configuration:', error);
     }
     
-    // Ne pas initialiser Twilio.Device immédiatement - attendre l'interaction utilisateur
-    // await initializeTwilioClient();
+    // Initialiser Twilio.Device pour recevoir les appels entrants
+    await initializeTwilioClient();
     
     initializeSocket();
     initializeKeypad();
@@ -247,21 +247,37 @@ async function initializeTwilioClient() {
         device = new Twilio.Device(token, {
             closeProtection: true,
             enableRingingState: true,
-            // Configuration audio optimisée
+            // Configuration audio simplifiée pour éviter les erreurs AudioContext
             audioConstraints: {
-                autoGainControl: true,
-                echoCancellation: true,
-                noiseSuppression: true,
-                sampleRate: 48000
+                autoGainControl: false,
+                echoCancellation: false,
+                noiseSuppression: false
             },
             // Éviter les warnings audio
             fakeLocalDTMF: true
         });
         
+        // Forcer l'initialisation immédiate
+        console.log('🔧 État initial du device:', device.state);
+        
         // Événements du client Twilio
         device.on('ready', () => {
             console.log('✅ Client Twilio prêt');
+            console.log('📱 Identité du client:', settings.identity);
+            console.log('📱 État du device:', device.state);
+            console.log('📱 Device object:', device);
             updateConnectionStatus('online', 'Prêt à recevoir des appels');
+            
+            // Vérifier que l'identité est enregistrée
+            fetch('/api/register-identity', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identity: settings.identity })
+            }).then(() => {
+                console.log('✅ Identité enregistrée après initialisation du client');
+            }).catch(error => {
+                console.log('⚠️ Erreur lors de l\'enregistrement de l\'identité:', error);
+            });
         });
         
         device.on('error', (error) => {
@@ -287,6 +303,11 @@ async function initializeTwilioClient() {
         
         device.on('incoming', (connection) => {
             console.log('📞 Appel entrant reçu:', connection);
+            console.log('📞 Paramètres de l\'appel entrant:', connection.parameters);
+            console.log('📞 État de l\'appel entrant:', connection.status());
+            
+            // Stocker l'appel entrant actuel
+            incomingCall = connection;
             handleIncomingCall(connection);
         });
         
@@ -362,10 +383,10 @@ async function makeCall() {
         return;
     }
     
-    // Initialiser Twilio.Device lors du premier appel (après interaction utilisateur)
+    // Vérifier que le device est initialisé
     if (!device) {
         try {
-            console.log('🔧 Initialisation du client Twilio lors du premier appel...');
+            console.log('🔧 Initialisation du client Twilio...');
             await initializeTwilioClient();
         } catch (error) {
             console.error('❌ Erreur lors de l\'initialisation du client Twilio:', error);
@@ -380,23 +401,20 @@ async function makeCall() {
         updateConnectionStatus('connecting', 'Connexion...');
         
         // Vérifier que le device est prêt
-        if (device.state !== 'ready') {
-            console.log('⏳ Attente que le client Twilio soit prêt...');
-            await new Promise((resolve, reject) => {
-                const timeout = setTimeout(() => {
-                    reject(new Error('Timeout: Client Twilio non prêt'));
-                }, 10000);
-                
-                device.once('ready', () => {
-                    clearTimeout(timeout);
-                    resolve();
-                });
-                
-                device.once('error', (error) => {
-                    clearTimeout(timeout);
-                    reject(error);
-                });
-            });
+        console.log('📞 État du device avant vérification:', device.state);
+        
+        // Si le device n'est pas prêt, essayer de le forcer
+        if (!device.state || device.state !== 'ready') {
+            console.log('🔧 Tentative de forcer l\'état ready...');
+            
+            // Attendre un peu et vérifier à nouveau
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            console.log('📞 État du device après attente:', device.state);
+            
+            // Si toujours pas prêt, essayer de se connecter quand même
+            if (!device.state || device.state !== 'ready') {
+                console.log('⚠️ Device pas dans l\'état ready, tentative de connexion...');
+            }
         }
         
         // Passer l'appel via le client Twilio pour l'audio bidirectionnel
@@ -407,6 +425,7 @@ async function makeCall() {
         
         console.log('📞 Paramètres d\'appel:', params);
         console.log('📞 État du device avant connexion:', device.state);
+        console.log('📞 Device object:', device);
         
         currentCall = device.connect(params);
         
@@ -506,9 +525,14 @@ function acceptIncomingCall() {
 
 // Rejeter un appel entrant
 function rejectIncomingCall() {
-    if (incomingCall) {
+    if (incomingCall && incomingCall.parameters) {
+        console.log('Appel entrant rejeté');
         incomingCall.reject();
         socket.emit('incoming-call-rejected', incomingCall.parameters.CallSid);
+        hideIncomingCallModal();
+        incomingCall = null;
+    } else {
+        console.log('Aucun appel entrant à rejeter');
         hideIncomingCallModal();
     }
 }

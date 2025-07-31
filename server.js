@@ -278,7 +278,7 @@ app.post('/handle_calls', (req, res) => {
     });
     
     // Utiliser l'identité du client Twilio enregistrée
-    const clientIdentity = currentClientIdentity || process.env.TWILIO_CLIENT_IDENTITY || 'softphone-user';
+    const clientIdentity = currentClientIdentity || 'softphone-user';
     dial.client(clientIdentity);
     
     console.log('📱 Appel entrant connecté au client:', clientIdentity);
@@ -361,7 +361,7 @@ app.get('/api/config', (req, res) => {
 });
 
 // Variable globale pour stocker l'identité du client actuel
-let currentClientIdentity = null;
+let currentClientIdentity = 'softphone-user'; // Identité par défaut
 
 // Route pour enregistrer l'identité du client
 app.post('/api/register-identity', (req, res) => {
