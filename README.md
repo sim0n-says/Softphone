@@ -56,7 +56,7 @@ TWILIO_TWIML_APP_SID=your_twiml_app_sid_here
 TWILIO_PHONE_NUMBER=+18199754345
 
 # NGROK Configuration
-NGROK_URL=https://apt-buzzard-leading.ngrok-free.app
+NGROK_URL=https://your-ngrok-url.ngrok-free.app
 
 # Server Configuration
    PORT=3000
@@ -78,7 +78,7 @@ Le script automatise :
 - ✅ Interface web prête à l'emploi
 
 ### Interface Web
-1. **Ouvrir** : https://apt-buzzard-leading.ngrok-free.app
+1. **Ouvrir** : Votre URL NGROK (ex: https://your-ngrok-url.ngrok-free.app)
 2. **Attendre** : Initialisation automatique (5-10 secondes)
 3. **Utiliser** : Interface complète de softphone
 
@@ -150,7 +150,7 @@ Le script automatise :
 tail -f logs/server.log
 
 # Vérifier la configuration Twilio
-curl https://apt-buzzard-leading.ngrok-free.app/api/config
+curl https://your-ngrok-url.ngrok-free.app/api/config
 ```
 
 ## 📚 **Documentation**
