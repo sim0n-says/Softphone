@@ -536,7 +536,7 @@
 
 /* Effet de glitch pour le numéro de téléphone comme SIM0N-SAYS DIAL */
 .phreaking-input::before {
-    content: attr(value);
+    content: attr(data-text);
     position: absolute;
     top: 0;
     left: 0;
@@ -550,7 +550,7 @@
 }
 
 .phreaking-input::after {
-    content: attr(value);
+    content: attr(data-text);
     position: absolute;
     top: 0;
     left: 0;

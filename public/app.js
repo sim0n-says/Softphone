@@ -339,6 +339,11 @@ function initializeCallControls() {
             makeCall();
         }
     });
+    
+    // Mettre à jour data-text pour l'effet de glitch quand l'utilisateur tape
+    phoneNumberInput.addEventListener('input', (e) => {
+        phoneNumberInput.setAttribute('data-text', e.target.value);
+    });
 }
 
 // Initialisation des paramètres
@@ -499,11 +504,15 @@ function initializeIncomingCallModal() {
 function addToPhoneNumber(number) {
     const currentValue = phoneNumberInput.value;
     phoneNumberInput.value = currentValue + number;
+    // Mettre à jour l'attribut data-text pour l'effet de glitch
+    phoneNumberInput.setAttribute('data-text', currentValue + number);
 }
 
 // Effacer le numéro de téléphone
 function clearPhoneNumber() {
     phoneNumberInput.value = '';
+    // Mettre à jour l'attribut data-text pour l'effet de glitch
+    phoneNumberInput.setAttribute('data-text', '');
 }
 
 // Mettre à jour le statut de connexion
