@@ -1470,10 +1470,16 @@
             "terminal"
             "sidebar-left"
             "sidebar-right";
+        gap: var(--space-lg);
     }
     
     .phreaking-container {
         padding: var(--space-lg);
+    }
+    
+    /* Amélioration de l'espacement des panels */
+    .sidebar-panel {
+        margin-bottom: var(--space-md);
     }
 }
 
@@ -1483,6 +1489,7 @@
         gap: var(--space-lg);
     }
     
+    /* Header optimisé pour mobile */
     .quantum-header {
         padding: var(--space-md);
         flex-direction: column;
@@ -1495,11 +1502,14 @@
         font-size: 1.25rem;
         margin-right: 0;
         width: 100%;
+        letter-spacing: 2px; /* Réduit pour mobile */
     }
     
     .system-status {
         width: 100%;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
     }
     
     .header-config-btn {
@@ -1509,46 +1519,72 @@
         margin-top: 2px;
     }
     
+    /* Notifications optimisées */
     .phreaking-notifications {
         top: 10px;
         right: 10px;
         left: 10px;
+        z-index: 1000;
     }
     
     .phreaking-notification {
         min-width: unset;
         max-width: unset;
         width: 100%;
+        font-size: 0.85rem;
     }
     
+    /* Pavé numérique optimisé */
     .dial-key {
         width: 65px;
         height: 65px;
+        margin: 2px;
     }
     
     .dial-number {
         font-size: 1.1rem;
     }
     
+    .dial-letters {
+        font-size: 0.6rem;
+    }
+    
+    /* Commandes optimisées */
     .command-panel {
         flex-wrap: wrap;
         gap: var(--space-sm);
+        justify-content: center;
     }
     
     .phreaking-command {
         padding: var(--space-sm) var(--space-md);
         min-width: 70px;
+        font-size: 0.8rem;
     }
     
+    /* Contrôles flottants ajustés */
     .floating-controls {
         bottom: var(--space-lg);
         right: var(--space-lg);
+        left: var(--space-lg);
+        justify-content: center;
     }
-}
-
-@media (max-width: 480px) {
-    .phreaking-interface {
-        gap: var(--space-lg);
+    
+    /* Terminal frame optimisé */
+    .terminal-frame {
+        clip-path: polygon(
+            15px 0%, 
+            100% 0%, 
+            100% calc(100% - 15px), 
+            calc(100% - 15px) 100%, 
+            0% 100%, 
+            0% 15px
+        );
+    }
+    
+    .frame-header {
+        padding: var(--space-sm);
+        gap: var(--space-sm);
     }
     
     .terminal-body {
@@ -1556,26 +1592,170 @@
         gap: var(--space-md);
     }
     
-    .dial-key {
-        width: 60px;
-        height: 60px;
+    /* HUD optimisé */
+    .call-status-hud {
+        padding: var(--space-sm);
+        gap: var(--space-xs);
     }
     
-    .dial-number {
-    font-size: 1rem;
-}
-
-    .dial-letters {
-        font-size: 0.55rem;
+    .hud-line {
+        font-size: 0.75rem;
+    }
+    
+    /* Input optimisé */
+    .phreaking-input {
+        font-size: 0.9rem;
+        padding: var(--space-sm);
+    }
+    
+    /* Panels optimisés */
+    .panel-header {
+        padding: var(--space-xs) var(--space-sm);
+        gap: var(--space-xs);
+    }
+    
+    .panel-title {
+        font-size: 0.7rem;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Audio matrix optimisé */
+    .audio-matrix {
+        padding: var(--space-sm);
+        gap: var(--space-xs);
+    }
+    
+    .matrix-node {
+        padding: var(--space-xs);
+        font-size: 0.75rem;
+    }
+    
+    /* Device selectors optimisés */
+    .device-selectors {
+        gap: var(--space-sm);
     }
     
     .device-selectors select {
-        max-width: 240px;
+        max-width: 100%;
+        font-size: 0.75rem;
+        padding: var(--space-xs);
+    }
+    
+    .device-label {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .phreaking-interface {
+        gap: var(--space-md);
+    }
+    
+    .phreaking-container {
+        padding: var(--space-sm);
+    }
+    
+    /* Header ultra-compact */
+    .quantum-header {
+        padding: var(--space-sm);
+        gap: var(--space-sm);
+    }
+    
+    .system-title {
+        font-size: 1rem;
+        letter-spacing: 1px;
+    }
+    
+    /* Pavé numérique ultra-compact */
+    .dial-key {
+        width: 55px;
+        height: 55px;
+        margin: 1px;
+    }
+    
+    .dial-number {
+        font-size: 1rem;
+    }
+    
+    .dial-letters {
+        font-size: 0.5rem;
+    }
+    
+    /* Commandes ultra-compactes */
+    .phreaking-command {
+        padding: var(--space-xs) var(--space-sm);
+        min-width: 60px;
         font-size: 0.7rem;
     }
     
-    .selector-group {
-        max-width: 240px;
+    /* Terminal body ultra-compact */
+    .terminal-body {
+        padding: var(--space-sm);
+        gap: var(--space-sm);
+    }
+    
+    /* HUD ultra-compact */
+    .call-status-hud {
+        padding: var(--space-xs);
+    }
+    
+    .hud-line {
+        font-size: 0.65rem;
+    }
+    
+    /* Input ultra-compact */
+    .phreaking-input {
+        font-size: 0.8rem;
+        padding: var(--space-xs);
+    }
+    
+    /* Panels ultra-compacts */
+    .panel-header {
+        padding: var(--space-xs);
+    }
+    
+    .panel-title {
+        font-size: 0.65rem;
+        letter-spacing: 0.3px;
+    }
+    
+    /* Audio matrix ultra-compact */
+    .audio-matrix {
+        padding: var(--space-xs);
+    }
+    
+    .matrix-node {
+        padding: var(--space-xs);
+        font-size: 0.65rem;
+    }
+    
+    /* Device selectors ultra-compacts */
+    .device-selectors select {
+        font-size: 0.65rem;
+        padding: var(--space-xs);
+    }
+    
+    .device-label {
+        font-size: 0.6rem;
+    }
+    
+    /* Notifications ultra-compactes */
+    .phreaking-notification {
+        font-size: 0.75rem;
+        padding: var(--space-sm);
+    }
+    
+    /* Contrôles flottants ultra-compacts */
+    .floating-controls {
+        bottom: var(--space-md);
+        right: var(--space-md);
+        left: var(--space-md);
+    }
+    
+    .quantum-button {
+        width: 40px;
+        height: 40px;
+        font-size: 0.8rem;
     }
 }
 
