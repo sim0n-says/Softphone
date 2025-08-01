@@ -362,6 +362,11 @@ app.post('/api/call-status', (req, res) => {
       
       // Mettre à jour le log avec les informations finales
       addCallLog(callData);
+      
+      // Émettre la mise à jour des logs via Socket.IO
+      const logs = loadCallLogs();
+      const stats = getCallStatistics();
+      io.emit('call-log-updated', { logs, statistics: stats });
     }
   } else if (Direction === 'inbound' && CallStatus === 'ringing') {
     // Créer un nouvel appel entrant
@@ -380,6 +385,11 @@ app.post('/api/call-status', (req, res) => {
     
     // Ajouter au log des appels
     addCallLog(incomingCallData);
+    
+    // Émettre la mise à jour des logs via Socket.IO
+    const logs = loadCallLogs();
+    const stats = getCallStatistics();
+    io.emit('call-log-updated', { logs, statistics: stats });
   }
 
   // Notifier les clients via Socket.IO
@@ -420,7 +430,7 @@ app.post('/twiml/voice', (req, res) => {
 app.post('/handle_calls', (req, res) => {
   console.log('📞 Appel reçu:', req.body);
   
-  const { To, From, Direction } = req.body;
+  const { To, From, Direction, CallSid } = req.body;
   const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
   
   const response = new twilio.twiml.VoiceResponse();
@@ -429,11 +439,31 @@ app.post('/handle_calls', (req, res) => {
     // Appel entrant vers notre numéro Twilio
     console.log('📱 Appel entrant de', From);
     
+    // Créer un log d'appel entrant
+    const callData = {
+      sid: CallSid,
+      to: To,
+      from: From,
+      status: 'ringing',
+      startTime: new Date(),
+      direction: 'inbound',
+      clientIdentity: 'softphone-user'
+    };
+    
+    activeCalls.set(CallSid, callData);
+    callHistory.push(callData);
+    
+    // Ajouter au log des appels
+    addCallLog(callData);
+    
     // Connecter l'appel entrant au client Twilio
     const dial = response.dial({ 
       callerId: From,
       timeout: 30,
-      record: 'record-from-answer'
+      record: 'record-from-answer',
+      statusCallback: `${process.env.NGROK_URL || 'https://apt-buzzard-leading.ngrok-free.app'}/api/call-status`,
+      statusCallbackEvent: ['initiated', 'ringing', 'answered', 'completed', 'failed', 'busy', 'no-answer'],
+      statusCallbackMethod: 'POST'
     });
     
     // Utiliser l'identité du client Twilio enregistrée
@@ -461,11 +491,31 @@ app.post('/twiml/outgoing', (req, res) => {
   
   console.log('📤 Paramètres:', { To, From, CallSid, twilioNumber });
   
+  // Créer un log d'appel sortant
+  const callData = {
+    sid: CallSid,
+    to: To,
+    from: twilioNumber,
+    status: 'initiated',
+    startTime: new Date(),
+    direction: 'outbound',
+    clientIdentity: 'softphone-user'
+  };
+  
+  activeCalls.set(CallSid, callData);
+  callHistory.push(callData);
+  
+  // Ajouter au log des appels
+  addCallLog(callData);
+  
   const response = new twilio.twiml.VoiceResponse();
   const dial = response.dial({ 
     callerId: twilioNumber,
     timeout: 30,
-    record: 'record-from-answer'
+    record: 'record-from-answer',
+    statusCallback: `${process.env.NGROK_URL || 'https://apt-buzzard-leading.ngrok-free.app'}/api/call-status`,
+    statusCallbackEvent: ['initiated', 'ringing', 'answered', 'completed', 'failed', 'busy', 'no-answer'],
+    statusCallbackMethod: 'POST'
   });
   dial.number(To);
   
