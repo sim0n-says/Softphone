@@ -224,7 +224,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     initializeCallControls();
     initializeSettings();
     initializeIncomingCallModal();
-    initializeAudioControls();
     // loadAudioDevices() sera appelé automatiquement après requestMicrophoneAccess()
     loadCallHistory();
     
@@ -260,6 +259,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     socket.on('call-log-updated', (data) => {
         updateCallLogsDisplay(data.logs);
     });
+    
+    // Initialiser les contrôles audio après un délai pour s'assurer que le DOM est prêt
+    setTimeout(() => {
+        initializeAudioControls();
+    }, 500);
 });
 
 // Initialisation Socket.IO
@@ -1100,36 +1104,62 @@ document.head.appendChild(style);
 
 // Initialiser les contrôles audio
 function initializeAudioControls() {
-    // Bouton Mute
+    const muteBtn = document.getElementById('mute-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const holdBtn = document.getElementById('hold-btn');
+    const speakerBtn = document.getElementById('speaker-btn');
+    const recordBtn = document.getElementById('record-btn');
+    
+    // Vérifier que tous les éléments existent
+    if (!muteBtn || !pauseBtn || !holdBtn || !speakerBtn || !recordBtn) {
+        console.warn('⚠️ Certains éléments de contrôle audio non trouvés, initialisation différée');
+        // Réessayer après un délai
+        setTimeout(initializeAudioControls, 1000);
+        return;
+    }
+    
+    console.log('✅ Initialisation des contrôles audio...');
+    
     muteBtn.addEventListener('click', toggleMute);
-    
-    // Bouton Pause
     pauseBtn.addEventListener('click', togglePause);
-    
-    // Bouton Hold
     holdBtn.addEventListener('click', toggleHold);
-    
-    // Bouton Speaker
     speakerBtn.addEventListener('click', toggleSpeaker);
-    
-    // Bouton Transfer
-    transferBtn.addEventListener('click', showTransferDialog);
-    
-    // Bouton Record
     recordBtn.addEventListener('click', toggleRecording);
     
-    // Changement de périphériques audio
-    inputDeviceSelect.addEventListener('change', changeInputDevice);
-    outputDeviceSelect.addEventListener('change', changeOutputDevice);
+    console.log('✅ Contrôles audio initialisés');
     
-    // Bouton d'accès au microphone
-    micAccessBtn.addEventListener('click', async () => {
-        const success = await requestMicrophoneAccess();
-        if (success) {
-            micAccessBtn.style.display = 'none';
-            loadAudioDevices();
-        }
-    });
+    // Initialiser les autres contrôles
+    initializeOtherAudioControls();
+}
+
+// Initialiser les autres contrôles audio
+function initializeOtherAudioControls() {
+    const transferBtn = document.getElementById('transfer-btn');
+    const inputDeviceSelect = document.getElementById('input-device');
+    const outputDeviceSelect = document.getElementById('output-device');
+    const micAccessBtn = document.getElementById('mic-access-btn');
+    
+    if (transferBtn) {
+        transferBtn.addEventListener('click', showTransferDialog);
+    }
+    
+    if (inputDeviceSelect) {
+        inputDeviceSelect.addEventListener('change', changeInputDevice);
+    }
+    
+    if (outputDeviceSelect) {
+        outputDeviceSelect.addEventListener('change', changeOutputDevice);
+    }
+    
+    if (micAccessBtn) {
+        micAccessBtn.addEventListener('click', async () => {
+            const success = await requestMicrophoneAccess();
+            if (success) {
+                micAccessBtn.style.display = 'none';
+                loadAudioDevices();
+            }
+        });
+    }
 }
 
 // Demander l'accès au microphone automatiquement
@@ -1427,6 +1457,14 @@ function toggleRecording() {
 
 // Mettre à jour l'interface des contrôles audio
 function updateAudioControls(show) {
+    const audioControls = document.getElementById('audio-controls');
+    const audioSettings = document.getElementById('audio-settings');
+    
+    if (!audioControls || !audioSettings) {
+        console.warn('⚠️ Éléments audio-controls ou audio-settings non trouvés');
+        return;
+    }
+    
     if (show) {
         audioControls.style.display = 'block';
         audioSettings.style.display = 'block';
@@ -1442,14 +1480,20 @@ function updateAudioControls(show) {
         isSpeakerOn = false;
         
         // Réinitialiser les boutons
-        muteBtn.classList.remove('muted');
-        pauseBtn.classList.remove('active');
-        holdBtn.classList.remove('active');
-        speakerBtn.classList.remove('active');
-        recordBtn.classList.remove('recording');
+        const muteBtn = document.getElementById('mute-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const holdBtn = document.getElementById('hold-btn');
+        const speakerBtn = document.getElementById('speaker-btn');
+        const recordBtn = document.getElementById('record-btn');
         
-        muteBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-        pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        if (muteBtn) muteBtn.classList.remove('muted');
+        if (pauseBtn) pauseBtn.classList.remove('active');
+        if (holdBtn) holdBtn.classList.remove('active');
+        if (speakerBtn) speakerBtn.classList.remove('active');
+        if (recordBtn) recordBtn.classList.remove('recording');
+        
+        if (muteBtn) muteBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        if (pauseBtn) pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
     }
 } 
 
