@@ -238,15 +238,53 @@
                         </div>
                         <div class="data-stream-container">
                             <div class="stream-header">
-                                <i class="fas fa-phone-volume"></i>
+                                <i class="fas fa-database"></i>
                                 <span>EXCHANGE.db</span>
+                                <div class="stream-controls">
+                                    <button id="refresh-logs" class="stream-btn" title="Actualiser">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    <button id="clear-logs" class="stream-btn" title="Effacer">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="history-stream" id="call-history">
-                                <div class="no-data-message">
-                                    <div class="loading-dots">
-                                        <span></span><span></span><span></span>
+                            
+                            <!-- Statistiques des appels -->
+                            <div class="call-stats" id="call-stats">
+                                <div class="stats-grid">
+                                    <div class="stat-item">
+                                        <span class="stat-label">TOTAL</span>
+                                        <span class="stat-value" id="total-calls">0</span>
                                     </div>
-                                    <p>NO_CALLS_LOGGED</p>
+                                    <div class="stat-item">
+                                        <span class="stat-label">ENTRANTS</span>
+                                        <span class="stat-value" id="inbound-calls">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">SORTANTS</span>
+                                        <span class="stat-value" id="outbound-calls">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">DURÉE MOY</span>
+                                        <span class="stat-value" id="avg-duration">0s</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Logs des appels -->
+                            <div class="call-logs" id="call-logs">
+                                <div class="logs-header">
+                                    <span class="logs-title">CALL_LOG</span>
+                                    <span class="logs-count" id="logs-count">0 entrées</span>
+                                </div>
+                                <div class="logs-container" id="logs-container">
+                                    <div class="no-data-message">
+                                        <div class="loading-dots">
+                                            <span></span><span></span><span></span>
+                                        </div>
+                                        <p>NO_CALLS_LOGGED</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

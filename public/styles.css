@@ -1921,3 +1921,238 @@
     73% { visibility: visible; }
     100% { visibility: visible; }
 } 
+
+/* Styles pour les logs d'appels */
+.stream-controls {
+    display: flex;
+    gap: var(--space-xs);
+    margin-left: auto;
+}
+
+.stream-btn {
+    background: transparent;
+    border: 1px solid var(--phreaking-accent);
+    color: var(--phreaking-text-primary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.7rem;
+}
+
+.stream-btn:hover {
+    background: rgba(74, 103, 65, 0.2);
+    border-color: var(--phreaking-highlight);
+}
+
+.call-stats {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--phreaking-border);
+    border-radius: 4px;
+    padding: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-xs);
+}
+
+.stat-item {
+    text-align: center;
+    padding: var(--space-xs);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    border: 1px solid var(--phreaking-border);
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.6rem;
+    color: var(--phreaking-text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--phreaking-highlight);
+    font-weight: 600;
+}
+
+.call-logs {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--phreaking-border);
+    border-radius: 4px;
+    max-height: 300px;
+    overflow: hidden;
+}
+
+.logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm);
+    background: rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid var(--phreaking-border);
+}
+
+.logs-title {
+    font-size: 0.8rem;
+    color: var(--phreaking-highlight);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.logs-count {
+    font-size: 0.7rem;
+    color: var(--phreaking-text-secondary);
+}
+
+.logs-container {
+    max-height: 250px;
+    overflow-y: auto;
+    padding: var(--space-xs);
+}
+
+.log-entry {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--phreaking-border);
+    border-radius: 4px;
+    padding: var(--space-xs);
+    margin-bottom: var(--space-xs);
+    font-size: 0.7rem;
+    transition: all 0.2s ease;
+}
+
+.log-entry:hover {
+    background: rgba(74, 103, 65, 0.1);
+    border-color: var(--phreaking-accent);
+}
+
+.log-entry.inbound {
+    border-left: 3px solid var(--phreaking-highlight);
+}
+
+.log-entry.outbound {
+    border-left: 3px solid var(--phreaking-accent);
+}
+
+.log-entry.completed {
+    border-left: 3px solid #4CAF50;
+}
+
+.log-entry.failed {
+    border-left: 3px solid #f44336;
+}
+
+.log-entry.no-answer {
+    border-left: 3px solid #ff9800;
+}
+
+.log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.log-direction {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.6rem;
+}
+
+.log-direction.inbound {
+    color: var(--phreaking-highlight);
+}
+
+.log-direction.outbound {
+    color: var(--phreaking-accent);
+}
+
+.log-timestamp {
+    font-size: 0.6rem;
+    color: var(--phreaking-text-secondary);
+}
+
+.log-numbers {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.log-from, .log-to {
+    font-size: 0.7rem;
+    color: var(--phreaking-text-primary);
+}
+
+.log-arrow {
+    color: var(--phreaking-text-secondary);
+    font-size: 0.6rem;
+}
+
+.log-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.6rem;
+    color: var(--phreaking-text-secondary);
+}
+
+.log-status {
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.log-status.completed {
+    color: #4CAF50;
+}
+
+.log-status.failed {
+    color: #f44336;
+}
+
+.log-status.no-answer {
+    color: #ff9800;
+}
+
+.log-status.ringing {
+    color: var(--phreaking-highlight);
+}
+
+.log-duration {
+    color: var(--phreaking-text-secondary);
+}
+
+/* Responsive pour les statistiques */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-xs);
+    }
+    
+    .stat-item {
+        padding: 6px;
+    }
+    
+    .stat-label {
+        font-size: 0.5rem;
+    }
+    
+    .stat-value {
+        font-size: 0.8rem;
+    }
+    
+    .logs-container {
+        max-height: 200px;
+    }
+    
+    .log-entry {
+        font-size: 0.65rem;
+        padding: 6px;
+    }
+} 

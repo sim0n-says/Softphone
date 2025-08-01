@@ -252,6 +252,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Afficher les informations de configuration
     showConfigurationInfo();
+
+    // Système de logs d'appels
+    initializeCallLogs();
+    
+    // Écouter les mises à jour des logs via Socket.IO
+    socket.on('call-log-updated', (data) => {
+        updateCallLogsDisplay(data.logs);
+    });
 });
 
 // Initialisation Socket.IO
@@ -1442,5 +1450,140 @@ function updateAudioControls(show) {
         
         muteBtn.innerHTML = '<i class="fas fa-microphone"></i>';
         pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+    }
+} 
+
+// Fonctions de gestion des logs d'appels
+function initializeCallLogs() {
+    loadCallLogs();
+    
+    // Événements pour les boutons de contrôle
+    document.getElementById('refresh-logs').addEventListener('click', loadCallLogs);
+    document.getElementById('clear-logs').addEventListener('click', clearCallLogs);
+}
+
+async function loadCallLogs() {
+    try {
+        const response = await fetch('/api/call-logs');
+        const data = await response.json();
+        
+        if (response.ok) {
+            updateCallLogsDisplay(data.logs);
+            updateCallStats(data.statistics);
+        } else {
+            console.error('Erreur lors du chargement des logs:', data.error);
+            NotificationSystem.error('LOG_ERROR', 'Impossible de charger les logs', { duration: 3000 });
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement des logs:', error);
+        NotificationSystem.error('LOG_ERROR', 'Erreur de connexion', { duration: 3000 });
+    }
+}
+
+async function clearCallLogs() {
+    if (!confirm('Êtes-vous sûr de vouloir effacer tous les logs d\'appels ?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/call-logs', {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            updateCallLogsDisplay([]);
+            updateCallStats({
+                total: 0,
+                inbound: 0,
+                outbound: 0,
+                averageDuration: 0
+            });
+            NotificationSystem.success('LOG_CLEARED', 'Logs effacés avec succès', { duration: 2000 });
+        } else {
+            const data = await response.json();
+            console.error('Erreur lors de l\'effacement des logs:', data.error);
+            NotificationSystem.error('LOG_ERROR', 'Impossible d\'effacer les logs', { duration: 3000 });
+        }
+    } catch (error) {
+        console.error('Erreur lors de l\'effacement des logs:', error);
+        NotificationSystem.error('LOG_ERROR', 'Erreur de connexion', { duration: 3000 });
+    }
+}
+
+function updateCallLogsDisplay(logs) {
+    const container = document.getElementById('logs-container');
+    const countElement = document.getElementById('logs-count');
+    
+    // Mettre à jour le compteur
+    countElement.textContent = `${logs.length} entrée${logs.length !== 1 ? 's' : ''}`;
+    
+    if (logs.length === 0) {
+        container.innerHTML = `
+            <div class="no-data-message">
+                <div class="loading-dots">
+                    <span></span><span></span><span></span>
+                </div>
+                <p>NO_CALLS_LOGGED</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Générer les entrées de log
+    const logEntries = logs.map(log => createLogEntry(log)).join('');
+    container.innerHTML = logEntries;
+}
+
+function createLogEntry(log) {
+    const timestamp = new Date(log.timestamp).toLocaleString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    
+    const duration = log.duration ? formatDuration(log.duration) : 'N/A';
+    const statusClass = log.status ? `log-status ${log.status}` : 'log-status';
+    const entryClass = `log-entry ${log.direction} ${log.status}`;
+    
+    return `
+        <div class="${entryClass}">
+            <div class="log-header">
+                <span class="log-direction ${log.direction}">${log.direction.toUpperCase()}</span>
+                <span class="log-timestamp">${timestamp}</span>
+            </div>
+            <div class="log-numbers">
+                <span class="log-from">${log.from}</span>
+                <span class="log-arrow">→</span>
+                <span class="log-to">${log.to}</span>
+            </div>
+            <div class="log-details">
+                <span class="${statusClass}">${log.status.toUpperCase()}</span>
+                <span class="log-duration">${duration}</span>
+            </div>
+        </div>
+    `;
+}
+
+function updateCallStats(stats) {
+    document.getElementById('total-calls').textContent = stats.total;
+    document.getElementById('inbound-calls').textContent = stats.inbound;
+    document.getElementById('outbound-calls').textContent = stats.outbound;
+    document.getElementById('avg-duration').textContent = `${stats.averageDuration}s`;
+}
+
+function formatDuration(durationMs) {
+    if (!durationMs || durationMs === 0) return '0s';
+    
+    const seconds = Math.floor(durationMs / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    
+    if (minutes > 0) {
+        return `${minutes}m ${remainingSeconds}s`;
+    } else {
+        return `${seconds}s`;
     }
 } 

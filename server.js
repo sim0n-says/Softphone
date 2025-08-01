@@ -5,7 +5,93 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
+
+// Système de logging des appels
+const CALL_LOG_FILE = path.join(__dirname, 'logs', 'call_log.json');
+const EXCHANGE_DB_FILE = path.join(__dirname, 'logs', 'exchange.db.json');
+
+// Créer le dossier logs s'il n'existe pas
+if (!fs.existsSync(path.join(__dirname, 'logs'))) {
+  fs.mkdirSync(path.join(__dirname, 'logs'), { recursive: true });
+}
+
+// Fonction pour charger les logs existants
+function loadCallLogs() {
+  try {
+    if (fs.existsSync(CALL_LOG_FILE)) {
+      const data = fs.readFileSync(CALL_LOG_FILE, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des logs:', error);
+  }
+  return [];
+}
+
+// Fonction pour sauvegarder les logs
+function saveCallLogs(logs) {
+  try {
+    fs.writeFileSync(CALL_LOG_FILE, JSON.stringify(logs, null, 2), 'utf8');
+  } catch (error) {
+    console.error('❌ Erreur lors de la sauvegarde des logs:', error);
+  }
+}
+
+// Fonction pour ajouter un log d'appel
+function addCallLog(callData) {
+  const logs = loadCallLogs();
+  const logEntry = {
+    id: callData.sid || `call_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    timestamp: new Date().toISOString(),
+    direction: callData.direction || 'unknown',
+    from: callData.from || 'unknown',
+    to: callData.to || 'unknown',
+    status: callData.status || 'unknown',
+    duration: callData.duration || 0,
+    startTime: callData.startTime ? new Date(callData.startTime).toISOString() : new Date().toISOString(),
+    endTime: callData.endTime ? new Date(callData.endTime).toISOString() : null,
+    clientIdentity: callData.clientIdentity || 'unknown'
+  };
+  
+  logs.unshift(logEntry); // Ajouter au début
+  
+  // Garder seulement les 1000 derniers appels
+  if (logs.length > 1000) {
+    logs.splice(1000);
+  }
+  
+  saveCallLogs(logs);
+  
+  // Notifier les clients via Socket.IO
+  io.emit('call-log-updated', { logs });
+  
+  return logEntry;
+}
+
+// Fonction pour obtenir les statistiques des appels
+function getCallStatistics() {
+  const logs = loadCallLogs();
+  const stats = {
+    total: logs.length,
+    inbound: logs.filter(log => log.direction === 'inbound').length,
+    outbound: logs.filter(log => log.direction === 'outbound').length,
+    completed: logs.filter(log => log.status === 'completed').length,
+    failed: logs.filter(log => log.status === 'failed').length,
+    missed: logs.filter(log => log.status === 'no-answer').length,
+    totalDuration: logs.reduce((sum, log) => sum + (log.duration || 0), 0),
+    averageDuration: 0
+  };
+  
+  const completedCalls = logs.filter(log => log.duration > 0);
+  if (completedCalls.length > 0) {
+    stats.averageDuration = Math.round(stats.totalDuration / completedCalls.length / 1000); // en secondes
+  }
+  
+  return stats;
+}
 
 const twilio = require('twilio');
 // Initialiser le client Twilio seulement si les variables d'environnement sont définies
@@ -55,6 +141,45 @@ app.get('/api/status', (req, res) => {
     totalCalls: callHistory.length,
     twilioConfigured: !!twilioClient
   });
+});
+
+// Route pour obtenir les logs d'appels
+app.get('/api/call-logs', (req, res) => {
+  try {
+    const logs = loadCallLogs();
+    const stats = getCallStatistics();
+    res.json({
+      logs: logs,
+      statistics: stats,
+      total: logs.length
+    });
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des logs:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des logs' });
+  }
+});
+
+// Route pour obtenir les statistiques des appels
+app.get('/api/call-stats', (req, res) => {
+  try {
+    const stats = getCallStatistics();
+    res.json(stats);
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des statistiques:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des statistiques' });
+  }
+});
+
+// Route pour effacer les logs d'appels
+app.delete('/api/call-logs', (req, res) => {
+  try {
+    saveCallLogs([]);
+    io.emit('call-log-updated', { logs: [] });
+    res.json({ success: true, message: 'Logs effacés avec succès' });
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'effacement des logs:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'effacement des logs' });
+  }
 });
 
 // Route pour obtenir un token Twilio Client
@@ -146,11 +271,15 @@ app.post('/api/call', async (req, res) => {
       status: call.status,
       startTime: new Date(),
       identity: identity,
-      direction: 'outbound'
+      direction: 'outbound',
+      clientIdentity: identity
     };
 
     activeCalls.set(call.sid, callData);
     callHistory.push(callData);
+    
+    // Ajouter au log des appels
+    addCallLog(callData);
 
     res.json({ success: true, callSid: call.sid });
   } catch (error) {
@@ -207,6 +336,9 @@ app.post('/api/call-status', (req, res) => {
       callData.endTime = new Date();
       callData.duration = callData.endTime - callData.startTime;
       activeCalls.delete(CallSid);
+      
+      // Mettre à jour le log avec les informations finales
+      addCallLog(callData);
     }
   } else if (Direction === 'inbound' && CallStatus === 'ringing') {
     // Créer un nouvel appel entrant
@@ -216,11 +348,15 @@ app.post('/api/call-status', (req, res) => {
       from: From,
       status: CallStatus,
       startTime: new Date(),
-      direction: 'inbound'
+      direction: 'inbound',
+      clientIdentity: currentClientIdentity || 'softphone-user'
     };
     
     activeCalls.set(CallSid, incomingCallData);
     callHistory.push(incomingCallData);
+    
+    // Ajouter au log des appels
+    addCallLog(incomingCallData);
   }
 
   // Notifier les clients via Socket.IO
