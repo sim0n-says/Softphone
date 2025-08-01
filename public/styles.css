@@ -811,7 +811,8 @@
     gap: var(--space-sm);
 }
 
-.panel-header::after {
+/* Suppression de l'effet de dégradé sur la bordure */
+/* .panel-header::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -824,7 +825,7 @@
         var(--phreaking-accent) 80%, 
         transparent 100%
     );
-}
+} */
 
 .panel-title {
     font-family: 'Courier New', monospace;
