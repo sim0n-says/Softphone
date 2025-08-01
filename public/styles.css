@@ -2371,10 +2371,10 @@
 /* Boutons cyberpunk pour la gestion des logs dans le header */
 .panel-header .stream-controls {
     display: flex;
-    gap: var(--space-xs);
+    gap: 2px;
     flex-wrap: wrap;
     margin: 0;
-    flex: 1;
+    flex-shrink: 0;
     justify-content: flex-end;
 }
 
@@ -2382,22 +2382,22 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: var(--space-xs);
-    padding: var(--space-xs) var(--space-sm);
+    justify-content: center;
+    padding: 2px 4px;
     background: transparent;
     border: 1px solid var(--phreaking-accent);
     color: var(--phreaking-text-primary);
     font-family: 'Oxanium', monospace;
-    font-size: 0.7rem;
+    font-size: 0.5rem;
     font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     cursor: pointer;
     transition: all 0.3s ease;
-    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
-    min-width: 50px;
-    height: 28px;
-    justify-content: center;
+    clip-path: polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 3px 100%, 0 calc(100% - 3px));
+    min-width: 32px;
+    height: 20px;
+    opacity: 0.7;
 }
 
 .panel-header .stream-btn.cyber-btn::before {
@@ -2407,7 +2407,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.03) 50%, transparent 70%);
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -2419,66 +2419,31 @@
 
 .panel-header .stream-btn.cyber-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     color: var(--phreaking-highlight);
     border-color: var(--phreaking-highlight);
+    opacity: 1;
 }
 
 .panel-header .stream-btn.cyber-btn:active {
     transform: translateY(0);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* Types de boutons - couleurs sobres comme le bouton config */
-.panel-header .stream-btn.cyber-btn[data-type="success"] {
-    border-color: var(--phreaking-accent);
-    color: var(--phreaking-text-primary);
-}
-
-.panel-header .stream-btn.cyber-btn[data-type="success"]:hover {
-    background: rgba(74, 103, 65, 0.1);
-    color: var(--phreaking-highlight);
-    border-color: var(--phreaking-highlight);
-}
-
-.panel-header .stream-btn.cyber-btn[data-type="warning"] {
-    border-color: var(--phreaking-accent);
-    color: var(--phreaking-text-primary);
-}
-
-.panel-header .stream-btn.cyber-btn[data-type="warning"]:hover {
-    background: rgba(74, 103, 65, 0.1);
-    color: var(--phreaking-highlight);
-    border-color: var(--phreaking-highlight);
-}
-
-.panel-header .stream-btn.cyber-btn[data-type="error"] {
-    border-color: var(--phreaking-accent);
-    color: var(--phreaking-text-primary);
-}
-
-.panel-header .stream-btn.cyber-btn[data-type="error"]:hover {
-    background: rgba(74, 103, 65, 0.1);
-    color: var(--phreaking-highlight);
-    border-color: var(--phreaking-highlight);
-}
-
-.panel-header .stream-btn.cyber-btn[data-type="info"] {
-    border-color: var(--phreaking-accent);
-    color: var(--phreaking-text-primary);
-}
-
-.panel-header .stream-btn.cyber-btn[data-type="info"]:hover {
-    background: rgba(74, 103, 65, 0.1);
-    color: var(--phreaking-highlight);
-    border-color: var(--phreaking-highlight);
-}
-
+.panel-header .stream-btn.cyber-btn[data-type="success"],
+.panel-header .stream-btn.cyber-btn[data-type="warning"],
+.panel-header .stream-btn.cyber-btn[data-type="error"],
+.panel-header .stream-btn.cyber-btn[data-type="info"],
 .panel-header .stream-btn.cyber-btn[data-type="danger"] {
     border-color: var(--phreaking-accent);
     color: var(--phreaking-text-primary);
 }
 
+.panel-header .stream-btn.cyber-btn[data-type="success"]:hover,
+.panel-header .stream-btn.cyber-btn[data-type="warning"]:hover,
+.panel-header .stream-btn.cyber-btn[data-type="error"]:hover,
+.panel-header .stream-btn.cyber-btn[data-type="info"]:hover,
 .panel-header .stream-btn.cyber-btn[data-type="danger"]:hover {
     background: rgba(74, 103, 65, 0.1);
     color: var(--phreaking-highlight);
@@ -2486,12 +2451,11 @@
 }
 
 .panel-header .stream-btn.cyber-btn i {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
 }
 
 .panel-header .stream-btn.cyber-btn .btn-text {
-    font-size: 0.5rem;
-    font-weight: 600;
+    display: none;
 }
 
 /* Animation de pulsation pour les boutons actifs */
@@ -2502,29 +2466,23 @@
 /* Responsive pour les boutons dans le header */
 @media (max-width: 768px) {
     .panel-header {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
         gap: var(--space-sm);
     }
     
     .panel-header .stream-controls {
-        width: 100%;
-        justify-content: flex-start;
-        gap: var(--space-xs);
+        gap: 1px;
     }
     
     .panel-header .stream-btn.cyber-btn {
-        padding: var(--space-xs);
-        min-width: 40px;
-        height: 24px;
-        font-size: 0.6rem;
-    }
-    
-    .panel-header .stream-btn.cyber-btn .btn-text {
-        display: none;
+        padding: 1px 3px;
+        min-width: 28px;
+        height: 18px;
+        font-size: 0.4rem;
     }
     
     .panel-header .stream-btn.cyber-btn i {
-        font-size: 0.8rem;
+        font-size: 0.5rem;
     }
 } 
