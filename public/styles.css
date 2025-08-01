@@ -531,6 +531,91 @@
     text-transform: uppercase;
     padding: var(--space-md);
     outline: none;
+    position: relative; /* Pour les pseudo-éléments */
+}
+
+/* Effet de glitch pour le numéro de téléphone comme SIM0N-SAYS DIAL */
+.phreaking-input::before {
+    content: attr(value);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: #7aff7a; /* Vert cyber pour l'effet glitch */
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+    opacity: 0;
+    animation: input-glitch-green 4s infinite;
+    pointer-events: none;
+}
+
+.phreaking-input::after {
+    content: attr(value);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: #ff4757; /* Rouge cyber pour l'effet glitch */
+    clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+    opacity: 0;
+    animation: input-glitch-red 4s infinite 0.5s;
+    pointer-events: none;
+}
+
+/* Animations de glitch pour le numéro de téléphone */
+@keyframes input-glitch-green {
+    0%, 90% { 
+        opacity: 0; 
+        transform: translateX(0);
+    }
+    91% { 
+        opacity: 0.9; 
+        transform: translateX(-2px);
+        text-shadow: 0 0 10px rgba(122, 255, 122, 0.6);
+    }
+    92% { 
+        opacity: 0.7; 
+        transform: translateX(2px);
+        text-shadow: 0 0 15px rgba(122, 255, 122, 0.8);
+    }
+    93% { 
+        opacity: 1; 
+        transform: translateX(-1px);
+        text-shadow: 0 0 20px rgba(122, 255, 122, 1);
+    }
+    94%, 100% { 
+        opacity: 0; 
+        transform: translateX(0);
+        text-shadow: none;
+    }
+}
+
+@keyframes input-glitch-red {
+    0%, 85% { 
+        opacity: 0; 
+        transform: translateX(0);
+    }
+    86% { 
+        opacity: 0.8; 
+        transform: translateX(2px);
+        text-shadow: 0 0 8px rgba(255, 71, 87, 0.6);
+    }
+    87% { 
+        opacity: 0.6; 
+        transform: translateX(-2px);
+        text-shadow: 0 0 12px rgba(255, 71, 87, 0.8);
+    }
+    88% { 
+        opacity: 0.9; 
+        transform: translateX(1px);
+        text-shadow: 0 0 16px rgba(255, 71, 87, 1);
+    }
+    89%, 100% { 
+        opacity: 0; 
+        transform: translateX(0);
+        text-shadow: none;
+    }
 }
 
 .phreaking-input::placeholder {
