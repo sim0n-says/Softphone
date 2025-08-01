@@ -2156,3 +2156,151 @@
         padding: 6px;
     }
 } 
+
+/* Boutons cyberpunk pour la gestion des logs */
+.stream-controls {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+    margin-top: var(--space-sm);
+}
+
+.stream-btn.cyber-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: transparent;
+    border: 1px solid var(--phreaking-accent);
+    color: var(--phreaking-text-primary);
+    font-family: 'Oxanium', monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    min-width: 60px;
+    justify-content: center;
+}
+
+.stream-btn.cyber-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.stream-btn.cyber-btn:hover::before {
+    opacity: 1;
+}
+
+.stream-btn.cyber-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.stream-btn.cyber-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Types de boutons */
+.stream-btn.cyber-btn[data-type="success"] {
+    border-color: #7aff7a;
+    color: #7aff7a;
+}
+
+.stream-btn.cyber-btn[data-type="success"]:hover {
+    background: rgba(122, 255, 122, 0.1);
+    box-shadow: 0 4px 12px rgba(122, 255, 122, 0.2);
+}
+
+.stream-btn.cyber-btn[data-type="warning"] {
+    border-color: #ffa726;
+    color: #ffa726;
+}
+
+.stream-btn.cyber-btn[data-type="warning"]:hover {
+    background: rgba(255, 167, 38, 0.1);
+    box-shadow: 0 4px 12px rgba(255, 167, 38, 0.2);
+}
+
+.stream-btn.cyber-btn[data-type="error"] {
+    border-color: #ff4757;
+    color: #ff4757;
+}
+
+.stream-btn.cyber-btn[data-type="error"]:hover {
+    background: rgba(255, 71, 87, 0.1);
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.2);
+}
+
+.stream-btn.cyber-btn[data-type="info"] {
+    border-color: #74b9ff;
+    color: #74b9ff;
+}
+
+.stream-btn.cyber-btn[data-type="info"]:hover {
+    background: rgba(116, 185, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(116, 185, 255, 0.2);
+}
+
+.stream-btn.cyber-btn[data-type="danger"] {
+    border-color: #ff6b6b;
+    color: #ff6b6b;
+}
+
+.stream-btn.cyber-btn[data-type="danger"]:hover {
+    background: rgba(255, 107, 107, 0.1);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
+}
+
+.stream-btn.cyber-btn i {
+    font-size: 0.8rem;
+}
+
+.stream-btn.cyber-btn .btn-text {
+    font-size: 0.6rem;
+    font-weight: 600;
+}
+
+/* Animation de pulsation pour les boutons actifs */
+.stream-btn.cyber-btn:active {
+    animation: cyber-pulse 0.2s ease;
+}
+
+@keyframes cyber-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+/* Responsive pour les boutons */
+@media (max-width: 768px) {
+    .stream-controls {
+        gap: var(--space-xs);
+    }
+    
+    .stream-btn.cyber-btn {
+        padding: var(--space-xs);
+        min-width: 50px;
+        font-size: 0.6rem;
+    }
+    
+    .stream-btn.cyber-btn .btn-text {
+        display: none;
+    }
+    
+    .stream-btn.cyber-btn i {
+        font-size: 0.9rem;
+    }
+} 
