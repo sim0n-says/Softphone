@@ -786,22 +786,22 @@
     letter-spacing: 1px;
     margin: 0;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
 }
 
-.panel-indicator {
-    width: 8px;
-    height: 8px;
-    background: var(--phreaking-success);
-    border-radius: 50%;
+.panel-title i {
     animation: pulse-indicator 2s infinite;
-    flex-shrink: 0;
-    margin: 0 var(--space-sm);
+    color: var(--phreaking-success);
 }
 
 @keyframes pulse-indicator {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.5; transform: scale(1.2); }
 }
+
+
 
 /* ===== MATRICE AUDIO AVEC FORMES CYBERPUNK ===== */
 .audio-matrix {
