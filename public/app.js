@@ -1455,21 +1455,75 @@ function updateAudioControls(show) {
 
 // Fonctions de gestion des logs d'appels
 function initializeCallLogs() {
+    console.log('🔍 Initialisation du système de logs d\'appels...');
     loadCallLogs();
     
     // Événements pour les boutons de contrôle
-    document.getElementById('refresh-logs').addEventListener('click', loadCallLogs);
-    document.getElementById('clear-logs').addEventListener('click', clearCallLogs);
+    const refreshBtn = document.getElementById('refresh-logs');
+    const clearBtn = document.getElementById('clear-logs');
+    const testBtn = document.getElementById('test-log-btn');
+    
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', loadCallLogs);
+        console.log('✅ Bouton refresh-logs configuré');
+    } else {
+        console.error('❌ Bouton refresh-logs non trouvé');
+    }
+    
+    if (clearBtn) {
+        clearBtn.addEventListener('click', clearCallLogs);
+        console.log('✅ Bouton clear-logs configuré');
+    } else {
+        console.error('❌ Bouton clear-logs non trouvé');
+    }
+    
+    if (testBtn) {
+        testBtn.addEventListener('click', createTestLog);
+        console.log('✅ Bouton test-log-btn configuré');
+    } else {
+        console.error('❌ Bouton test-log-btn non trouvé');
+    }
+}
+
+// Fonction pour créer un log de test
+async function createTestLog() {
+    console.log('🧪 Création d\'un log de test...');
+    try {
+        const response = await fetch('/api/test-log', {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Log de test créé:', data);
+            NotificationSystem.success('TEST_LOG', 'Log de test créé', { duration: 2000 });
+            
+            // Recharger les logs après création
+            setTimeout(() => {
+                loadCallLogs();
+            }, 500);
+        } else {
+            console.error('❌ Erreur lors de la création du log de test');
+            NotificationSystem.error('TEST_ERROR', 'Impossible de créer le log de test', { duration: 3000 });
+        }
+    } catch (error) {
+        console.error('❌ Erreur lors de la création du log de test:', error);
+        NotificationSystem.error('TEST_ERROR', 'Erreur de connexion', { duration: 3000 });
+    }
 }
 
 async function loadCallLogs() {
+    console.log('📊 Chargement des logs d\'appels...');
     try {
         const response = await fetch('/api/call-logs');
         const data = await response.json();
         
+        console.log('📊 Réponse API logs:', data);
+        
         if (response.ok) {
             updateCallLogsDisplay(data.logs);
             updateCallStats(data.statistics);
+            console.log('✅ Logs chargés avec succès');
         } else {
             console.error('Erreur lors du chargement des logs:', data.error);
             NotificationSystem.error('LOG_ERROR', 'Impossible de charger les logs', { duration: 3000 });
@@ -1511,8 +1565,19 @@ async function clearCallLogs() {
 }
 
 function updateCallLogsDisplay(logs) {
+    console.log('🎨 Mise à jour de l\'affichage des logs:', logs);
     const container = document.getElementById('logs-container');
     const countElement = document.getElementById('logs-count');
+    
+    if (!container) {
+        console.error('❌ Container logs-container non trouvé');
+        return;
+    }
+    
+    if (!countElement) {
+        console.error('❌ Élément logs-count non trouvé');
+        return;
+    }
     
     // Mettre à jour le compteur
     countElement.textContent = `${logs.length} entrée${logs.length !== 1 ? 's' : ''}`;
@@ -1526,12 +1591,14 @@ function updateCallLogsDisplay(logs) {
                 <p>NO_CALLS_LOGGED</p>
             </div>
         `;
+        console.log('📭 Aucun log à afficher');
         return;
     }
     
     // Générer les entrées de log
     const logEntries = logs.map(log => createLogEntry(log)).join('');
     container.innerHTML = logEntries;
+    console.log('✅ Affichage des logs mis à jour');
 }
 
 function createLogEntry(log) {
