@@ -650,47 +650,11 @@ function hideIncomingCallModal() {
 
 // Jouer une sonnerie (fonction simple)
 function playRingtone() {
-    // Jouer le son de modem 56k classique
-    try {
-        // Créer un élément audio pour le son de modem
-        if (!window.modemAudio) {
-            window.modemAudio = new Audio('/modem-56k.mp3');
-            window.modemAudio.volume = 0.3; // Volume modéré
-            window.modemAudio.loop = true; // Boucle continue
-        }
-        
-        // Jouer le son de modem
-        window.modemAudio.play().catch(error => {
-            console.log('Impossible de jouer le son de modem:', error);
-            // Fallback vers la synthèse sonore cyberpunk si le fichier audio échoue
-            playCyberpunkRingtone();
-        });
-        
-        // Notification cyberpunk pour le son de modem
-        NotificationSystem.info('MODEM_SOUND', 'Son de modem 56k activé - Connexion en cours...', { duration: 2000 });
-        
-        // Répéter la sonnerie
-        window.ringtoneInterval = setInterval(() => {
-            if (incomingCallModal.style.display === 'block') {
-                if (window.modemAudio && window.modemAudio.paused) {
-                    window.modemAudio.play().catch(() => {
-                        playCyberpunkRingtone();
-                    });
-                }
-            }
-        }, 2000);
-    } catch (error) {
-        console.log('Impossible de jouer la sonnerie modem:', error);
-        // Fallback vers la synthèse sonore cyberpunk
-        playCyberpunkRingtone();
-    }
-}
-
-// Fonction de fallback avec synthèse sonore cyberpunk
-function playCyberpunkRingtone() {
-    // Créer un audio context pour générer un son cyberpunk de fallback
+    // Créer un audio context pour générer un son cyberpunk
     try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Créer plusieurs oscillateurs pour un son plus complexe
         const oscillator1 = audioContext.createOscillator();
         const oscillator2 = audioContext.createOscillator();
         const oscillator3 = audioContext.createOscillator();
@@ -744,8 +708,14 @@ function playCyberpunkRingtone() {
         oscillator2.stop(audioContext.currentTime + 0.8);
         oscillator3.stop(audioContext.currentTime + 0.8);
         
+        // Répéter la sonnerie cyberpunk
+        window.ringtoneInterval = setInterval(() => {
+            if (incomingCallModal.style.display === 'block') {
+                playRingtone();
+            }
+        }, 1500); // Intervalle plus court pour un effet plus dynamique
     } catch (error) {
-        console.log('Impossible de jouer la sonnerie cyberpunk de fallback:', error);
+        console.log('Impossible de jouer la sonnerie cyberpunk:', error);
     }
 }
 
@@ -754,12 +724,6 @@ function stopRingtone() {
     if (window.ringtoneInterval) {
         clearInterval(window.ringtoneInterval);
         window.ringtoneInterval = null;
-    }
-    
-    // Arrêter le son de modem
-    if (window.modemAudio) {
-        window.modemAudio.pause();
-        window.modemAudio.currentTime = 0;
     }
 }
 

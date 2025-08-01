@@ -98,6 +98,10 @@
     position: relative;
     overflow: hidden;
     box-shadow: var(--glow-phreaking);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 80px;
     /* Forme cyberpunk avec razor edges */
     clip-path: polygon(
         var(--cyber-bevel) 0%, 
@@ -172,6 +176,8 @@
     color: var(--phreaking-text-primary); /* Couleur neutre par défaut */
     text-shadow: none;
     position: relative;
+    flex: 1;
+    margin-right: var(--space-lg);
 }
 
 .system-title::before {
@@ -266,9 +272,11 @@
 }
 
 .system-status {
-    position: absolute;
-    top: var(--space-lg);
-    right: var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    justify-content: flex-end;
+    flex-shrink: 0;
 }
 
 .status-matrix {
@@ -1397,15 +1405,21 @@
     
     .quantum-header {
         padding: var(--space-md);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+        min-height: auto;
     }
     
     .system-title {
         font-size: 1.25rem;
+        margin-right: 0;
+        width: 100%;
     }
     
     .system-status {
-        position: static;
-        margin-top: var(--space-md);
+        width: 100%;
+        justify-content: space-between;
     }
     
     .header-config-btn {
@@ -1636,13 +1650,7 @@
 }
 
 /* Ajustement du layout system-status pour accueillir le bouton */
-.system-status {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-md);
-    justify-content: space-between;
-    width: 100%;
-}
+
 
 /* Système de notifications cyberpunk phreaking */
 .phreaking-notifications {
