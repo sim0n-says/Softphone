@@ -1457,9 +1457,10 @@ function updateAudioControls(show) {
 function initializeCallLogs() {
     console.log('🔍 Initialisation du système de logs d\'appels...');
     
-    // Test de l'API au démarrage
+    // Chargement automatique des logs au démarrage
     setTimeout(() => {
-        testAPI();
+        console.log('🚀 Chargement automatique des logs...');
+        forceLoadLogs();
     }, 1000);
     
     // Événements pour les boutons de contrôle
@@ -1537,6 +1538,164 @@ async function testAPI() {
     }
 }
 
+// Fonction de test direct accessible depuis la console
+window.testAPIDirect = async function() {
+    console.log('🧪 Test API Direct...');
+    try {
+        const response = await fetch('/api/call-logs');
+        console.log('📡 Réponse brute:', response);
+        
+        if (!response.ok) {
+            console.error('❌ Erreur HTTP:', response.status, response.statusText);
+            return;
+        }
+        
+        const data = await response.json();
+        console.log('📊 Données complètes:', data);
+        console.log('📊 Nombre de logs:', data.logs ? data.logs.length : 'undefined');
+        
+        if (data.logs && data.logs.length > 0) {
+            console.log('✅ Logs trouvés:', data.logs);
+            console.log('✅ Premier log:', data.logs[0]);
+            
+            // Essayer de forcer l'affichage
+            const container = document.getElementById('logs-container');
+            if (container) {
+                console.log('✅ Container trouvé, mise à jour...');
+                updateCallLogsDisplay(data.logs);
+                updateCallStats(data.statistics);
+            } else {
+                console.error('❌ Container logs-container non trouvé');
+            }
+        } else {
+            console.log('📭 Aucun log dans la réponse');
+        }
+    } catch (error) {
+        console.error('❌ Erreur lors du test API:', error);
+    }
+};
+
+// Fonction pour vérifier les éléments DOM
+window.checkDOM = function() {
+    console.log('🔍 Vérification des éléments DOM...');
+    
+    const elements = [
+        'logs-container',
+        'logs-count',
+        'total-calls',
+        'inbound-calls',
+        'outbound-calls',
+        'avg-duration',
+        'refresh-logs',
+        'clear-logs',
+        'test-log-btn'
+    ];
+    
+    elements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            console.log(`✅ ${id}: trouvé`);
+        } else {
+            console.error(`❌ ${id}: NON TROUVÉ`);
+        }
+    });
+    
+    console.log('🔍 Vérification terminée');
+};
+
+// Fonction pour forcer le chargement des logs
+window.forceLoadLogs = async function() {
+    console.log('🚀 Force Load Logs...');
+    
+    try {
+        // Appel direct à l'API
+        const response = await fetch('/api/call-logs');
+        console.log('📡 Réponse API:', response.status, response.statusText);
+        
+        if (!response.ok) {
+            console.error('❌ Erreur HTTP:', response.status);
+            return;
+        }
+        
+        const data = await response.json();
+        console.log('📊 Données reçues:', data);
+        
+        // Vérifier les éléments DOM
+        const container = document.getElementById('logs-container');
+        const countElement = document.getElementById('logs-count');
+        
+        console.log('🔍 Container:', container ? 'trouvé' : 'NON TROUVÉ');
+        console.log('🔍 Count element:', countElement ? 'trouvé' : 'NON TROUVÉ');
+        
+        if (container && data.logs) {
+            console.log('✅ Mise à jour de l\'affichage...');
+            
+            // Mettre à jour le compteur
+            if (countElement) {
+                countElement.textContent = `${data.logs.length} entrée${data.logs.length !== 1 ? 's' : ''}`;
+            }
+            
+            // Mettre à jour les statistiques
+            if (data.statistics) {
+                const totalEl = document.getElementById('total-calls');
+                const inboundEl = document.getElementById('inbound-calls');
+                const outboundEl = document.getElementById('outbound-calls');
+                const avgEl = document.getElementById('avg-duration');
+                
+                if (totalEl) totalEl.textContent = data.statistics.total;
+                if (inboundEl) inboundEl.textContent = data.statistics.inbound;
+                if (outboundEl) outboundEl.textContent = data.statistics.outbound;
+                if (avgEl) avgEl.textContent = `${data.statistics.averageDuration}s`;
+            }
+            
+            // Afficher les logs
+            if (data.logs.length === 0) {
+                container.innerHTML = `
+                    <div class="no-data-message">
+                        <div class="loading-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <p>NO_CALLS_LOGGED</p>
+                    </div>
+                `;
+            } else {
+                const logEntries = data.logs.map(log => {
+                    const timestamp = new Date(log.timestamp).toLocaleString('fr-FR');
+                    const duration = log.duration ? formatDuration(log.duration) : 'N/A';
+                    const entryClass = `log-entry ${log.direction} ${log.status}`;
+                    
+                    return `
+                        <div class="${entryClass}">
+                            <div class="log-header">
+                                <span class="log-direction ${log.direction}">${log.direction.toUpperCase()}</span>
+                                <span class="log-timestamp">${timestamp}</span>
+                            </div>
+                            <div class="log-numbers">
+                                <span class="log-from">${log.from}</span>
+                                <span class="log-arrow">→</span>
+                                <span class="log-to">${log.to}</span>
+                            </div>
+                            <div class="log-details">
+                                <span class="log-status ${log.status}">${log.status.toUpperCase()}</span>
+                                <span class="log-duration">${duration}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                container.innerHTML = logEntries;
+            }
+            
+            console.log('✅ Affichage mis à jour avec succès');
+        } else {
+            console.error('❌ Container non trouvé ou données invalides');
+        }
+        
+    } catch (error) {
+        console.error('❌ Erreur lors du chargement forcé:', error);
+    }
+};
+
 async function loadCallLogs() {
     console.log('📊 Chargement des logs d\'appels...');
     try {
@@ -1546,9 +1705,71 @@ async function loadCallLogs() {
         console.log('📊 Réponse API logs:', data);
         
         if (response.ok) {
-            updateCallLogsDisplay(data.logs);
-            updateCallStats(data.statistics);
-            console.log('✅ Logs chargés avec succès');
+            // Utiliser la même logique que forceLoadLogs qui fonctionne
+            const container = document.getElementById('logs-container');
+            const countElement = document.getElementById('logs-count');
+            
+            if (container && data.logs) {
+                // Mettre à jour le compteur
+                if (countElement) {
+                    countElement.textContent = `${data.logs.length} entrée${data.logs.length !== 1 ? 's' : ''}`;
+                }
+                
+                // Mettre à jour les statistiques
+                if (data.statistics) {
+                    const totalEl = document.getElementById('total-calls');
+                    const inboundEl = document.getElementById('inbound-calls');
+                    const outboundEl = document.getElementById('outbound-calls');
+                    const avgEl = document.getElementById('avg-duration');
+                    
+                    if (totalEl) totalEl.textContent = data.statistics.total;
+                    if (inboundEl) inboundEl.textContent = data.statistics.inbound;
+                    if (outboundEl) outboundEl.textContent = data.statistics.outbound;
+                    if (avgEl) avgEl.textContent = `${data.statistics.averageDuration}s`;
+                }
+                
+                // Afficher les logs
+                if (data.logs.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-data-message">
+                            <div class="loading-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <p>NO_CALLS_LOGGED</p>
+                        </div>
+                    `;
+                } else {
+                    const logEntries = data.logs.map(log => {
+                        const timestamp = new Date(log.timestamp).toLocaleString('fr-FR');
+                        const duration = log.duration ? formatDuration(log.duration) : 'N/A';
+                        const entryClass = `log-entry ${log.direction} ${log.status}`;
+                        
+                        return `
+                            <div class="${entryClass}">
+                                <div class="log-header">
+                                    <span class="log-direction ${log.direction}">${log.direction.toUpperCase()}</span>
+                                    <span class="log-timestamp">${timestamp}</span>
+                                </div>
+                                <div class="log-numbers">
+                                    <span class="log-from">${log.from}</span>
+                                    <span class="log-arrow">→</span>
+                                    <span class="log-to">${log.to}</span>
+                                </div>
+                                <div class="log-details">
+                                    <span class="log-status ${log.status}">${log.status.toUpperCase()}</span>
+                                    <span class="log-duration">${duration}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    container.innerHTML = logEntries;
+                }
+                
+                console.log('✅ Logs chargés avec succès');
+            } else {
+                console.error('❌ Container non trouvé ou données invalides');
+            }
         } else {
             console.error('Erreur lors du chargement des logs:', data.error);
             NotificationSystem.error('LOG_ERROR', 'Impossible de charger les logs', { duration: 3000 });
