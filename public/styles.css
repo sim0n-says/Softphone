@@ -2676,3 +2676,38 @@
         font-size: 0.5rem;
     }
 } 
+
+/* ===== RESPONSIVE DESIGN AMÉLIORÉ ===== */
+@media (max-width: 1400px) {
+    .phreaking-interface {
+        grid-template-columns: 180px 1fr 180px;
+        gap: var(--space-lg);
+    }
+}
+
+@media (max-width: 1200px) {
+    .phreaking-interface {
+        grid-template-columns: 160px 1fr 160px;
+        gap: var(--space-md);
+    }
+}
+
+@media (max-width: 1024px) {
+    .phreaking-interface {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "terminal"
+            "sidebar-left"
+            "sidebar-right";
+        gap: var(--space-lg);
+    }
+    
+    .phreaking-container {
+        padding: var(--space-lg);
+    }
+    
+    /* Amélioration de l'espacement des panels */
+    .sidebar-panel {
+        margin-bottom: var(--space-md);
+    }
+}
