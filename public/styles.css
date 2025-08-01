@@ -1634,7 +1634,7 @@
 /* Bouton config repositionné à droite du header */
 .header-config-btn {
     background: transparent;
-    border: 1px solid var(--phreaking-primary);
+    border: none;
     color: var(--phreaking-text-muted);
     width: 28px;
     height: 28px;
@@ -1662,7 +1662,6 @@
 
 .header-config-btn:hover {
     color: var(--phreaking-highlight);
-    border-color: var(--phreaking-highlight);
     box-shadow: 0 0 8px rgba(74, 103, 65, 0.3);
     background: rgba(74, 103, 65, 0.05);
 }
@@ -2193,7 +2192,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -2204,64 +2203,71 @@
 }
 
 .stream-btn.cyber-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    color: var(--phreaking-highlight);
+    border-color: var(--phreaking-highlight);
 }
 
 .stream-btn.cyber-btn:active {
     transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Types de boutons */
+/* Types de boutons - couleurs sobres comme le bouton config */
 .stream-btn.cyber-btn[data-type="success"] {
-    border-color: #7aff7a;
-    color: #7aff7a;
+    border-color: var(--phreaking-accent);
+    color: var(--phreaking-text-primary);
 }
 
 .stream-btn.cyber-btn[data-type="success"]:hover {
-    background: rgba(122, 255, 122, 0.1);
-    box-shadow: 0 4px 12px rgba(122, 255, 122, 0.2);
+    background: rgba(74, 103, 65, 0.1);
+    color: var(--phreaking-highlight);
+    border-color: var(--phreaking-highlight);
 }
 
 .stream-btn.cyber-btn[data-type="warning"] {
-    border-color: #ffa726;
-    color: #ffa726;
+    border-color: var(--phreaking-accent);
+    color: var(--phreaking-text-primary);
 }
 
 .stream-btn.cyber-btn[data-type="warning"]:hover {
-    background: rgba(255, 167, 38, 0.1);
-    box-shadow: 0 4px 12px rgba(255, 167, 38, 0.2);
+    background: rgba(74, 103, 65, 0.1);
+    color: var(--phreaking-highlight);
+    border-color: var(--phreaking-highlight);
 }
 
 .stream-btn.cyber-btn[data-type="error"] {
-    border-color: #ff4757;
-    color: #ff4757;
+    border-color: var(--phreaking-accent);
+    color: var(--phreaking-text-primary);
 }
 
 .stream-btn.cyber-btn[data-type="error"]:hover {
-    background: rgba(255, 71, 87, 0.1);
-    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.2);
+    background: rgba(74, 103, 65, 0.1);
+    color: var(--phreaking-highlight);
+    border-color: var(--phreaking-highlight);
 }
 
 .stream-btn.cyber-btn[data-type="info"] {
-    border-color: #74b9ff;
-    color: #74b9ff;
+    border-color: var(--phreaking-accent);
+    color: var(--phreaking-text-primary);
 }
 
 .stream-btn.cyber-btn[data-type="info"]:hover {
-    background: rgba(116, 185, 255, 0.1);
-    box-shadow: 0 4px 12px rgba(116, 185, 255, 0.2);
+    background: rgba(74, 103, 65, 0.1);
+    color: var(--phreaking-highlight);
+    border-color: var(--phreaking-highlight);
 }
 
 .stream-btn.cyber-btn[data-type="danger"] {
-    border-color: #ff6b6b;
-    color: #ff6b6b;
+    border-color: var(--phreaking-accent);
+    color: var(--phreaking-text-primary);
 }
 
 .stream-btn.cyber-btn[data-type="danger"]:hover {
-    background: rgba(255, 107, 107, 0.1);
-    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
+    background: rgba(74, 103, 65, 0.1);
+    color: var(--phreaking-highlight);
+    border-color: var(--phreaking-highlight);
 }
 
 .stream-btn.cyber-btn i {
