@@ -1,792 +1,1851 @@
-/* Reset et base */
+/* =========================
+   SIM0N-SAYS DIAL INTERFACE
+   CYBERPUNK PHREAKING TERMINAL
+   ========================= */
+
+/* Import des polices nécessaires */
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700&display=swap');
+
+/* Reset et variables de l'univers phreaking */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    color: #333;
+/* Palette couleurs phreaking-cyberpunk */
+:root {
+    /* Atmosphère principale - nuances bleu/vert foncé */
+    --phreaking-void: #0b0d13;           /* Void profond */
+    --phreaking-depth: #0f1419;          /* Profondeur phreaking */
+    --phreaking-surface: #141a21;        /* Surface principale */
+    --phreaking-elevated: #1a232e;       /* Éléments élevés */
+    
+    /* Accents subtils et discrets */
+    --phreaking-primary: #2a4a5c;        /* Bleu-gris foncé */
+    --phreaking-secondary: #1e3a2e;      /* Vert-gris foncé */
+    --phreaking-accent: #3d5a73;         /* Accent bleu subtil */
+    --phreaking-highlight: #4a6741;      /* Highlight vert subtil */
+    
+    /* Couleurs fonctionnelles discrètes */
+    --phreaking-success: #2d4a3a;        /* Vert très foncé */
+    --phreaking-warning: #4a3d2d;        /* Ambre très foncé */
+    --phreaking-danger: #4a2d32;         /* Rouge très foncé */
+    --phreaking-info: #2d3d4a;           /* Bleu très foncé */
+    
+    /* Texte et contrastes */
+    --phreaking-text-primary: #a8b8c8;   /* Texte principal */
+    --phreaking-text-secondary: #6b7c8c; /* Texte secondaire */
+    --phreaking-text-muted: #4a5a6a;     /* Texte atténué */
+    --phreaking-text-accent: #7a9bb3;    /* Texte accent */
+    
+    /* Effets lumineux très subtils */
+    --glow-phreaking: 0 0 8px rgba(42, 74, 92, 0.3);
+    --glow-accent: 0 0 6px rgba(61, 90, 115, 0.4);
+    --glow-success: 0 0 4px rgba(45, 74, 58, 0.5);
+    --glow-danger: 0 0 4px rgba(74, 45, 50, 0.5);
+    
+    /* Espacement harmonieux */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-xxl: 3rem;
+    
+    /* Formes cyberpunk authentiques */
+    --cyber-bevel: 10px;
+    --cyber-razor-height: 30px;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+/* Corps principal avec texture phreaking */
+.phreaking-terminal {
+    font-family: 'Oxanium', 'Courier New', monospace;
+    background: 
+        radial-gradient(circle at 25% 25%, rgba(42, 74, 92, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(30, 58, 46, 0.03) 0%, transparent 50%),
+        var(--phreaking-void);
+    min-height: 100vh;
+    color: var(--phreaking-text-primary);
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Grille switch principale */
+.switch-grid {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
-/* Header */
-.header {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.header h1 {
-    color: #4a5568;
-    font-size: 1.8rem;
-    font-weight: 600;
-}
-
-.header h1 i {
-    color: #667eea;
-    margin-right: 10px;
-}
-
-.status-indicator {
-    display: flex;
-    align-items: center;
-}
-
-.status {
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.status.online {
-    background: #48bb78;
-    color: white;
-}
-
-.status.offline {
-    background: #e53e3e;
-    color: white;
-}
-
-.status.connecting {
-    background: #ed8936;
-    color: white;
-}
-
-.config-badge {
-    margin-left: 10px;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    background: #48bb78;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.config-badge i {
-    font-size: 0.7rem;
-}
-
-/* Main Content */
-.main-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+/* Conteneur principal avec disposition créative */
+.phreaking-container {
     flex: 1;
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    max-width: 1600px;
+    margin: 0 auto;
 }
 
-@media (max-width: 768px) {
-    .main-content {
-        grid-template-columns: 1fr;
+/* ===== HEADER QUANTIQUE AVEC RAZOR EDGES ===== */
+.quantum-header {
+    background: linear-gradient(135deg, var(--phreaking-surface), var(--phreaking-elevated));
+    border: 1px solid var(--phreaking-primary);
+    padding: var(--space-lg);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--glow-phreaking);
+    /* Forme cyberpunk avec razor edges */
+    clip-path: polygon(
+        var(--cyber-bevel) 0%, 
+        100% 0%, 
+        100% calc(100% - var(--cyber-bevel)), 
+        calc(100% - var(--cyber-bevel)) 100%, 
+        0% 100%, 
+        0% var(--cyber-bevel)
+    );
+}
+
+.quantum-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--phreaking-accent), transparent);
+    animation: neural-scan 4s infinite;
+}
+
+.quantum-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: var(--cyber-bevel);
+    height: var(--cyber-bevel);
+    background: linear-gradient(45deg, var(--phreaking-accent), transparent);
+    opacity: 0.3;
+}
+
+@keyframes neural-scan {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.data-stream {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.terminal-line {
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    color: var(--phreaking-text-secondary);
+    letter-spacing: 1px;
+}
+
+.prompt { color: var(--phreaking-accent); }
+.domain { color: var(--phreaking-highlight); }
+.cursor {
+    animation: cursor-blink 1.5s infinite;
+    color: var(--phreaking-text-accent);
+}
+
+@keyframes cursor-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.system-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #7aff7a; /* Vert cyber plus vif pour le titre */
+    text-shadow: 0 0 10px rgba(122, 255, 122, 0.3);
+    position: relative;
+}
+
+.system-title::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: #ff4757; /* Rouge cyber pour l'effet glitch */
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+    opacity: 0;
+    animation: title-glitch-red 4s infinite;
+}
+
+.system-title::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: #00d4ff; /* Cyan cyber pour l'effet glitch */
+    clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+    opacity: 0;
+    animation: title-glitch-cyan 4s infinite 0.5s;
+}
+
+@keyframes title-glitch-red {
+    0%, 90% { 
+        opacity: 0; 
+        transform: translateX(0);
+    }
+    91% { 
+        opacity: 0.8; 
+        transform: translateX(-2px);
+    }
+    92% { 
+        opacity: 0.6; 
+        transform: translateX(2px);
+    }
+    93% { 
+        opacity: 0.9; 
+        transform: translateX(-1px);
+    }
+    94%, 100% { 
+        opacity: 0; 
+        transform: translateX(0);
     }
 }
 
-/* Dialer Section */
-.dialer-section {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+@keyframes title-glitch-cyan {
+    0%, 85% { 
+        opacity: 0; 
+        transform: translateX(0);
+    }
+    86% { 
+        opacity: 0.7; 
+        transform: translateX(2px);
+    }
+    87% { 
+        opacity: 0.5; 
+        transform: translateX(-2px);
+    }
+    88% { 
+        opacity: 0.8; 
+        transform: translateX(1px);
+    }
+    89%, 100% { 
+        opacity: 0; 
+        transform: translateX(0);
+    }
 }
 
-.phone-display {
-    margin-bottom: 30px;
+.neural-icon {
+    color: #7aff7a;
+    font-size: 1.25rem;
+    text-shadow: 0 0 8px rgba(122, 255, 122, 0.4);
+    filter: drop-shadow(0 0 3px rgba(122, 255, 122, 0.3));
 }
 
-#phone-number {
-    width: 100%;
-    padding: 15px;
-    font-size: 1.5rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
-    text-align: center;
-    background: #f7fafc;
+.title-fragment {
+    position: relative;
+}
+
+.system-status {
+    position: absolute;
+    top: var(--space-lg);
+    right: var(--space-lg);
+}
+
+.status-matrix {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+}
+
+.matrix-node {
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--phreaking-depth);
+    border: 1px solid var(--phreaking-primary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     transition: all 0.3s ease;
+    /* Forme cyberpunk pour les status */
+    clip-path: polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px);
 }
 
-#phone-number:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+.matrix-node.offline {
+    color: var(--phreaking-text-muted);
+    border-color: var(--phreaking-danger);
 }
 
-.call-info {
-    margin-top: 10px;
+.config-matrix {
+    color: var(--phreaking-text-secondary);
+    background: var(--phreaking-secondary);
+    border-color: var(--phreaking-highlight);
+}
+
+/* ===== INTERFACE PHREAKING PRINCIPALE ===== */
+.phreaking-interface {
+    display: grid;
+    grid-template-columns: 200px 1fr 200px;
+    grid-template-areas: 
+        "sidebar-left terminal sidebar-right";
+    gap: var(--space-xl);
+    flex: 1;
+}
+
+/* ===== TERMINAL CENTRAL AVEC FORME CYBERPUNK ===== */
+.dial-terminal {
+    grid-area: terminal;
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal-frame {
+    background: var(--phreaking-surface);
+    border: 1px solid var(--phreaking-primary);
+    overflow: hidden;
+    box-shadow: var(--glow-phreaking);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    /* Grande forme cyberpunk pour le terminal principal */
+    clip-path: polygon(
+        20px 0%, 
+        100% 0%, 
+        100% calc(100% - 20px), 
+        calc(100% - 20px) 100%, 
+        0% 100%, 
+        0% 20px
+    );
+}
+
+.frame-header {
+    background: var(--phreaking-elevated);
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--phreaking-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    position: relative;
+}
+
+.frame-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(45deg, var(--phreaking-accent), transparent);
+    opacity: 0.2;
+}
+
+.terminal-dots {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 0.6;
+}
+
+.dot.red { background: var(--phreaking-danger); }
+.dot.amber { background: var(--phreaking-warning); }
+.dot.green { background: var(--phreaking-success); }
+
+.terminal-title {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: var(--phreaking-text-secondary);
+    letter-spacing: 1px;
+}
+
+.terminal-body {
+    flex: 1;
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+/* ===== DISPLAY HOLOGRAPHIQUE AVEC FORME BISEAUTÉE ===== */
+.holo-display {
+    background: var(--phreaking-depth);
+    border: 1px solid var(--phreaking-accent);
+    padding: var(--space-lg);
+    position: relative;
+    overflow: hidden;
+    /* Cyber tile avec forme biseautée */
+    clip-path: polygon(
+        15px 0%, 
+        100% 0%, 
+        100% calc(100% - 15px), 
+        calc(100% - 15px) 100%, 
+        0% 100%, 
+        0% 15px
+    );
+}
+
+.holo-display::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    background: linear-gradient(45deg, var(--phreaking-accent), transparent);
+    opacity: 0.3;
+}
+
+.scan-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(42, 74, 92, 0.1) 2px,
+        rgba(42, 74, 92, 0.1) 4px
+    );
+    pointer-events: none;
+    animation: scan-lines 8s linear infinite;
+}
+
+@keyframes scan-lines {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(20px); }
+}
+
+.display-content {
+    position: relative;
+    z-index: 2;
+}
+
+.number-input-zone {
+    position: relative;
+    margin-bottom: var(--space-lg);
+}
+
+.phreaking-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--phreaking-highlight); /* Même vert que TELECOM.SYS pour les numéros */
+    font-family: 'Courier New', monospace;
+    font-size: 1.25rem;
+    font-weight: 500;
     text-align: center;
-    font-size: 0.9rem;
-    color: #4a5568;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: var(--space-md);
+    outline: none;
 }
 
-#call-status {
-    font-weight: 600;
-    color: #667eea;
+.phreaking-input::placeholder {
+    color: var(--phreaking-text-muted);
+    opacity: 0.7;
 }
 
-#call-duration {
-    margin-left: 10px;
-    color: #718096;
+.input-effects {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--phreaking-accent);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
 }
 
-/* Keypad */
-.keypad {
-    margin-bottom: 30px;
+.phreaking-input:focus + .input-effects .input-glow {
+    transform: scaleX(1);
 }
 
-.keypad-row {
+.call-status-hud {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.hud-line {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 15px;
+    align-items: center;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
 }
 
-.key {
+.status-label {
+    color: var(--phreaking-text-secondary);
+    letter-spacing: 1px;
+}
+
+.status-value, .timer-display {
+    color: var(--phreaking-text-accent);
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* ===== PAVÉ NUMÉRIQUE AVEC FORMES COMMANDE CYBERPUNK ===== */
+.control-matrix {
+    margin: var(--space-lg) 0;
+}
+
+.dial-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: center;
+}
+
+.dial-row {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: center;
+}
+
+.dial-key {
     width: 70px;
     height: 70px;
-    border: none;
-    border-radius: 50%;
-    background: linear-gradient(145deg, #f0f0f0, #cacaca);
-    box-shadow: 5px 5px 10px #bebebe, -5px -5px 10px #ffffff;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #4a5568;
+    background: transparent; /* Seulement la bordure */
+    border: 1px solid var(--phreaking-primary);
+    color: var(--phreaking-text-primary);
+    font-family: 'Oxanium', monospace;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
+    /* Forme octogonale originale */
+    clip-path: polygon(
+        15px 0%, 
+        calc(100% - 15px) 0%, 
+        100% 15px, 
+        100% calc(100% - 15px), 
+        calc(100% - 15px) 100%, 
+        15px 100%, 
+        0% calc(100% - 15px), 
+        0% 15px
+    );
 }
 
-.key:hover {
+.dial-key:hover {
+    background: transparent;
+    border-color: var(--phreaking-highlight);
+    color: var(--phreaking-highlight);
+    box-shadow: 0 0 8px rgba(74, 103, 65, 0.3);
+    text-shadow: none;
     transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    animation: dial-glitch 3s infinite;
 }
 
-.key:active {
+.dial-key:active {
     transform: translateY(0);
-    box-shadow: inset 2px 2px 5px #bebebe, inset -2px -2px 5px #ffffff;
+    background: rgba(74, 103, 65, 0.1); /* Effet léger qui s'harmonise au fond */
+    border-color: var(--phreaking-highlight);
+    color: var(--phreaking-highlight);
+    box-shadow: 0 0 4px rgba(74, 103, 65, 0.5);
+    text-shadow: none;
 }
 
-.letters {
-    font-size: 0.6rem;
-    color: #718096;
-    margin-top: 2px;
+@keyframes dial-glitch {
+    0%, 98% { 
+        transform: translateY(-2px); 
+        filter: hue-rotate(0deg);
+    }
+    1% { 
+        transform: translateY(-2px) translateX(-1px); 
+        filter: hue-rotate(90deg);
+    }
+    2% { 
+        transform: translateY(-2px) translateX(1px); 
+        filter: hue-rotate(180deg);
+    }
+    3% { 
+        transform: translateY(-2px); 
+        filter: hue-rotate(0deg);
+    }
 }
 
-/* Call Controls */
-.call-controls {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    align-items: center;
-}
-
-.call-button, .hangup-button, .clear-button {
-    width: 60px;
-    height: 60px;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-}
-
-.call-button {
-    background: linear-gradient(145deg, #48bb78, #38a169);
-    color: white;
-    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
-}
-
-.call-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(72, 187, 120, 0.6);
-}
-
-.hangup-button {
-    background: linear-gradient(145deg, #e53e3e, #c53030);
-    color: white;
-    box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
-}
-
-.hangup-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(229, 62, 62, 0.6);
-}
-
-.clear-button {
-    background: linear-gradient(145deg, #ed8936, #dd6b20);
-    color: white;
-    box-shadow: 0 4px 15px rgba(237, 137, 54, 0.4);
-}
-
-.clear-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(237, 137, 54, 0.6);
-}
-
-/* Audio Controls */
-.audio-controls {
-    margin-top: 20px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    backdrop-filter: blur(10px);
-}
-
-.audio-row {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 10px;
-}
-
-.audio-row:last-child {
-    margin-bottom: 0;
-}
-
-.audio-button {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    font-size: 18px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.audio-button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: scale(1.05);
-}
-
-.audio-button.active {
-    background: linear-gradient(135deg, #2196F3, #1976D2);
-    border-color: #2196F3;
-    color: white;
-}
-
-.audio-button.muted {
-    background: linear-gradient(135deg, #f44336, #d32f2f);
-    border-color: #f44336;
-}
-
-.audio-button.recording {
-    background: linear-gradient(135deg, #f44336, #d32f2f);
-    border-color: #f44336;
-    animation: pulse 1s infinite;
-}
-
-/* Audio Settings */
-.audio-settings {
-    margin-top: 20px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.audio-device {
-    margin-bottom: 15px;
-}
-
-.audio-device:last-child {
-    margin-bottom: 0;
-}
-
-.audio-device label {
-    display: block;
-    margin-bottom: 5px;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.audio-select {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 5px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    font-size: 14px;
-}
-
-.audio-select:focus {
-    outline: none;
-    border-color: #2196F3;
-    background: rgba(255, 255, 255, 0.15);
-}
-
-.audio-select option {
-    background: #2c3e50;
-    color: #fff;
-}
-
-/* History Section */
-.history-section {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.history-section h3 {
-    color: #4a5568;
-    margin-bottom: 20px;
-    font-size: 1.3rem;
-}
-
-.history-section h3 i {
-    color: #667eea;
-    margin-right: 10px;
-}
-
-.history-list {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.call-item {
-    background: #f7fafc;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-left: 4px solid #667eea;
-    transition: all 0.3s ease;
-}
-
-.call-item:hover {
-    background: #edf2f7;
-    transform: translateX(5px);
-}
-
-.call-item .call-number {
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 5px;
-}
-
-.call-item .call-details {
-    font-size: 0.9rem;
-    color: #718096;
-    display: flex;
-    justify-content: space-between;
-}
-
-.call-item .call-status {
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.call-item .call-status.completed {
-    background: #c6f6d5;
-    color: #22543d;
-}
-
-.call-item .call-status.failed {
-    background: #fed7d7;
-    color: #742a2a;
-}
-
-.call-item .call-status.ringing {
-    background: #fef5e7;
-    color: #744210;
-}
-
-.call-item .call-status.inbound {
-    background: #e6fffa;
-    color: #234e52;
-}
-
-.call-item .call-status.outbound {
-    background: #faf5ff;
-    color: #553c9a;
-}
-
-.no-calls {
-    text-align: center;
-    color: #a0aec0;
-    font-style: italic;
-    padding: 40px 20px;
-}
-
-/* Settings Button */
-.settings-button {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    border: none;
-    border-radius: 50%;
-    background: linear-gradient(145deg, #667eea, #764ba2);
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-}
-
-.settings-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-}
-
-/* Microphone Access Button */
-.mic-access-button {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    background: linear-gradient(145deg, #e53e3e, #c53030);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 15px 25px;
+.dial-number {
     font-size: 1rem;
     font-weight: 600;
+    color: var(--phreaking-text-accent);
+    text-shadow: none;
+}
+
+.dial-letters {
+    font-size: 0.6rem;
+    color: var(--phreaking-text-muted);
+    margin-top: 2px;
+    letter-spacing: 1px;
+    text-shadow: none;
+}
+
+/* ===== PANNEAU DE COMMANDES CYBERPUNK ===== */
+.command-panel {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    align-items: center;
+}
+
+.phreaking-command {
+    background: var(--phreaking-elevated);
+    border: 1px solid var(--phreaking-primary);
+    padding: var(--space-md) var(--space-lg);
+    color: var(--phreaking-text-primary);
+    font-family: 'Oxanium', monospace;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
     transition: all 0.3s ease;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
-    z-index: 1000;
+    gap: var(--space-xs);
+    min-width: 80px;
+    position: relative;
+    /* Forme cyberpunk pour les boutons de commande */
+    clip-path: polygon(
+        12px 0%, 
+        100% 0%, 
+        100% calc(100% - 12px), 
+        calc(100% - 12px) 100%, 
+        0% 100%, 
+        0% 12px
+    );
 }
 
-.mic-access-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(229, 62, 62, 0.6);
-}
-
-.mic-access-button i {
-    font-size: 1.2rem;
-}
-
-.mic-access-button.activated {
-    background: linear-gradient(145deg, #48bb78, #38a169);
-    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
-}
-
-.mic-access-button.activated:hover {
-    box-shadow: 0 6px 20px rgba(72, 187, 120, 0.6);
-}
-
-/* Modal */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
+.phreaking-command::after {
+    content: '';
+    position: absolute;
     top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(45deg, currentColor, transparent);
+    opacity: 0.3;
 }
 
-.modal-content {
-    background: white;
-    margin: 10% auto;
-    padding: 30px;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+.phreaking-command.primary {
+    border-color: var(--phreaking-success);
+    background: var(--phreaking-success);
+}
+
+.phreaking-command.primary:hover {
+    box-shadow: var(--glow-success);
+    transform: translateY(-2px);
+}
+
+.phreaking-command.secondary {
+    border-color: var(--phreaking-warning);
+    background: var(--phreaking-warning);
+}
+
+.phreaking-command.danger {
+    border-color: var(--phreaking-danger);
+    background: var(--phreaking-danger);
+}
+
+.phreaking-command.danger:hover {
+    box-shadow: var(--glow-danger);
+    transform: translateY(-2px);
+}
+
+.command-icon {
+    font-size: 1.25rem;
+}
+
+.command-label {
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+/* ===== PANNEAUX LATÉRAUX AVEC CYBER TILES ===== */
+.phreaking-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.phreaking-sidebar.left {
+    grid-area: sidebar-left;
+}
+
+.phreaking-sidebar.right {
+    grid-area: sidebar-right;
+}
+
+.sidebar-panel {
+    background: var(--phreaking-surface);
+    border: 1px solid var(--phreaking-primary);
+    overflow: hidden;
+    box-shadow: var(--glow-phreaking);
+    /* Cyber tile small */
+    clip-path: polygon(
+        8px 0%, 
+        100% 0%, 
+        100% calc(100% - 8px), 
+        calc(100% - 8px) 100%, 
+        0% 100%, 
+        0% 8px
+    );
+}
+
+.panel-header {
+    background: var(--phreaking-elevated);
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--phreaking-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     position: relative;
 }
 
-.close {
+.panel-header::after {
+    content: '';
     position: absolute;
-    right: 20px;
-    top: 20px;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #a0aec0;
-    transition: color 0.3s ease;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 100%;
+    background: linear-gradient(45deg, var(--phreaking-accent), transparent);
+    opacity: 0.3;
 }
 
-.close:hover {
-    color: #4a5568;
-}
-
-.modal-content h2 {
-    color: #2d3748;
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: #4a5568;
-    font-weight: 500;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.save-btn {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(145deg, #667eea, #764ba2);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.save-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-}
-
-/* Incoming Call Modal */
-.incoming-call-modal {
-    z-index: 2000;
-}
-
-.incoming-call-content {
-    text-align: center;
-    max-width: 400px;
-    padding: 40px 30px;
-}
-
-.incoming-call-header {
-    margin-bottom: 30px;
-}
-
-.ringing-icon {
-    font-size: 3rem;
-    color: #48bb78;
-    margin-bottom: 15px;
-    animation: ring 1s infinite;
-}
-
-.incoming-call-header h2 {
-    color: #2d3748;
-    font-size: 1.8rem;
+.panel-title {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: var(--phreaking-text-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
     margin: 0;
 }
 
-.incoming-call-info {
-    margin-bottom: 30px;
+.panel-indicator {
+    width: 6px;
+    height: 6px;
+    background: var(--phreaking-accent);
+    border-radius: 50%;
+    animation: pulse-indicator 2s infinite;
 }
 
-.caller-number {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 10px;
+@keyframes pulse-indicator {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
 }
 
-.caller-info {
-    color: #718096;
-    font-size: 1rem;
-}
-
-.incoming-call-controls {
+/* ===== MATRICE AUDIO AVEC FORMES CYBERPUNK ===== */
+.audio-matrix {
+    padding: var(--space-md);
     display: flex;
-    gap: 20px;
-    justify-content: center;
+    flex-direction: column;
+    gap: var(--space-sm);
 }
 
-.btn-accept-call, .btn-reject-call {
+.matrix-row {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.matrix-node {
     flex: 1;
-    padding: 15px 20px;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 600;
+    background: var(--phreaking-depth);
+    border: 1px solid var(--phreaking-primary);
+    padding: var(--space-sm);
+    color: var(--phreaking-text-primary);
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-xs);
+    font-size: 0.875rem;
+    position: relative;
+    /* Cyber button small pour les contrôles audio */
+    clip-path: polygon(
+        6px 0%, 
+        100% 0%, 
+        100% calc(100% - 6px), 
+        calc(100% - 6px) 100%, 
+        0% 100%, 
+        0% 6px
+    );
 }
 
-.btn-accept-call {
-    background: linear-gradient(145deg, #48bb78, #38a169);
-    color: white;
-    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+.matrix-node::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 6px;
+    height: 6px;
+    background: linear-gradient(45deg, currentColor, transparent);
+    opacity: 0.2;
 }
 
-.btn-accept-call:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(72, 187, 120, 0.6);
+.matrix-node:hover {
+    background: var(--phreaking-accent);
+    box-shadow: var(--glow-accent);
 }
 
-.btn-reject-call {
-    background: linear-gradient(145deg, #e53e3e, #c53030);
-    color: white;
-    box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
+.matrix-node.active {
+    background: var(--phreaking-success);
+    border-color: var(--phreaking-highlight);
+    box-shadow: var(--glow-success);
 }
 
-.btn-reject-call:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(229, 62, 62, 0.6);
+.matrix-node.muted {
+    background: var(--phreaking-danger);
+    border-color: var(--phreaking-danger);
+    box-shadow: var(--glow-danger);
 }
 
-.btn-accept-call i, .btn-reject-call i {
-    font-size: 1.2rem;
+.node-label {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--phreaking-text-muted);
 }
 
-/* Configuration Info */
-.config-info-content h3 {
-    margin: 0 0 15px 0;
-    font-size: 1.1rem;
+/* ===== SÉLECTEURS DE PÉRIPHÉRIQUES ===== */
+.device-selectors {
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
 }
 
-.config-info-content p {
-    margin: 8px 0;
-    font-size: 0.9rem;
+.selector-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
 }
 
-.close-config-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
+.device-label {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: var(--phreaking-text-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.device-selectors select {
+    background: var(--phreaking-depth);
+    border: 1px solid var(--phreaking-primary);
+    color: var(--phreaking-text-primary);
+    padding: var(--space-xs) var(--space-sm);
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    /* Cyber input forme */
+    clip-path: polygon(
+        4px 0%, 
+        100% 0%, 
+        100% calc(100% - 4px), 
+        calc(100% - 4px) 100%, 
+        0% 100%, 
+        0% 4px
+    );
+}
+
+/* ===== HISTORIQUE DONNÉES AVEC CYBER BANNER ===== */
+.data-stream-container {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+}
+
+.stream-header {
+    background: linear-gradient(90deg, var(--phreaking-elevated), var(--phreaking-accent));
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--phreaking-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: var(--phreaking-text-primary);
+    position: relative;
+    /* Cyber banner short */
+    clip-path: polygon(
+        0% 0%, 
+        calc(100% - 20px) 0%, 
+        100% 50%, 
+        calc(100% - 20px) 100%, 
+        0% 100%
+    );
+}
+
+.stream-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(45deg, var(--phreaking-accent), transparent);
+    opacity: 0.5;
+}
+
+.history-stream {
+    flex: 1;
+    padding: var(--space-md);
+    overflow-y: auto;
+    background: var(--phreaking-depth);
+}
+
+.history-stream::-webkit-scrollbar {
+    width: 4px;
+}
+
+.history-stream::-webkit-scrollbar-track {
+    background: var(--phreaking-surface);
+}
+
+.history-stream::-webkit-scrollbar-thumb {
+    background: var(--phreaking-accent);
+    border-radius: 2px;
+}
+
+.no-data-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: var(--space-md);
+    color: var(--phreaking-text-muted);
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+}
+
+.loading-dots {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.loading-dots span {
+    width: 4px;
+    height: 4px;
+    background: var(--phreaking-accent);
+    border-radius: 50%;
+    animation: loading-pulse 1.5s infinite;
+}
+
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes loading-pulse {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+}
+
+/* ===== CONTRÔLES FLOTTANTS CYBERPUNK ===== */
+.floating-controls {
+    position: fixed;
+    bottom: var(--space-xl);
+    right: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    z-index: 1000;
+}
+
+.quantum-button {
+    background: var(--phreaking-elevated);
+    border: 1px solid var(--phreaking-primary);
+    padding: var(--space-md);
+    color: var(--phreaking-text-primary);
     cursor: pointer;
-    font-size: 0.9rem;
-    margin-top: 10px;
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    min-width: 60px;
+    box-shadow: var(--glow-phreaking);
+    position: relative;
+    /* Cyber button pour les contrôles flottants */
+    clip-path: polygon(
+        10px 0%, 
+        100% 0%, 
+        100% calc(100% - 10px), 
+        calc(100% - 10px) 100%, 
+        0% 100%, 
+        0% 10px
+    );
 }
 
-.close-config-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-1px);
+.quantum-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    background: linear-gradient(45deg, currentColor, transparent);
+    opacity: 0.3;
 }
 
-/* Animations */
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+.quantum-button:hover {
+    background: var(--phreaking-accent);
+    box-shadow: var(--glow-accent);
+    transform: translateY(-2px);
 }
 
-@keyframes ring {
-    0% { transform: rotate(-10deg); }
-    50% { transform: rotate(10deg); }
-    100% { transform: rotate(-10deg); }
+.quantum-button.alert {
+    border-color: var(--phreaking-danger);
+    background: var(--phreaking-danger);
 }
 
-.call-button.ringing {
-    animation: pulse 1s infinite;
+.quantum-label {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
-/* Responsive Design */
+/* ===== MODAUX PHREAKING AVEC CYBER TILES ===== */
+.phreaking-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(11, 13, 19, 0.9);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.phreaking-modal.priority {
+    z-index: 3000;
+}
+
+.modal-terminal, .alert-terminal {
+    background: var(--phreaking-surface);
+    border: 1px solid var(--phreaking-primary);
+    max-width: 500px;
+    width: 90%;
+    box-shadow: var(--glow-phreaking);
+    overflow: hidden;
+    /* Cyber tile big pour les modaux */
+    clip-path: polygon(
+        25px 0%, 
+        100% 0%, 
+        100% calc(100% - 25px), 
+        calc(100% - 25px) 100%, 
+        0% 100%, 
+        0% 25px
+    );
+}
+
+.terminal-header, .alert-header {
+    background: var(--phreaking-elevated);
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--phreaking-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.terminal-header::after, .alert-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 25px;
+    height: 25px;
+    background: linear-gradient(45deg, var(--phreaking-accent), transparent);
+    opacity: 0.3;
+}
+
+.phreaking-close {
+    color: var(--phreaking-text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    z-index: 10;
+    position: relative;
+}
+
+.phreaking-close:hover {
+    color: var(--phreaking-danger);
+}
+
+.terminal-prompt {
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    color: var(--phreaking-text-secondary);
+    letter-spacing: 1px;
+}
+
+.terminal-content, .alert-content {
+    padding: var(--space-xl);
+}
+
+.config-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+    padding: var(--space-md);
+    background: linear-gradient(90deg, var(--phreaking-depth), var(--phreaking-accent));
+    position: relative;
+    /* Cyber banner */
+    clip-path: polygon(
+        0% 0%, 
+        calc(100% - 15px) 0%, 
+        100% 50%, 
+        calc(100% - 15px) 100%, 
+        0% 100%
+    );
+}
+
+.config-banner::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 15px;
+    height: 100%;
+    background: linear-gradient(45deg, var(--phreaking-accent), transparent);
+    opacity: 0.5;
+}
+
+.config-icon {
+    font-size: 1.5rem;
+    color: var(--phreaking-text-primary);
+    z-index: 2;
+    position: relative;
+}
+
+.config-text {
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    color: var(--phreaking-text-primary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    z-index: 2;
+    position: relative;
+}
+
+.config-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.config-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.config-label {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: var(--phreaking-text-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.config-form input {
+    background: var(--phreaking-depth);
+    border: 1px solid var(--phreaking-primary);
+    color: var(--phreaking-text-primary);
+    padding: var(--space-md);
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
+    /* Cyber input full */
+    clip-path: polygon(
+        8px 0%, 
+        100% 0%, 
+        100% calc(100% - 8px), 
+        calc(100% - 8px) 100%, 
+        0% 100%, 
+        0% 8px
+    );
+}
+
+.config-form input:focus {
+    outline: none;
+    border-color: var(--phreaking-accent);
+    box-shadow: var(--glow-accent);
+}
+
+.config-submit {
+    background: var(--phreaking-success);
+    border: 1px solid var(--phreaking-highlight);
+    color: var(--phreaking-text-primary);
+    padding: var(--space-md);
+    font-family: 'Oxanium', monospace;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    /* Cyber button pour submit */
+    clip-path: polygon(
+        15px 0%, 
+        100% 0%, 
+        100% calc(100% - 15px), 
+        calc(100% - 15px) 100%, 
+        0% 100%, 
+        0% 15px
+    );
+}
+
+.config-submit::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    background: linear-gradient(45deg, currentColor, transparent);
+    opacity: 0.5;
+}
+
+.config-submit:hover {
+    box-shadow: var(--glow-success);
+    transform: translateY(-2px);
+}
+
+/* ===== ALERTES APPEL ENTRANT CYBERPUNK ===== */
+.alert-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.alert-text {
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    color: var(--phreaking-text-primary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    z-index: 2;
+    position: relative;
+}
+
+.transmission-info {
+    margin-bottom: var(--space-xl);
+    text-align: center;
+}
+
+.source-id {
+    font-family: 'Courier New', monospace;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--phreaking-text-accent);
+    letter-spacing: 2px;
+    margin-bottom: var(--space-sm);
+}
+
+.transmission-type {
+    font-size: 0.875rem;
+    color: var(--phreaking-text-secondary);
+}
+
+.response-matrix {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.response-node {
+    flex: 1;
+    background: var(--phreaking-elevated);
+    border: 1px solid var(--phreaking-primary);
+    padding: var(--space-lg);
+    color: var(--phreaking-text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: 'Oxanium', monospace;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    /* Cyber button pour les réponses */
+    clip-path: polygon(
+        12px 0%, 
+        100% 0%, 
+        100% calc(100% - 12px), 
+        calc(100% - 12px) 100%, 
+        0% 100%, 
+        0% 12px
+    );
+}
+
+.response-node::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(45deg, currentColor, transparent);
+    opacity: 0.3;
+}
+
+.response-node.accept {
+    border-color: var(--phreaking-success);
+    background: var(--phreaking-success);
+}
+
+.response-node.accept:hover {
+    box-shadow: var(--glow-success);
+    transform: translateY(-2px);
+}
+
+.response-node.reject {
+    border-color: var(--phreaking-danger);
+    background: var(--phreaking-danger);
+}
+
+.response-node.reject:hover {
+    box-shadow: var(--glow-danger);
+    transform: translateY(-2px);
+}
+
+.response-label {
+    font-size: 0.875rem;
+    letter-spacing: 1px;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+    .phreaking-interface {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "terminal"
+            "sidebar-left"
+            "sidebar-right";
+    }
+    
+    .phreaking-container {
+        padding: var(--space-lg);
+    }
+}
+
+@media (max-width: 768px) {
+    .phreaking-container {
+        padding: var(--space-md);
+        gap: var(--space-lg);
+    }
+    
+    .quantum-header {
+        padding: var(--space-md);
+    }
+    
+    .system-title {
+        font-size: 1.25rem;
+    }
+    
+    .system-status {
+        position: static;
+        margin-top: var(--space-md);
+    }
+    
+    .header-config-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 0.7rem;
+        margin-top: 2px;
+    }
+    
+    .phreaking-notifications {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+    
+    .phreaking-notification {
+        min-width: unset;
+        max-width: unset;
+        width: 100%;
+    }
+    
+    .dial-key {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .dial-number {
+        font-size: 1.1rem;
+    }
+    
+    .command-panel {
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+    }
+    
+    .phreaking-command {
+        padding: var(--space-sm) var(--space-md);
+        min-width: 70px;
+    }
+    
+    .floating-controls {
+        bottom: var(--space-lg);
+        right: var(--space-lg);
+    }
+}
+
 @media (max-width: 480px) {
-    .container {
-        padding: 10px;
+    .phreaking-interface {
+        gap: var(--space-lg);
     }
     
-    .header {
-        padding: 15px;
-        flex-direction: column;
-        gap: 10px;
+    .terminal-body {
+        padding: var(--space-md);
+        gap: var(--space-md);
     }
     
-    .header h1 {
-        font-size: 1.5rem;
-    }
-    
-    .dialer-section, .history-section {
-        padding: 20px;
-    }
-    
-    .key {
+    .dial-key {
         width: 60px;
         height: 60px;
+    }
+    
+    .dial-number {
         font-size: 1rem;
     }
     
-    .call-controls {
-        gap: 15px;
+    .dial-letters {
+        font-size: 0.55rem;
     }
-    
-    .call-button, .hangup-button, .clear-button {
-        width: 50px;
-        height: 50px;
+}
+
+/* ===== ANIMATIONS SPÉCIALES ===== */
+@keyframes data-flow {
+    0% { 
+        background-position: 0% 0%;
+        opacity: 0.3;
     }
-    
-    .settings-button {
-        bottom: 20px;
-        right: 20px;
-        width: 50px;
-        height: 50px;
+    50% { 
+        background-position: 100% 100%;
+        opacity: 0.7;
     }
-    
-    .incoming-call-content {
-        padding: 30px 20px;
+    100% { 
+        background-position: 0% 0%;
+        opacity: 0.3;
     }
-    
-    .incoming-call-controls {
-        flex-direction: column;
+}
+
+/* Effet de particules subtiles */
+.phreaking-terminal::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(1px 1px at 25px 35px, rgba(42, 74, 92, 0.2), transparent),
+        radial-gradient(1px 1px at 70px 80px, rgba(30, 58, 46, 0.15), transparent),
+        radial-gradient(1px 1px at 140px 25px, rgba(61, 90, 115, 0.1), transparent);
+    background-repeat: repeat;
+    background-size: 200px 150px;
+    pointer-events: none;
+    z-index: 1;
+    animation: data-flow 30s linear infinite;
+}
+
+/* Items d'historique avec forme cyberpunk */
+.call-item {
+    background: var(--phreaking-elevated);
+    border: 1px solid var(--phreaking-primary);
+    border-left: 3px solid var(--phreaking-accent);
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+    transition: all 0.3s ease;
+    position: relative;
+    /* Cyber tile pour les items d'historique */
+    clip-path: polygon(
+        6px 0%, 
+        100% 0%, 
+        100% calc(100% - 6px), 
+        calc(100% - 6px) 100%, 
+        0% 100%, 
+        0% 6px
+    );
+}
+
+.call-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 6px;
+    height: 6px;
+    background: linear-gradient(45deg, var(--phreaking-accent), transparent);
+    opacity: 0.3;
+}
+
+.call-item:hover {
+    background: var(--phreaking-accent);
+    border-left-color: var(--phreaking-highlight);
+    transform: translateX(3px);
+    box-shadow: var(--glow-accent);
+}
+
+.call-item .call-number {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: var(--phreaking-text-accent);
+    margin-bottom: var(--space-xs);
+    font-size: 0.875rem;
+    letter-spacing: 1px;
+}
+
+.call-item .call-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--phreaking-text-secondary);
+}
+
+.call-item .call-status {
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--phreaking-depth);
+    border: 1px solid var(--phreaking-primary);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    /* Cyber status avec forme */
+    clip-path: polygon(
+        4px 0%, 
+        100% 0%, 
+        100% calc(100% - 4px), 
+        calc(100% - 4px) 100%, 
+        0% 100%, 
+        0% 4px
+    );
+}
+
+.call-item .call-status.completed {
+    border-color: var(--phreaking-success);
+    color: var(--phreaking-highlight);
+}
+
+.call-item .call-status.failed {
+    border-color: var(--phreaking-danger);
+    color: var(--phreaking-text-muted);
+} 
+
+/* Bouton config repositionné à droite du header */
+.header-config-btn {
+    background: transparent;
+    border: 1px solid var(--phreaking-primary);
+    color: var(--phreaking-text-muted);
+    width: 28px;
+    height: 28px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 4px;
+    clip-path: polygon(
+        3px 0%, 
+        calc(100% - 3px) 0%, 
+        100% 3px, 
+        100% calc(100% - 3px), 
+        calc(100% - 3px) 100%, 
+        3px 100%, 
+        0% calc(100% - 3px), 
+        0% 3px
+    );
+}
+
+.header-config-btn:hover {
+    color: var(--phreaking-highlight);
+    border-color: var(--phreaking-highlight);
+    box-shadow: 0 0 8px rgba(74, 103, 65, 0.3);
+    background: rgba(74, 103, 65, 0.05);
+}
+
+.header-config-btn:active {
+    transform: translateY(1px);
+    background: rgba(74, 103, 65, 0.1);
+}
+
+/* Ajustement du layout system-status pour accueillir le bouton */
+.system-status {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* Système de notifications cyberpunk phreaking */
+.phreaking-notifications {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    pointer-events: none;
+}
+
+.phreaking-notification {
+    background: var(--phreaking-elevated);
+    border: 1px solid var(--phreaking-primary);
+    color: var(--phreaking-text-primary);
+    padding: var(--space-md);
+    min-width: 280px;
+    max-width: 400px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    pointer-events: auto;
+    transform: translateX(100%);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 0;
+    clip-path: polygon(
+        8px 0%, 
+        calc(100% - 8px) 0%, 
+        100% 8px, 
+        100% calc(100% - 8px), 
+        calc(100% - 8px) 100%, 
+        8px 100%, 
+        0% calc(100% - 8px), 
+        0% 8px
+    );
+    position: relative;
+    overflow: hidden;
+}
+
+.phreaking-notification.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.phreaking-notification::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--phreaking-accent);
+}
+
+.phreaking-notification.success::before {
+    background: var(--phreaking-highlight);
+}
+
+.phreaking-notification.warning::before {
+    background: #d4a853;
+}
+
+.phreaking-notification.error::before {
+    background: #d45353;
+}
+
+.phreaking-notification.info::before {
+    background: var(--phreaking-accent);
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.notification-icon {
+    font-size: 1rem;
+    width: 16px;
+    text-align: center;
+}
+
+.notification-title {
+    color: var(--phreaking-text-accent);
+}
+
+.notification-body {
+    color: var(--phreaking-text-secondary);
+    line-height: 1.4;
+    margin-left: 24px;
+}
+
+.notification-timestamp {
+    font-size: 0.75rem;
+    color: var(--phreaking-text-muted);
+    margin-top: var(--space-xs);
+    text-align: right;
+    font-family: 'Courier New', monospace;
+}
+
+.notification-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    color: var(--phreaking-text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+}
+
+.notification-close:hover {
+    color: var(--phreaking-text-primary);
+}
+
+/* Animation de scan line pour les notifications critiques */
+.phreaking-notification.critical::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--phreaking-highlight), transparent);
+    animation: scan-notification 2s ease-in-out infinite;
+}
+
+@keyframes scan-notification {
+    0% {
+        left: -100%;
     }
-    
-    .btn-accept-call, .btn-reject-call {
-        flex-direction: row;
-        justify-content: center;
+    100% {
+        left: 100%;
     }
+}
+
+/* Animations glitch cyberpunk */
+.cyber-glitch-2 {
+    animation: cyber-glitch-2 6s linear infinite;
+}
+
+@keyframes cyber-glitch-2 {
+    0% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        transform: translateX(0);
+        text-shadow: none;
+        filter: none;
+    }
+    1% {
+        clip-path: polygon(0 20%, 0 80%, 100% 80%, 100% 20%);
+        transform: translateX(-1px);
+        text-shadow: 1px 0 #ff4757, -1px 0 #00d4ff;
+        filter: brightness(1.2);
+    }
+    2% {
+        clip-path: polygon(0 60%, 0 100%, 100% 100%, 100% 60%);
+        transform: translateX(1px);
+        text-shadow: -1px 0 #ff4757, 1px 0 #00d4ff;
+        filter: brightness(0.8);
+    }
+    3% {
+        clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+        transform: translateX(0);
+        text-shadow: 0.5px 0 #ff4757, -0.5px 0 #00d4ff;
+        filter: brightness(1.1);
+    }
+    4% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        transform: translateX(0);
+        text-shadow: none;
+        filter: none;
+    }
+    97% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        transform: translateX(0);
+        text-shadow: none;
+        filter: none;
+    }
+    98% {
+        transform: translateX(-0.5px);
+        text-shadow: 0.5px 0 #7aff7a;
+        filter: brightness(1.1);
+    }
+    99% {
+        transform: translateX(0.5px);
+        text-shadow: -0.5px 0 #7aff7a;
+        filter: brightness(0.9);
+    }
+    100% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        transform: translateX(0);
+        text-shadow: none;
+        filter: none;
+    }
+}
+
+.cyber-glitch-4 {
+    animation: cyber-glitch-4 5s linear infinite;
+}
+
+@keyframes cyber-glitch-4 {
+    0% { visibility: visible; }
+    1% { visibility: hidden; }
+    2% { visibility: hidden; }
+    3% { visibility: visible; }
+    20% { visibility: visible; }
+    21% { visibility: hidden; }
+    24% { visibility: hidden; }
+    25% { visibility: visible; }
+    40% { visibility: visible; }
+    41% { visibility: hidden; }
+    42% { visibility: hidden; }
+    43% { visibility: visible; }
+    44% { visibility: visible; }
+    45% { visibility: hidden; }
+    46% { visibility: hidden; }
+    47% { visibility: visible; }
+    60% { visibility: visible; }
+    61% { visibility: hidden; }
+    64% { visibility: hidden; }
+    65% { visibility: visible; }
+    70% { visibility: visible; }
+    71% { visibility: hidden; }
+    72% { visibility: hidden; }
+    73% { visibility: visible; }
+    100% { visibility: visible; }
 } 

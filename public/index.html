@@ -4,180 +4,332 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://sdk.twilio.com https://*.twilio.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; connect-src *;">
-    <title>Softphone Twilio</title>
+    <title>Sim0n-Says Comm</title>
     <link rel="icon" href="data:,">
+    <!-- <link rel="stylesheet" href="cyberpunk.css"> -->
+    <link rel="stylesheet" href="cyber-grid.css">
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://sdk.twilio.com/js/client/releases/1.13.1/twilio.js"></script>
 </head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <h1><i class="fas fa-phone"></i> Softphone Twilio</h1>
-            <div class="status-indicator">
-                <span id="connection-status" class="status offline">Déconnecté</span>
-                <span id="config-status" class="config-badge" style="display: none;">
-                    <i class="fas fa-check-circle"></i> Auto-configuré
-                </span>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Dialer Section -->
-            <section class="dialer-section">
-                <div class="phone-display">
-                    <input type="text" id="phone-number" placeholder="Numéro de téléphone" maxlength="20">
-                    <div class="call-info" id="call-info" style="display: none;">
-                        <span id="call-status">En cours...</span>
-                        <span id="call-duration">00:00</span>
+<body class="phreaking-terminal">
+    <div class="switch-grid">
+        <!-- Interface principale avec disposition cyberpunk -->
+        <div class="phreaking-container">
+            
+            <!-- Header flottant avec effet holographique -->
+            <header class="quantum-header">
+                <div class="data-stream">
+                    <div class="terminal-line">
+                        <span class="prompt">SWITCH_NODE@</span>
+                        <span class="domain">TELECOM.SYS</span>
+                        <span class="cursor">_</span>
                     </div>
+                    <h1 class="system-title cyber-glitch-2" data-text="SIM0N-SAYS DIAL">
+                        <i class="fas fa-phone neural-icon"></i>
+                        <span class="title-fragment">SIM0N-SAYS</span>
+                        <span class="title-fragment">DIAL</span>
+                    </h1>
                 </div>
-
-                <!-- Keypad -->
-                <div class="keypad">
-                    <div class="keypad-row">
-                        <button class="key" data-number="1">1</button>
-                        <button class="key" data-number="2">2 <span class="letters">ABC</span></button>
-                        <button class="key" data-number="3">3 <span class="letters">DEF</span></button>
+                <div class="system-status">
+                    <div class="status-matrix">
+                        <span id="connection-status" class="matrix-node offline">OFFLINE</span>
+                        <span id="config-status" class="config-matrix" style="display: none;">
+                            <i class="fas fa-satellite-dish"></i> EXCHANGE_SYNC
+                        </span>
                     </div>
-                    <div class="keypad-row">
-                        <button class="key" data-number="4">4 <span class="letters">GHI</span></button>
-                        <button class="key" data-number="5">5 <span class="letters">JKL</span></button>
-                        <button class="key" data-number="6">6 <span class="letters">MNO</span></button>
-                    </div>
-                    <div class="keypad-row">
-                        <button class="key" data-number="7">7 <span class="letters">PQRS</span></button>
-                        <button class="key" data-number="8">8 <span class="letters">TUV</span></button>
-                        <button class="key" data-number="9">9 <span class="letters">WXYZ</span></button>
-                    </div>
-                    <div class="keypad-row">
-                        <button class="key" data-number="*">*</button>
-                        <button class="key" data-number="0">0 <span class="letters">+</span></button>
-                        <button class="key" data-number="#">#</button>
-                    </div>
-                </div>
-
-                <!-- Call Controls -->
-                <div class="call-controls">
-                    <button id="call-btn" class="call-button">
-                        <i class="fas fa-phone"></i>
-                    </button>
-                    <button id="hangup-btn" class="hangup-button" style="display: none;">
-                        <i class="fas fa-phone-slash"></i>
-                    </button>
-                    <button id="clear-btn" class="clear-button">
-                        <i class="fas fa-backspace"></i>
+                    <!-- Bouton config repositionné à droite -->
+                    <button id="settings-btn" class="header-config-btn" title="Configuration">
+                        <i class="fas fa-cog"></i>
                     </button>
                 </div>
+            </header>
 
-                <!-- Audio Controls (visible pendant l'appel) -->
-                <div class="audio-controls" id="audio-controls" style="display: none;">
-                    <div class="audio-row">
-                        <button id="mute-btn" class="audio-button" title="Muet">
-                            <i class="fas fa-microphone"></i>
-                        </button>
-                        <button id="pause-btn" class="audio-button" title="Mettre en pause">
-                            <i class="fas fa-pause"></i>
-                        </button>
-                        <button id="hold-btn" class="audio-button" title="Mettre en attente">
-                            <i class="fas fa-clock"></i>
-                        </button>
+            <!-- Zone principale avec layout triangulaire -->
+            <main class="phreaking-interface">
+                
+                <!-- Terminal de communication central -->
+                <section class="dial-terminal">
+                    <div class="terminal-frame">
+                        <div class="frame-header">
+                            <div class="terminal-dots">
+                                <span class="dot red"></span>
+                                <span class="dot amber"></span>
+                                <span class="dot green"></span>
+                            </div>
+                            <span class="terminal-title">/DIAL/EXCHANGE.interface</span>
+                        </div>
+                        
+                        <div class="terminal-body">
+                            <!-- Display holographique -->
+                            <div class="holo-display">
+                                <div class="scan-lines"></div>
+                                <div class="display-content">
+                                    <div class="number-input-zone">
+                                        <input type="text" id="phone-number" placeholder="[TARGET_LINE]" maxlength="20" class="phreaking-input">
+                                        <div class="input-effects">
+                                            <div class="input-glow"></div>
+                                            <div class="typing-cursor"></div>
+                                        </div>
+                                    </div>
+                                    <div class="call-status-hud" id="call-info" style="display: none;">
+                                        <div class="hud-line">
+                                            <span class="status-label">LINE_STATUS:</span>
+                                            <span id="call-status" class="status-value">CONNECTING...</span>
+                                        </div>
+                                        <div class="hud-line">
+                                            <span class="status-label">DURATION:</span>
+                                            <span id="call-duration" class="timer-display cyber-glitch-3">00:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Matrice de contrôle du pavé numérique -->
+                            <div class="control-matrix">
+                                <div class="dial-grid">
+                                    <div class="dial-row">
+                                        <button class="dial-key cyber-button-small" data-number="1">
+                                            <span class="dial-number">1</span>
+                                        </button>
+                                        <button class="dial-key cyber-button-small" data-number="2">
+                                            <span class="dial-number">2</span>
+                                            <span class="dial-letters">ABC</span>
+                                        </button>
+                                        <button class="dial-key cyber-button-small" data-number="3">
+                                            <span class="dial-number">3</span>
+                                            <span class="dial-letters">DEF</span>
+                                        </button>
+                                    </div>
+                                    <div class="dial-row">
+                                        <button class="dial-key cyber-button-small" data-number="4">
+                                            <span class="dial-number">4</span>
+                                            <span class="dial-letters">GHI</span>
+                                        </button>
+                                        <button class="dial-key cyber-button-small" data-number="5">
+                                            <span class="dial-number">5</span>
+                                            <span class="dial-letters">JKL</span>
+                                        </button>
+                                        <button class="dial-key cyber-button-small" data-number="6">
+                                            <span class="dial-number">6</span>
+                                            <span class="dial-letters">MNO</span>
+                                        </button>
+                                    </div>
+                                    <div class="dial-row">
+                                        <button class="dial-key cyber-button-small" data-number="7">
+                                            <span class="dial-number">7</span>
+                                            <span class="dial-letters">PQRS</span>
+                                        </button>
+                                        <button class="dial-key cyber-button-small" data-number="8">
+                                            <span class="dial-number">8</span>
+                                            <span class="dial-letters">TUV</span>
+                                        </button>
+                                        <button class="dial-key cyber-button-small" data-number="9">
+                                            <span class="dial-number">9</span>
+                                            <span class="dial-letters">WXYZ</span>
+                                        </button>
+                                    </div>
+                                    <div class="dial-row dial-bottom">
+                                        <button class="dial-key cyber-button-small" data-number="*">
+                                            <span class="dial-number">*</span>
+                                            <span class="dial-letters">STAR</span>
+                                        </button>
+                                        <button class="dial-key cyber-button-small" data-number="0">
+                                            <span class="dial-number">0</span>
+                                            <span class="dial-letters">OPER</span>
+                                        </button>
+                                        <button class="dial-key cyber-button-small" data-number="#">
+                                            <span class="dial-number">#</span>
+                                            <span class="dial-letters">POUND</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Panneau de contrôle principal -->
+                            <div class="command-panel">
+                                <button id="call-btn" class="phreaking-command primary">
+                                    <div class="command-icon">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <span class="command-label">CONNECT</span>
+                                </button>
+                                <button id="clear-btn" class="phreaking-command secondary">
+                                    <div class="command-icon">
+                                        <i class="fas fa-backspace"></i>
+                                    </div>
+                                    <span class="command-label">CLEAR</span>
+                                </button>
+                                <button id="hangup-btn" class="phreaking-command danger" style="display: none;">
+                                    <div class="command-icon">
+                                        <i class="fas fa-phone-slash"></i>
+                                    </div>
+                                    <span class="command-label">HANGUP</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="audio-row">
-                        <button id="speaker-btn" class="audio-button" title="Haut-parleur">
-                            <i class="fas fa-volume-up"></i>
-                        </button>
-                        <button id="transfer-btn" class="audio-button" title="Transférer">
-                            <i class="fas fa-exchange-alt"></i>
-                        </button>
-                        <button id="record-btn" class="audio-button" title="Enregistrer">
-                            <i class="fas fa-circle"></i>
-                        </button>
+                </section>
+
+                <!-- Panneau latéral gauche - Contrôles audio -->
+                <aside class="phreaking-sidebar left">
+                    <div class="sidebar-panel" id="audio-controls" style="display: none;">
+                        <div class="panel-header">
+                            <h3 class="panel-title">AUDIO_SWITCH</h3>
+                            <div class="panel-indicator"></div>
+                        </div>
+                        <div class="audio-matrix">
+                            <div class="matrix-row">
+                                <button id="mute-btn" class="matrix-node" title="Mute Line">
+                                    <i class="fas fa-microphone"></i>
+                                    <span class="node-label">MIC</span>
+                                </button>
+                                <button id="hold-btn" class="matrix-node" title="Hold Line">
+                                    <i class="fas fa-pause"></i>
+                                    <span class="node-label">HOLD</span>
+                                </button>
+                            </div>
+                            <div class="matrix-row">
+                                <button id="speaker-btn" class="matrix-node" title="Speaker">
+                                    <i class="fas fa-volume-up"></i>
+                                    <span class="node-label">SPK</span>
+                                </button>
+                                <button id="record-btn" class="matrix-node cyber-glitch-4" title="Tap Line">
+                                    <i class="fas fa-circle"></i>
+                                    <span class="node-label">TAP</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sélecteurs audio intégrés -->
+                    <div class="sidebar-panel" id="audio-settings">
+                        <div class="panel-header">
+                            <h3 class="panel-title">LINE_DEVICES</h3>
+                        </div>
+                        <div class="device-selectors">
+                            <div class="selector-group">
+                                <label class="device-label">INPUT_LINE</label>
+                                <div class="cyber-select-full">
+                                    <select id="input-device">
+                                        <option value="">Scanning...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="selector-group">
+                                <label class="device-label">OUTPUT_LINE</label>
+                                <div class="cyber-select-full">
+                                    <select id="output-device">
+                                        <option value="">Scanning...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Panneau latéral droit - Historique -->
+                <aside class="phreaking-sidebar right">
+                    <div class="sidebar-panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">CALL_LOG</h3>
+                            <div class="panel-indicator"></div>
+                        </div>
+                        <div class="data-stream-container">
+                            <div class="stream-header">
+                                <i class="fas fa-phone-volume"></i>
+                                <span>EXCHANGE.db</span>
+                            </div>
+                            <div class="history-stream" id="call-history">
+                                <div class="no-data-message">
+                                    <div class="loading-dots">
+                                        <span></span><span></span><span></span>
+                                    </div>
+                                    <p>NO_CALLS_LOGGED</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </main>
+        </div>
+
+        <!-- Système de notifications -->
+        <div id="phreaking-notifications" class="phreaking-notifications">
+            <!-- Les notifications seront ajoutées dynamiquement ici -->
+        </div>
+
+        <!-- Éléments flottants -->
+        <div class="floating-controls">
+            <button id="mic-access-btn" class="quantum-button alert" style="display: none;">
+                <i class="fas fa-microphone-slash"></i>
+                <span class="quantum-label">ENABLE_MIC</span>
+            </button>
+        </div>
+
+        <!-- Modal de configuration redesigné -->
+        <div id="settings-modal" class="phreaking-modal">
+            <div class="modal-terminal">
+                <div class="terminal-header">
+                    <span class="close phreaking-close">&times;</span>
+                    <div class="header-text">
+                        <span class="terminal-prompt">root@exchange:~/config#</span>
                     </div>
                 </div>
-
-                <!-- Audio Settings -->
-                <div class="audio-settings" id="audio-settings">
-                    <div class="audio-device">
-                        <label for="input-device">Microphone:</label>
-                        <select id="input-device" class="audio-select">
-                            <option value="">Chargement...</option>
-                        </select>
+                <div class="terminal-content">
+                    <div class="config-banner">
+                        <span class="config-icon">📞</span>
+                        <span class="config-text">SWITCH_CONFIGURATION</span>
                     </div>
-                    <div class="audio-device">
-                        <label for="output-device">Haut-parleur:</label>
-                        <select id="output-device" class="audio-select">
-                            <option value="">Chargement...</option>
-                        </select>
-                    </div>
+                    <form id="settings-form" class="config-form">
+                        <div class="config-group">
+                            <label class="config-label">CALLER_ID:</label>
+                            <div class="cyber-input-full">
+                                <input type="text" id="identity" placeholder="Enter caller identity" required>
+                            </div>
+                        </div>
+                        <div class="config-group">
+                            <label class="config-label">SOURCE_LINE:</label>
+                            <div class="cyber-input-full">
+                                <input type="text" id="from-number" placeholder="+1234567890" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="config-submit cyber-button">
+                            <span class="submit-text">APPLY_CONFIG</span>
+                        </button>
+                    </form>
                 </div>
-            </section>
-
-            <!-- Call History Section -->
-            <section class="history-section">
-                <h3><i class="fas fa-history"></i> Historique des appels</h3>
-                <div class="history-list" id="call-history">
-                    <div class="no-calls">Aucun appel récent</div>
-                </div>
-            </section>
-        </main>
-
-        <!-- Settings Modal -->
-        <div id="settings-modal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Configuration</h2>
-                <form id="settings-form">
-                    <div class="form-group">
-                        <label for="identity">Identité:</label>
-                        <input type="text" id="identity" placeholder="Votre nom" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="from-number">Numéro d'origine:</label>
-                        <input type="text" id="from-number" placeholder="+1234567890" required>
-                    </div>
-                    <button type="submit" class="save-btn">Sauvegarder</button>
-                </form>
             </div>
         </div>
 
-        <!-- Incoming Call Modal -->
-        <div id="incoming-call-modal" class="modal incoming-call-modal">
-            <div class="modal-content incoming-call-content">
-                <div class="incoming-call-header">
-                    <i class="fas fa-phone-volume ringing-icon"></i>
-                    <h2>Appel Entrant</h2>
+        <!-- Modal d'appel entrant redesigné -->
+        <div id="incoming-call-modal" class="phreaking-modal priority">
+            <div class="alert-terminal">
+                <div class="alert-header">
+                    <div class="alert-status">
+                        <i class="fas fa-phone-volume cyber-glitch-1"></i>
+                        <span class="alert-text">INCOMING_CALL</span>
+                    </div>
                 </div>
-                <div class="incoming-call-info">
-                    <div class="caller-number" id="caller-number">+1234567890</div>
-                    <div class="caller-info" id="caller-info">Appel entrant...</div>
-                </div>
-                <div class="incoming-call-controls">
-                    <button class="btn-accept-call" id="btn-accept-call">
-                        <i class="fas fa-phone"></i>
-                        <span>Accepter</span>
-                    </button>
-                    <button class="btn-reject-call" id="btn-reject-call">
-                        <i class="fas fa-phone-slash"></i>
-                        <span>Rejeter</span>
-                    </button>
+                <div class="alert-content">
+                    <div class="transmission-info">
+                        <div class="source-id" id="caller-number">[UNKNOWN_CALLER]</div>
+                        <div class="transmission-type" id="caller-info">Line ringing...</div>
+                    </div>
+                    <div class="response-matrix">
+                        <button class="response-node accept" id="btn-accept-call">
+                            <i class="fas fa-phone"></i>
+                            <span class="response-label">ANSWER</span>
+                        </button>
+                        <button class="response-node reject" id="btn-reject-call">
+                            <i class="fas fa-phone-slash"></i>
+                            <span class="response-label">REJECT</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Settings Button -->
-        <button id="settings-btn" class="settings-button">
-            <i class="fas fa-cog"></i>
-        </button>
-
-        <!-- Microphone Access Button -->
-        <button id="mic-access-btn" class="mic-access-button" style="display: none;">
-            <i class="fas fa-microphone-slash"></i>
-            <span>Activer Microphone</span>
-        </button>
     </div>
 
     <script src="app.js"></script>

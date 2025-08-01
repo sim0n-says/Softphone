@@ -99,7 +99,7 @@ app.post('/api/token', (req, res) => {
 
   // Utiliser l'URL NGROK pour les webhooks Twilio
   const ngrokUrl = process.env.NGROK_URL || 'https://apt-buzzard-leading.ngrok-free.app';
-  
+
   const grant = new VoiceGrant({
     // Pour Twilio.Device, utiliser le SID de l'application TwiML
     outgoingApplicationSid: process.env.TWILIO_TWIML_APP_SID,
@@ -129,7 +129,7 @@ app.post('/api/call', async (req, res) => {
 
     // Utiliser l'URL NGROK pour les webhooks Twilio
     const ngrokUrl = process.env.NGROK_URL || 'https://apt-buzzard-leading.ngrok-free.app';
-    
+
     const call = await twilioClient.calls.create({
       url: `${ngrokUrl}/twiml/voice`,
       to: to,
@@ -248,9 +248,9 @@ app.post('/twiml/voice', (req, res) => {
     dial.client(process.env.TWILIO_CLIENT_IDENTITY || 'softphone-user');
   } else {
     // Appel sortant - message de bienvenue
-    twiml.say('Bonjour, vous êtes connecté au softphone Twilio.');
-    twiml.pause({ length: 1 });
-    twiml.say('Votre appel est en cours.');
+  twiml.say('Bonjour, vous êtes connecté au softphone Twilio.');
+  twiml.pause({ length: 1 });
+  twiml.say('Votre appel est en cours.');
   }
   
   res.type('text/xml');

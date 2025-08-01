@@ -22,19 +22,19 @@ Un softphone moderne et fonctionnel basé sur Twilio Voice API avec support comp
 - NGROK (domaine statique recommandé)
 
 ### 1. Cloner le projet
-```bash
+   ```bash
 git clone https://github.com/sim0n-says/Softphone.git
 cd Softphone
-```
+   ```
 
 ### 2. Installer les dépendances
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
 ### 3. Configurer les variables d'environnement
-```bash
-cp env.example .env
+   ```bash
+   cp env.example .env
 # Éditer .env avec vos identifiants Twilio
 ```
 
@@ -46,10 +46,10 @@ cp env.example .env
 ## 📋 **Configuration**
 
 ### Variables d'environnement requises (.env)
-```env
+   ```env
 # Twilio Configuration
-TWILIO_ACCOUNT_SID=your_account_sid_here
-TWILIO_AUTH_TOKEN=your_auth_token_here
+   TWILIO_ACCOUNT_SID=your_account_sid_here
+   TWILIO_AUTH_TOKEN=your_auth_token_here
 TWILIO_API_KEY=your_api_key_here
 TWILIO_API_SECRET=your_api_secret_here
 TWILIO_TWIML_APP_SID=your_twiml_app_sid_here
@@ -59,14 +59,14 @@ TWILIO_PHONE_NUMBER=+18199754345
 NGROK_URL=https://apt-buzzard-leading.ngrok-free.app
 
 # Server Configuration
-PORT=3000
-NODE_ENV=development
-```
+   PORT=3000
+   NODE_ENV=development
+   ```
 
 ## 🎯 **Utilisation**
 
 ### Démarrage automatique
-```bash
+   ```bash
 ./start-auto.sh
 ```
 

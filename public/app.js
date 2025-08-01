@@ -20,6 +20,127 @@ let settings = {
     fromNumber: localStorage.getItem('fromNumber') || '+18199754345'
 };
 
+// Système de notifications cyberpunk phreaking
+const NotificationSystem = {
+    container: null,
+    notifications: new Map(),
+    
+    init() {
+        this.container = document.getElementById('phreaking-notifications');
+    },
+    
+    show(type, title, message, options = {}) {
+        const id = Date.now() + Math.random();
+        const notification = this.createNotification(id, type, title, message, options);
+        
+        this.container.appendChild(notification);
+        this.notifications.set(id, notification);
+        
+        // Animation d'entrée
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 100);
+        
+        // Auto-suppression après délai
+        const duration = options.duration || this.getDefaultDuration(type);
+        if (duration > 0) {
+            setTimeout(() => {
+                this.remove(id);
+            }, duration);
+        }
+        
+        return id;
+    },
+    
+    createNotification(id, type, title, message, options) {
+        const notification = document.createElement('div');
+        notification.className = `phreaking-notification ${type}`;
+        if (options.critical) notification.classList.add('critical');
+        
+        const icon = this.getIcon(type);
+        const timestamp = new Date().toLocaleTimeString('fr-FR', { 
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        
+        notification.innerHTML = `
+            <div class="notification-header">
+                <span class="notification-icon">${icon}</span>
+                <span class="notification-title">${title}</span>
+            </div>
+            <div class="notification-body">${message}</div>
+            <div class="notification-timestamp">[${timestamp}]</div>
+            <button class="notification-close" onclick="NotificationSystem.remove(${id})">&times;</button>
+        `;
+        
+        return notification;
+    },
+    
+    getIcon(type) {
+        const icons = {
+            success: '✓',
+            warning: '⚠',
+            error: '✗',
+            info: 'ⓘ',
+            system: '●'
+        };
+        return icons[type] || icons.info;
+    },
+    
+    getDefaultDuration(type) {
+        const durations = {
+            success: 4000,
+            warning: 6000,
+            error: 8000,
+            info: 5000,
+            system: 7000
+        };
+        return durations[type] || 5000;
+    },
+    
+    remove(id) {
+        const notification = this.notifications.get(id);
+        if (notification) {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+                this.notifications.delete(id);
+            }, 400);
+        }
+    },
+    
+    clear() {
+        this.notifications.forEach((notification, id) => {
+            this.remove(id);
+        });
+    },
+    
+    // Méthodes de convenance
+    success(title, message, options = {}) {
+        return this.show('success', title, message, options);
+    },
+    
+    warning(title, message, options = {}) {
+        return this.show('warning', title, message, options);
+    },
+    
+    error(title, message, options = {}) {
+        return this.show('error', title, message, options);
+    },
+    
+    info(title, message, options = {}) {
+        return this.show('info', title, message, options);
+    },
+    
+    system(title, message, options = {}) {
+        return this.show('system', title, message, options);
+    }
+};
+
 // Générer une identité automatique basée sur l'heure et un ID aléatoire
 function generateIdentity() {
     const timestamp = Date.now().toString(36);
@@ -42,7 +163,7 @@ const callHistory = document.getElementById('call-history');
 const settingsBtn = document.getElementById('settings-btn');
 const settingsModal = document.getElementById('settings-modal');
 const settingsForm = document.getElementById('settings-form');
-const closeModal = document.querySelector('.close');
+const closeModal = document.querySelector('.phreaking-close');
 
 // Éléments du modal d'appel entrant
 const incomingCallModal = document.getElementById('incoming-call-modal');
@@ -70,6 +191,12 @@ const micAccessBtn = document.getElementById('mic-access-btn');
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', async function() {
+    // Initialiser le système de notifications
+    NotificationSystem.init();
+    
+    // Notification de démarrage du système
+    NotificationSystem.system('SYS_INIT', 'Terminal de communication initialisé', { duration: 3000 });
+    
     // Demander l'accès au microphone immédiatement
     await requestMicrophoneAccess();
     
@@ -98,7 +225,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     initializeSettings();
     initializeIncomingCallModal();
     initializeAudioControls();
-    loadAudioDevices();
+    // loadAudioDevices() sera appelé automatiquement après requestMicrophoneAccess()
     loadCallHistory();
     
     // Enregistrer l'identité auprès du serveur pour les appels entrants
@@ -178,7 +305,7 @@ function initializeSocket() {
 
 // Initialisation du clavier
 function initializeKeypad() {
-    const keys = document.querySelectorAll('.key');
+    const keys = document.querySelectorAll('.dial-key');
     
     keys.forEach(key => {
         key.addEventListener('click', () => {
@@ -267,6 +394,9 @@ async function initializeTwilioClient() {
             console.log('📱 État du device:', device.state);
             console.log('📱 Device object:', device);
             updateConnectionStatus('online', 'Prêt à recevoir des appels');
+            
+            // Notification de connexion réussie
+            NotificationSystem.success('COMM_READY', 'Ligne téléphonique active - Prêt pour les appels');
             
             // Vérifier que l'identité est enregistrée
             fetch('/api/register-identity', {
@@ -433,7 +563,7 @@ async function makeCall() {
         console.log('📞 Objet currentCall:', currentCall);
         console.log('📞 Paramètres de l\'appel:', currentCall.parameters);
         
-        updateConnectionStatus('online', 'Connecté');
+            updateConnectionStatus('online', 'Connecté');
         showNotification('Appel en cours...', 'success');
         
     } catch (error) {
@@ -453,7 +583,7 @@ async function makeCall() {
         }
         
         showNotification('Erreur lors de l\'appel: ' + error.message, 'error');
-        updateConnectionStatus('offline', 'Erreur');
+            updateConnectionStatus('offline', 'Erreur');
         updateCallUI('idle');
     }
 }
@@ -476,16 +606,16 @@ function handleIncomingCall(connection) {
     connection.on('accept', () => {
         console.log('Appel entrant accepté');
         hideIncomingCallModal();
-        currentCall = connection;
-        startCallTimer();
-        updateCallUI('connected');
-        
-        connection.on('disconnect', () => {
+            currentCall = connection;
+            startCallTimer();
+            updateCallUI('connected');
+            
+            connection.on('disconnect', () => {
             console.log('Appel entrant terminé');
-            endCall();
+                endCall();
+            });
         });
-    });
-    
+        
     connection.on('reject', () => {
         console.log('Appel entrant rejeté');
         hideIncomingCallModal();
@@ -510,7 +640,7 @@ function handleIncomingCallNotification(callData) {
     
     // Afficher le modal
     showIncomingCallModal();
-    
+        
     // Stocker les données de l'appel pour référence
     incomingCallData = callData;
 }
@@ -913,7 +1043,7 @@ style.textContent = `
         background: #f7fafc;
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(style); 
 
 // ===== FONCTIONS AUDIO =====
 
@@ -971,13 +1101,16 @@ async function requestMicrophoneAccess() {
         stream.getTracks().forEach(track => track.stop());
         
         console.log('✅ Accès au microphone accordé');
-        showNotification('Microphone activé avec succès', 'success');
+        NotificationSystem.success('MIC_ACCESS', 'Accès microphone accordé - Audio système opérationnel');
         
         // Mettre à jour le statut de connexion
         updateConnectionStatus('online', 'Microphone activé');
         
         // Masquer le bouton d'accès au microphone
         micAccessBtn.style.display = 'none';
+        
+        // Charger automatiquement les périphériques audio
+        await loadAudioDevices();
         
         return true;
     } catch (error) {
