@@ -405,7 +405,7 @@ async function initializeTwilioClient() {
             console.log('📱 Identité du client:', settings.identity);
             console.log('📱 État du device:', device.state);
             console.log('📱 Device object:', device);
-            updateConnectionStatus('online', 'Ligne active - Surveillance en cours');
+            updateConnectionStatus('online', 'Ligne active');
             
             // Notification de connexion réussie
             NotificationSystem.success('COMM_READY', 'Ligne téléphonique active - Prêt pour les appels');

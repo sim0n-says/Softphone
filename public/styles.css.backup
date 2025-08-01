@@ -2319,6 +2319,56 @@
     }
 } 
 
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--phreaking-elevated);
+    border-bottom: 1px solid var(--phreaking-primary);
+    position: relative;
+    gap: var(--space-sm);
+}
+
+.panel-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--phreaking-accent) 20%, 
+        var(--phreaking-accent) 80%, 
+        transparent 100%
+    );
+}
+
+.panel-title {
+    color: var(--phreaking-highlight);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.panel-indicator {
+    width: 8px;
+    height: 8px;
+    background: var(--phreaking-success);
+    border-radius: 50%;
+    animation: pulse-indicator 2s infinite;
+    flex-shrink: 0;
+    margin: 0 var(--space-sm);
+}
+
+@keyframes pulse-indicator {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
 
 /* Boutons cyberpunk pour la gestion des logs dans le header */
 .panel-header .stream-controls {
