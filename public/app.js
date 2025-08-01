@@ -294,7 +294,7 @@ function initializeSocket() {
                 handleIncomingCallNotification(callData);
             }).catch(error => {
                 console.error('❌ Erreur lors de l\'initialisation pour l\'appel entrant:', error);
-                showNotification('Impossible de recevoir l\'appel entrant', 'error');
+                NotificationSystem.error('CALL_ERROR', 'Impossible de recevoir l\'appel entrant', { duration: 5000 });
             });
         } else {
             // Client déjà initialisé, gérer directement
@@ -425,9 +425,9 @@ async function initializeTwilioClient() {
             
             // Afficher un message utilisateur approprié
             if (error.code === 31000) {
-                showNotification('Erreur de connexion. Veuillez réessayer.', 'error');
+                NotificationSystem.error('CONNECTION_ERROR', 'Erreur de connexion. Veuillez réessayer.', { duration: 5000 });
             } else {
-                showNotification('Erreur audio: ' + error.message, 'error');
+                NotificationSystem.error('AUDIO_ERROR', 'Erreur audio: ' + error.message, { duration: 5000 });
             }
         });
         
@@ -650,11 +650,47 @@ function hideIncomingCallModal() {
 
 // Jouer une sonnerie (fonction simple)
 function playRingtone() {
-    // Créer un audio context pour générer un son cyberpunk
+    // Jouer le son de modem 56k classique
+    try {
+        // Créer un élément audio pour le son de modem
+        if (!window.modemAudio) {
+            window.modemAudio = new Audio('/modem-56k.mp3');
+            window.modemAudio.volume = 0.3; // Volume modéré
+            window.modemAudio.loop = true; // Boucle continue
+        }
+        
+        // Jouer le son de modem
+        window.modemAudio.play().catch(error => {
+            console.log('Impossible de jouer le son de modem:', error);
+            // Fallback vers la synthèse sonore cyberpunk si le fichier audio échoue
+            playCyberpunkRingtone();
+        });
+        
+        // Notification cyberpunk pour le son de modem
+        NotificationSystem.info('MODEM_SOUND', 'Son de modem 56k activé - Connexion en cours...', { duration: 2000 });
+        
+        // Répéter la sonnerie
+        window.ringtoneInterval = setInterval(() => {
+            if (incomingCallModal.style.display === 'block') {
+                if (window.modemAudio && window.modemAudio.paused) {
+                    window.modemAudio.play().catch(() => {
+                        playCyberpunkRingtone();
+                    });
+                }
+            }
+        }, 2000);
+    } catch (error) {
+        console.log('Impossible de jouer la sonnerie modem:', error);
+        // Fallback vers la synthèse sonore cyberpunk
+        playCyberpunkRingtone();
+    }
+}
+
+// Fonction de fallback avec synthèse sonore cyberpunk
+function playCyberpunkRingtone() {
+    // Créer un audio context pour générer un son cyberpunk de fallback
     try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // Créer plusieurs oscillateurs pour un son plus complexe
         const oscillator1 = audioContext.createOscillator();
         const oscillator2 = audioContext.createOscillator();
         const oscillator3 = audioContext.createOscillator();
@@ -708,14 +744,8 @@ function playRingtone() {
         oscillator2.stop(audioContext.currentTime + 0.8);
         oscillator3.stop(audioContext.currentTime + 0.8);
         
-        // Répéter la sonnerie cyberpunk
-        window.ringtoneInterval = setInterval(() => {
-            if (incomingCallModal.style.display === 'block') {
-                playRingtone();
-            }
-        }, 1500); // Intervalle plus court pour un effet plus dynamique
     } catch (error) {
-        console.log('Impossible de jouer la sonnerie cyberpunk:', error);
+        console.log('Impossible de jouer la sonnerie cyberpunk de fallback:', error);
     }
 }
 
@@ -724,6 +754,12 @@ function stopRingtone() {
     if (window.ringtoneInterval) {
         clearInterval(window.ringtoneInterval);
         window.ringtoneInterval = null;
+    }
+    
+    // Arrêter le son de modem
+    if (window.modemAudio) {
+        window.modemAudio.pause();
+        window.modemAudio.currentTime = 0;
     }
 }
 
@@ -991,7 +1027,7 @@ function saveSettings() {
     const fromNumber = document.getElementById('from-number').value.trim();
     
     if (!identity || !fromNumber) {
-        showNotification('Veuillez remplir tous les champs', 'error');
+        NotificationSystem.error('SETTINGS_ERROR', 'Veuillez remplir tous les champs', { duration: 3000 });
         return;
     }
     
@@ -1002,7 +1038,7 @@ function saveSettings() {
     localStorage.setItem('fromNumber', fromNumber);
     
     hideSettingsModal();
-    showNotification('Paramètres sauvegardés', 'success');
+    NotificationSystem.success('SETTINGS_SAVED', 'Paramètres sauvegardés', { duration: 3000 });
 }
 
 // Afficher les informations de configuration automatique
@@ -1062,34 +1098,7 @@ function showConfigurationInfo() {
     }, 10000);
 }
 
-// Afficher une notification
-function showNotification(message, type = 'info') {
-    // Créer une notification temporaire
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 20px;
-        border-radius: 8px;
-        color: white;
-        font-weight: 500;
-        z-index: 10000;
-        animation: slideIn 0.3s ease;
-        background: ${type === 'error' ? '#e53e3e' : type === 'success' ? '#48bb78' : '#667eea'};
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 3000);
-}
+
 
 // Ajouter les styles d'animation pour les notifications
 const style = document.createElement('style');
@@ -1199,7 +1208,7 @@ async function requestMicrophoneAccess() {
             micAccessBtn.style.display = 'flex';
         }
         
-        showNotification(errorMessage, 'error');
+        NotificationSystem.error('MIC_ERROR', errorMessage, { duration: 5000 });
         updateConnectionStatus('offline', 'Microphone non disponible');
         
         return false;
@@ -1227,16 +1236,16 @@ async function loadAudioDevices() {
         
         // Afficher un message si aucun périphérique n'est trouvé
         if (audioDevices.inputs.length === 0) {
-            showNotification('Aucun microphone détecté', 'warning');
+            NotificationSystem.warning('DEVICE_WARNING', 'Aucun microphone détecté', { duration: 4000 });
         }
         
         if (audioDevices.outputs.length === 0) {
-            showNotification('Aucun haut-parleur détecté', 'warning');
+            NotificationSystem.warning('DEVICE_WARNING', 'Aucun haut-parleur détecté', { duration: 4000 });
         }
         
     } catch (error) {
         console.error('❌ Erreur lors du chargement des périphériques audio:', error);
-        showNotification('Impossible de charger les périphériques audio', 'error');
+        NotificationSystem.error('DEVICE_ERROR', 'Impossible de charger les périphériques audio', { duration: 5000 });
     }
 }
 
@@ -1269,11 +1278,11 @@ async function changeInputDevice() {
         if (currentCall) {
             // Changer le microphone pendant l'appel
             await currentCall.setInputDevice(deviceId);
-            showNotification('Microphone changé', 'success');
+            NotificationSystem.success('DEVICE_CHANGE', 'Microphone changé', { duration: 2000 });
         }
     } catch (error) {
         console.error('❌ Erreur lors du changement de microphone:', error);
-        showNotification('Impossible de changer le microphone', 'error');
+        NotificationSystem.error('DEVICE_ERROR', 'Impossible de changer le microphone', { duration: 3000 });
     }
 }
 
@@ -1286,11 +1295,11 @@ async function changeOutputDevice() {
         if (currentCall) {
             // Changer le haut-parleur pendant l'appel
             await currentCall.setOutputDevice(deviceId);
-            showNotification('Haut-parleur changé', 'success');
+            NotificationSystem.success('DEVICE_CHANGE', 'Haut-parleur changé', { duration: 2000 });
         }
     } catch (error) {
         console.error('❌ Erreur lors du changement de haut-parleur:', error);
-        showNotification('Impossible de changer le haut-parleur', 'error');
+        NotificationSystem.error('DEVICE_ERROR', 'Impossible de changer le haut-parleur', { duration: 3000 });
     }
 }
 
@@ -1306,15 +1315,15 @@ function toggleMute() {
         if (isMuted) {
             muteBtn.classList.add('muted');
             muteBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
-            showNotification('Microphone coupé', 'info');
+            NotificationSystem.info('AUDIO_CONTROL', 'Microphone coupé', { duration: 2000 });
         } else {
             muteBtn.classList.remove('muted');
             muteBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-            showNotification('Microphone activé', 'info');
+            NotificationSystem.info('AUDIO_CONTROL', 'Microphone activé', { duration: 2000 });
         }
     } catch (error) {
         console.error('❌ Erreur lors du changement de muet:', error);
-        showNotification('Impossible de changer le muet', 'error');
+        NotificationSystem.error('AUDIO_ERROR', 'Impossible de changer le muet', { duration: 3000 });
     }
 }
 
@@ -1329,17 +1338,17 @@ function togglePause() {
             currentCall.disconnect();
             pauseBtn.classList.add('active');
             pauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-            showNotification('Appel mis en pause', 'info');
+            NotificationSystem.info('CALL_CONTROL', 'Appel mis en pause', { duration: 2000 });
         } else {
             // Reconnecter l'appel
             makeCall();
             pauseBtn.classList.remove('active');
             pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            showNotification('Appel repris', 'info');
+            NotificationSystem.info('CALL_CONTROL', 'Appel repris', { duration: 2000 });
         }
     } catch (error) {
         console.error('❌ Erreur lors de la pause:', error);
-        showNotification('Impossible de mettre en pause', 'error');
+        NotificationSystem.error('CALL_ERROR', 'Impossible de mettre en pause', { duration: 3000 });
     }
 }
 
@@ -1353,15 +1362,15 @@ function toggleHold() {
         if (isOnHold) {
             currentCall.hold();
             holdBtn.classList.add('active');
-            showNotification('Appel mis en attente', 'info');
+            NotificationSystem.info('CALL_CONTROL', 'Appel mis en attente', { duration: 2000 });
         } else {
             currentCall.unhold();
             holdBtn.classList.remove('active');
-            showNotification('Appel repris', 'info');
+            NotificationSystem.info('CALL_CONTROL', 'Appel repris', { duration: 2000 });
         }
     } catch (error) {
         console.error('❌ Erreur lors de la mise en attente:', error);
-        showNotification('Impossible de mettre en attente', 'error');
+        NotificationSystem.error('CALL_ERROR', 'Impossible de mettre en attente', { duration: 3000 });
     }
 }
 
@@ -1374,14 +1383,14 @@ function toggleSpeaker() {
         
         if (isSpeakerOn) {
             speakerBtn.classList.add('active');
-            showNotification('Haut-parleur activé', 'info');
+            NotificationSystem.info('AUDIO_CONTROL', 'Haut-parleur activé', { duration: 2000 });
         } else {
             speakerBtn.classList.remove('active');
-            showNotification('Haut-parleur désactivé', 'info');
+            NotificationSystem.info('AUDIO_CONTROL', 'Haut-parleur désactivé', { duration: 2000 });
         }
     } catch (error) {
         console.error('❌ Erreur lors du changement de haut-parleur:', error);
-        showNotification('Impossible de changer le haut-parleur', 'error');
+        NotificationSystem.error('AUDIO_ERROR', 'Impossible de changer le haut-parleur', { duration: 3000 });
     }
 }
 
@@ -1413,14 +1422,14 @@ async function transferCall(number) {
         });
         
         if (response.ok) {
-            showNotification('Appel transféré', 'success');
+            NotificationSystem.success('CALL_TRANSFER', 'Appel transféré', { duration: 3000 });
             endCall();
         } else {
             throw new Error('Erreur lors du transfert');
         }
     } catch (error) {
         console.error('❌ Erreur lors du transfert:', error);
-        showNotification('Impossible de transférer l\'appel', 'error');
+        NotificationSystem.error('CALL_ERROR', 'Impossible de transférer l\'appel', { duration: 5000 });
     }
 }
 
@@ -1433,14 +1442,14 @@ function toggleRecording() {
         
         if (isRecording) {
             recordBtn.classList.add('recording');
-            showNotification('Enregistrement démarré', 'info');
+            NotificationSystem.info('RECORDING', 'Enregistrement démarré', { duration: 2000 });
         } else {
             recordBtn.classList.remove('recording');
-            showNotification('Enregistrement arrêté', 'info');
+            NotificationSystem.info('RECORDING', 'Enregistrement arrêté', { duration: 2000 });
         }
     } catch (error) {
         console.error('❌ Erreur lors de l\'enregistrement:', error);
-        showNotification('Impossible de démarrer l\'enregistrement', 'error');
+        NotificationSystem.error('RECORDING_ERROR', 'Impossible de démarrer l\'enregistrement', { duration: 3000 });
     }
 }
 
