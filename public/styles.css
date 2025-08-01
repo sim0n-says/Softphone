@@ -779,16 +779,17 @@
 }
 
 .panel-title {
-    color: var(--phreaking-highlight);
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-transform: uppercase;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: var(--phreaking-text-secondary);
     letter-spacing: 1px;
     margin: 0;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     gap: var(--space-xs);
+    text-transform: none;
+    font-weight: normal;
 }
 
 .panel-title i {
