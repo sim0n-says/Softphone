@@ -753,46 +753,53 @@
 }
 
 .panel-header {
-    background: var(--phreaking-elevated);
-    padding: var(--space-sm) var(--space-md);
-    border-bottom: 1px solid var(--phreaking-primary);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--phreaking-elevated);
+    border-bottom: 1px solid var(--phreaking-primary);
     position: relative;
+    gap: var(--space-sm);
 }
 
 .panel-header::after {
     content: '';
     position: absolute;
-    top: 0;
+    bottom: 0;
+    left: 0;
     right: 0;
-    width: 8px;
-    height: 100%;
-    background: linear-gradient(45deg, var(--phreaking-accent), transparent);
-    opacity: 0.3;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--phreaking-accent) 20%, 
+        var(--phreaking-accent) 80%, 
+        transparent 100%
+    );
 }
 
 .panel-title {
-    font-family: 'Courier New', monospace;
-    font-size: 0.75rem;
-    color: var(--phreaking-text-secondary);
-    letter-spacing: 1px;
+    color: var(--phreaking-highlight);
+    font-size: 0.9rem;
+    font-weight: 600;
     text-transform: uppercase;
+    letter-spacing: 1px;
     margin: 0;
+    flex-shrink: 0;
 }
 
 .panel-indicator {
-    width: 6px;
-    height: 6px;
-    background: var(--phreaking-accent);
+    width: 8px;
+    height: 8px;
+    background: var(--phreaking-success);
     border-radius: 50%;
     animation: pulse-indicator 2s infinite;
+    flex-shrink: 0;
 }
 
 @keyframes pulse-indicator {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 1; }
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
 }
 
 /* ===== MATRICE AUDIO AVEC FORMES CYBERPUNK ===== */
@@ -1496,9 +1503,9 @@
     }
     
     .dial-number {
-        font-size: 1rem;
-    }
-    
+    font-size: 1rem;
+}
+
     .dial-letters {
         font-size: 0.55rem;
     }
@@ -1681,7 +1688,7 @@
     right: 20px;
     z-index: 10000;
     display: flex;
-        flex-direction: column;
+    flex-direction: column;
     gap: var(--space-sm);
     pointer-events: none;
 }
@@ -2308,5 +2315,216 @@
     
     .stream-btn.cyber-btn i {
         font-size: 0.9rem;
+    }
+} 
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--phreaking-elevated);
+    border-bottom: 1px solid var(--phreaking-primary);
+    position: relative;
+    gap: var(--space-sm);
+}
+
+.panel-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--phreaking-accent) 20%, 
+        var(--phreaking-accent) 80%, 
+        transparent 100%
+    );
+}
+
+.panel-title {
+    color: var(--phreaking-highlight);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.panel-indicator {
+    width: 8px;
+    height: 8px;
+    background: var(--phreaking-success);
+    border-radius: 50%;
+    animation: pulse-indicator 2s infinite;
+    flex-shrink: 0;
+}
+
+@keyframes pulse-indicator {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+/* Boutons cyberpunk pour la gestion des logs dans le header */
+.panel-header .stream-controls {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+    margin: 0;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.panel-header .stream-btn.cyber-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: transparent;
+    border: 1px solid var(--phreaking-accent);
+    color: var(--phreaking-text-primary);
+    font-family: 'Oxanium', monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+    min-width: 50px;
+    height: 28px;
+    justify-content: center;
+}
+
+.panel-header .stream-btn.cyber-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.panel-header .stream-btn.cyber-btn:hover::before {
+    opacity: 1;
+}
+
+.panel-header .stream-btn.cyber-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    color: var(--phreaking-highlight);
+    border-color: var(--phreaking-highlight);
+}
+
+.panel-header .stream-btn.cyber-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Types de boutons - couleurs sobres comme le bouton config */
+.panel-header .stream-btn.cyber-btn[data-type="success"] {
+    border-color: var(--phreaking-accent);
+    color: var(--phreaking-text-primary);
+}
+
+.panel-header .stream-btn.cyber-btn[data-type="success"]:hover {
+    background: rgba(74, 103, 65, 0.1);
+    color: var(--phreaking-highlight);
+    border-color: var(--phreaking-highlight);
+}
+
+.panel-header .stream-btn.cyber-btn[data-type="warning"] {
+    border-color: var(--phreaking-accent);
+    color: var(--phreaking-text-primary);
+}
+
+.panel-header .stream-btn.cyber-btn[data-type="warning"]:hover {
+    background: rgba(74, 103, 65, 0.1);
+    color: var(--phreaking-highlight);
+    border-color: var(--phreaking-highlight);
+}
+
+.panel-header .stream-btn.cyber-btn[data-type="error"] {
+    border-color: var(--phreaking-accent);
+    color: var(--phreaking-text-primary);
+}
+
+.panel-header .stream-btn.cyber-btn[data-type="error"]:hover {
+    background: rgba(74, 103, 65, 0.1);
+    color: var(--phreaking-highlight);
+    border-color: var(--phreaking-highlight);
+}
+
+.panel-header .stream-btn.cyber-btn[data-type="info"] {
+    border-color: var(--phreaking-accent);
+    color: var(--phreaking-text-primary);
+}
+
+.panel-header .stream-btn.cyber-btn[data-type="info"]:hover {
+    background: rgba(74, 103, 65, 0.1);
+    color: var(--phreaking-highlight);
+    border-color: var(--phreaking-highlight);
+}
+
+.panel-header .stream-btn.cyber-btn[data-type="danger"] {
+    border-color: var(--phreaking-accent);
+    color: var(--phreaking-text-primary);
+}
+
+.panel-header .stream-btn.cyber-btn[data-type="danger"]:hover {
+    background: rgba(74, 103, 65, 0.1);
+    color: var(--phreaking-highlight);
+    border-color: var(--phreaking-highlight);
+}
+
+.panel-header .stream-btn.cyber-btn i {
+    font-size: 0.7rem;
+}
+
+.panel-header .stream-btn.cyber-btn .btn-text {
+    font-size: 0.5rem;
+    font-weight: 600;
+}
+
+/* Animation de pulsation pour les boutons actifs */
+.panel-header .stream-btn.cyber-btn:active {
+    animation: cyber-pulse 0.2s ease;
+}
+
+/* Responsive pour les boutons dans le header */
+@media (max-width: 768px) {
+    .panel-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+    
+    .panel-header .stream-controls {
+        width: 100%;
+        justify-content: flex-start;
+        gap: var(--space-xs);
+    }
+    
+    .panel-header .stream-btn.cyber-btn {
+        padding: var(--space-xs);
+        min-width: 40px;
+        height: 24px;
+        font-size: 0.6rem;
+    }
+    
+    .panel-header .stream-btn.cyber-btn .btn-text {
+        display: none;
+    }
+    
+    .panel-header .stream-btn.cyber-btn i {
+        font-size: 0.8rem;
     }
 } 

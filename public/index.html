@@ -234,33 +234,33 @@
                         <div class="panel-header">
                             <h3 class="panel-title">CALL_LOG</h3>
                             <div class="panel-indicator"></div>
+                            <div class="stream-controls">
+                                <button onclick="forceLoadLogs()" class="stream-btn cyber-btn" title="Force Load" data-type="success">
+                                    <i class="fas fa-download"></i>
+                                    <span class="btn-text">LOAD</span>
+                                </button>
+                                <button onclick="testAPIDirect()" class="stream-btn cyber-btn" title="Test API Direct" data-type="warning">
+                                    <i class="fas fa-code"></i>
+                                    <span class="btn-text">TEST</span>
+                                </button>
+                                <button id="test-log-btn" class="stream-btn cyber-btn" title="Test Log" data-type="error">
+                                    <i class="fas fa-bug"></i>
+                                    <span class="btn-text">DEBUG</span>
+                                </button>
+                                <button id="refresh-logs" class="stream-btn cyber-btn" title="Actualiser" data-type="info">
+                                    <i class="fas fa-sync-alt"></i>
+                                    <span class="btn-text">SYNC</span>
+                                </button>
+                                <button id="clear-logs" class="stream-btn cyber-btn" title="Effacer" data-type="danger">
+                                    <i class="fas fa-trash"></i>
+                                    <span class="btn-text">CLEAR</span>
+                                </button>
+                            </div>
                         </div>
                         <div class="data-stream-container">
                             <div class="stream-header">
                                 <i class="fas fa-database"></i>
                                 <span>EXCHANGE.db</span>
-                                <div class="stream-controls">
-                                    <button onclick="forceLoadLogs()" class="stream-btn cyber-btn" title="Force Load" data-type="success">
-                                        <i class="fas fa-download"></i>
-                                        <span class="btn-text">LOAD</span>
-                                    </button>
-                                    <button onclick="testAPIDirect()" class="stream-btn cyber-btn" title="Test API Direct" data-type="warning">
-                                        <i class="fas fa-code"></i>
-                                        <span class="btn-text">TEST</span>
-                                    </button>
-                                    <button id="test-log-btn" class="stream-btn cyber-btn" title="Test Log" data-type="error">
-                                        <i class="fas fa-bug"></i>
-                                        <span class="btn-text">DEBUG</span>
-                                    </button>
-                                    <button id="refresh-logs" class="stream-btn cyber-btn" title="Actualiser" data-type="info">
-                                        <i class="fas fa-sync-alt"></i>
-                                        <span class="btn-text">SYNC</span>
-                                    </button>
-                                    <button id="clear-logs" class="stream-btn cyber-btn" title="Effacer" data-type="danger">
-                                        <i class="fas fa-trash"></i>
-                                        <span class="btn-text">CLEAR</span>
-                                    </button>
-                                </div>
                             </div>
                             
                             <!-- Statistiques des appels -->

@@ -523,7 +523,7 @@ async function makeCall() {
     
     if (!device) {
         NotificationSystem.error('DEVICE_OFFLINE', 'Terminal hors ligne - Vérifiez la connexion', { duration: 5000 });
-        return;
+            return;
     }
     
     try {
@@ -1095,21 +1095,21 @@ function initializeOtherAudioControls() {
     }
     
     if (inputDeviceSelect) {
-        inputDeviceSelect.addEventListener('change', changeInputDevice);
+    inputDeviceSelect.addEventListener('change', changeInputDevice);
     }
     
     if (outputDeviceSelect) {
-        outputDeviceSelect.addEventListener('change', changeOutputDevice);
+    outputDeviceSelect.addEventListener('change', changeOutputDevice);
     }
     
     if (micAccessBtn) {
-        micAccessBtn.addEventListener('click', async () => {
-            const success = await requestMicrophoneAccess();
-            if (success) {
-                micAccessBtn.style.display = 'none';
-                loadAudioDevices();
-            }
-        });
+    micAccessBtn.addEventListener('click', async () => {
+        const success = await requestMicrophoneAccess();
+        if (success) {
+            micAccessBtn.style.display = 'none';
+            loadAudioDevices();
+        }
+    });
     }
 }
 
