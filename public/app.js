@@ -630,6 +630,8 @@ function acceptIncomingCall() {
     if (incomingCall) {
         incomingCall.accept();
         socket.emit('incoming-call-accepted', incomingCall.parameters.CallSid);
+        stopRingtone(); // Arrêter la sonnerie
+        hideIncomingCallModal();
     }
 }
 
@@ -639,10 +641,12 @@ function rejectIncomingCall() {
         console.log('Appel entrant rejeté');
         incomingCall.reject();
         socket.emit('incoming-call-rejected', incomingCall.parameters.CallSid);
+        stopRingtone(); // Arrêter la sonnerie
         hideIncomingCallModal();
         incomingCall = null;
     } else {
         console.log('Aucun appel entrant à rejeter');
+        stopRingtone(); // Arrêter la sonnerie même si pas d'appel
         hideIncomingCallModal();
     }
 }
@@ -733,10 +737,22 @@ function playRingtone() {
 
 // Arrêter la sonnerie
 function stopRingtone() {
+    console.log('🔇 Arrêt de la sonnerie...');
     if (window.ringtoneInterval) {
         clearInterval(window.ringtoneInterval);
         window.ringtoneInterval = null;
+        console.log('✅ Intervalle de sonnerie arrêté');
     }
+    
+    // S'assurer que le modal est bien fermé
+    const incomingCallModal = document.getElementById('incoming-call-modal');
+    if (incomingCallModal) {
+        incomingCallModal.style.display = 'none';
+    }
+    
+    // Réinitialiser les variables d'appel entrant
+    incomingCall = null;
+    incomingCallData = null;
 }
 
 // Jouer un son de connexion cyberpunk
