@@ -1456,7 +1456,11 @@ function updateAudioControls(show) {
 // Fonctions de gestion des logs d'appels
 function initializeCallLogs() {
     console.log('🔍 Initialisation du système de logs d\'appels...');
-    loadCallLogs();
+    
+    // Test de l'API au démarrage
+    setTimeout(() => {
+        testAPI();
+    }, 1000);
     
     // Événements pour les boutons de contrôle
     const refreshBtn = document.getElementById('refresh-logs');
@@ -1509,6 +1513,27 @@ async function createTestLog() {
     } catch (error) {
         console.error('❌ Erreur lors de la création du log de test:', error);
         NotificationSystem.error('TEST_ERROR', 'Erreur de connexion', { duration: 3000 });
+    }
+}
+
+// Fonction de test simple pour vérifier l'API
+async function testAPI() {
+    console.log('🧪 Test de l\'API...');
+    try {
+        const response = await fetch('/api/call-logs');
+        const data = await response.json();
+        console.log('📊 Données de l\'API:', data);
+        
+        if (data.logs && data.logs.length > 0) {
+            console.log('✅ API fonctionne, logs trouvés:', data.logs.length);
+            // Forcer l'affichage
+            updateCallLogsDisplay(data.logs);
+            updateCallStats(data.statistics);
+        } else {
+            console.log('📭 Aucun log trouvé dans l\'API');
+        }
+    } catch (error) {
+        console.error('❌ Erreur API:', error);
     }
 }
 
