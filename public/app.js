@@ -1019,59 +1019,20 @@ function saveSettings() {
 
 // Afficher les informations de configuration automatique
 function showConfigurationInfo() {
-    // Afficher le badge de configuration
-    const configBadge = document.getElementById('config-status');
+    const configBadge = document.getElementById('config-badge');
     if (configBadge) {
         configBadge.style.display = 'flex';
     }
     
-    const notification = document.createElement('div');
-    notification.className = 'config-info';
-    notification.innerHTML = `
-        <div class="config-info-content">
-            <h3>🎉 Configuration automatique terminée !</h3>
-            <p><strong>Identité:</strong> ${settings.identity}</p>
-            <p><strong>Numéro:</strong> ${settings.fromNumber}</p>
-            <p>Vous pouvez maintenant passer et recevoir des appels !</p>
-            <button class="close-config-btn">Fermer</button>
-        </div>
-    `;
-    
-    // Ajouter l'event listener pour fermer la notification
-    const closeBtn = notification.querySelector('.close-config-btn');
-    closeBtn.addEventListener('click', () => {
-        if (notification.parentElement) {
-            notification.parentElement.removeChild(notification);
+    // Utiliser le système de notifications cyberpunk
+    NotificationSystem.success(
+        'CONFIG_READY',
+        `Configuration automatique terminée !<br><br><strong>Identité:</strong> ${settings.identity}<br><strong>Numéro:</strong> ${settings.fromNumber}<br><br>Vous pouvez maintenant passer et recevoir des appels !`,
+        { 
+            duration: 8000,
+            persistent: true 
         }
-    });
-    
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(135deg, #48bb78, #38a169);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 8px 32px rgba(72, 187, 120, 0.3);
-        z-index: 10000;
-        max-width: 300px;
-        animation: slideIn 0.3s ease;
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Supprimer automatiquement après 10 secondes
-    setTimeout(() => {
-        if (notification.parentElement) {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.parentElement.removeChild(notification);
-                }
-            }, 300);
-        }
-    }, 10000);
+    );
 }
 
 
@@ -1079,16 +1040,6 @@ function showConfigurationInfo() {
 // Ajouter les styles d'animation pour les notifications
 const style = document.createElement('style');
 style.textContent = `
-    @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    
-    @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-    
     .call-direction {
         font-size: 0.8rem;
         color: #718096;
