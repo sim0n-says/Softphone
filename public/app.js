@@ -393,7 +393,7 @@ async function initializeTwilioClient() {
             console.log('📱 Identité du client:', settings.identity);
             console.log('📱 État du device:', device.state);
             console.log('📱 Device object:', device);
-            updateConnectionStatus('online', 'Prêt à recevoir des appels');
+            updateConnectionStatus('online', 'Ligne active - Surveillance en cours');
             
             // Notification de connexion réussie
             NotificationSystem.success('COMM_READY', 'Ligne téléphonique active - Prêt pour les appels');
@@ -448,6 +448,8 @@ async function initializeTwilioClient() {
             currentCall = connection;
             updateCallUI('connected');
             startCallTimer();
+            // Jouer le son de connexion cyberpunk
+            playConnectionSound();
         });
         
         device.on('disconnect', (connection) => {
@@ -503,88 +505,54 @@ async function makeCall() {
     const phoneNumber = phoneNumberInput.value.trim();
     
     if (!phoneNumber) {
-        showNotification('Veuillez saisir un numéro de téléphone', 'error');
+        NotificationSystem.warning('CALL_INVALID', 'Numéro de cible invalide - Spécifiez une ligne', { duration: 3000 });
         return;
     }
     
-    if (!settings.identity || !settings.fromNumber) {
-        showNotification('Veuillez configurer vos paramètres', 'error');
-        showSettingsModal();
-        return;
-    }
-    
-    // Vérifier que le device est initialisé
     if (!device) {
-        try {
-            console.log('🔧 Initialisation du client Twilio...');
-            await initializeTwilioClient();
-        } catch (error) {
-            console.error('❌ Erreur lors de l\'initialisation du client Twilio:', error);
-            showNotification('Erreur d\'initialisation Twilio. Veuillez réessayer.', 'error');
-            return;
-        }
+        NotificationSystem.error('DEVICE_OFFLINE', 'Terminal hors ligne - Vérifiez la connexion', { duration: 5000 });
+        return;
     }
     
     try {
-        console.log('📞 Début de l\'appel vers:', phoneNumber);
-        updateCallUI('calling');
-        updateConnectionStatus('connecting', 'Connexion...');
+        console.log('📞 Tentative d\'appel vers:', phoneNumber);
+        NotificationSystem.info('CALL_ATTEMPT', `Tentative de connexion vers ${phoneNumber}`, { duration: 2000 });
         
-        // Vérifier que le device est prêt
-        console.log('📞 État du device avant vérification:', device.state);
-        
-        // Si le device n'est pas prêt, essayer de le forcer
-        if (!device.state || device.state !== 'ready') {
-            console.log('🔧 Tentative de forcer l\'état ready...');
-            
-            // Attendre un peu et vérifier à nouveau
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            console.log('📞 État du device après attente:', device.state);
-            
-            // Si toujours pas prêt, essayer de se connecter quand même
-            if (!device.state || device.state !== 'ready') {
-                console.log('⚠️ Device pas dans l\'état ready, tentative de connexion...');
-            }
-        }
-        
-        // Passer l'appel via le client Twilio pour l'audio bidirectionnel
         const params = {
             To: phoneNumber,
             From: settings.fromNumber
         };
         
-        console.log('📞 Paramètres d\'appel:', params);
-        console.log('📞 État du device avant connexion:', device.state);
-        console.log('📞 Device object:', device);
-        
-        currentCall = device.connect(params);
-        
+        currentCall = await device.connect(params);
         console.log('✅ Appel initié avec succès via client Twilio');
-        console.log('📞 Objet currentCall:', currentCall);
-        console.log('📞 Paramètres de l\'appel:', currentCall.parameters);
         
-            updateConnectionStatus('online', 'Connecté');
-        showNotification('Appel en cours...', 'success');
+        updateCallUI('calling');
+        
+        // Événements de l'appel
+        currentCall.on('connect', () => {
+            console.log('✅ Appel connecté:', currentCall);
+            console.log('✅ Paramètres de connexion:', currentCall.parameters);
+            console.log('✅ État de la connexion:', currentCall.status());
+            updateCallUI('connected');
+            startCallTimer();
+            // Jouer le son de connexion cyberpunk
+            playConnectionSound();
+        });
+        
+        currentCall.on('disconnect', () => {
+            console.log('📞 Appel déconnecté');
+            endCall();
+        });
+        
+        currentCall.on('error', (error) => {
+            console.error('❌ Erreur d\'appel:', error);
+            NotificationSystem.error('CALL_FAILED', 'Échec de connexion - Erreur de ligne', { duration: 5000 });
+            endCall();
+        });
         
     } catch (error) {
-        console.error('❌ Erreur lors de l\'appel:', error);
-        
-        // Si l'erreur est liée au client, essayer de le réinitialiser
-        if (error.code === 31000 || error.message.includes('disconnected')) {
-            console.log('🔄 Tentative de réinitialisation du client Twilio...');
-            device = null;
-            showNotification('Réinitialisation du client en cours...', 'info');
-            
-            // Réessayer l'appel après réinitialisation
-            setTimeout(() => {
-                makeCall();
-            }, 2000);
-            return;
-        }
-        
-        showNotification('Erreur lors de l\'appel: ' + error.message, 'error');
-            updateConnectionStatus('offline', 'Erreur');
-        updateCallUI('idle');
+        console.error('❌ Erreur lors de l\'initiation de l\'appel:', error);
+        NotificationSystem.error('CALL_ERROR', 'Erreur d\'initiation - Vérifiez les paramètres', { duration: 5000 });
     }
 }
 
@@ -682,32 +650,72 @@ function hideIncomingCallModal() {
 
 // Jouer une sonnerie (fonction simple)
 function playRingtone() {
-    // Créer un audio context pour générer un son de sonnerie
+    // Créer un audio context pour générer un son cyberpunk
     try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
         
-        oscillator.connect(gainNode);
+        // Créer plusieurs oscillateurs pour un son plus complexe
+        const oscillator1 = audioContext.createOscillator();
+        const oscillator2 = audioContext.createOscillator();
+        const oscillator3 = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        const filter = audioContext.createBiquadFilter();
+        
+        // Configuration des oscillateurs
+        oscillator1.type = 'sawtooth';
+        oscillator2.type = 'square';
+        oscillator3.type = 'sine';
+        
+        // Fréquences cyberpunk (harmoniques)
+        oscillator1.frequency.setValueAtTime(440, audioContext.currentTime); // La
+        oscillator2.frequency.setValueAtTime(880, audioContext.currentTime); // La octave
+        oscillator3.frequency.setValueAtTime(220, audioContext.currentTime); // La basse
+        
+        // Filtre pour un son plus "électronique"
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(2000, audioContext.currentTime);
+        filter.Q.setValueAtTime(8, audioContext.currentTime);
+        
+        // Modulation de fréquence pour effet glitch
+        oscillator1.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.1);
+        oscillator2.frequency.exponentialRampToValueAtTime(1320, audioContext.currentTime + 0.1);
+        oscillator3.frequency.exponentialRampToValueAtTime(330, audioContext.currentTime + 0.1);
+        
+        // Retour aux fréquences originales
+        oscillator1.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.2);
+        oscillator2.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.2);
+        oscillator3.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 0.2);
+        
+        // Gain avec enveloppe cyberpunk
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+        
+        // Connexions
+        oscillator1.connect(filter);
+        oscillator2.connect(filter);
+        oscillator3.connect(filter);
+        filter.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.5);
+        // Démarrer les oscillateurs
+        oscillator1.start(audioContext.currentTime);
+        oscillator2.start(audioContext.currentTime);
+        oscillator3.start(audioContext.currentTime);
         
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+        // Arrêter après 0.8 secondes
+        oscillator1.stop(audioContext.currentTime + 0.8);
+        oscillator2.stop(audioContext.currentTime + 0.8);
+        oscillator3.stop(audioContext.currentTime + 0.8);
         
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 1);
-        
-        // Répéter la sonnerie
+        // Répéter la sonnerie cyberpunk
         window.ringtoneInterval = setInterval(() => {
             if (incomingCallModal.style.display === 'block') {
                 playRingtone();
             }
-        }, 2000);
+        }, 1500); // Intervalle plus court pour un effet plus dynamique
     } catch (error) {
-        console.log('Impossible de jouer la sonnerie:', error);
+        console.log('Impossible de jouer la sonnerie cyberpunk:', error);
     }
 }
 
@@ -719,25 +727,74 @@ function stopRingtone() {
     }
 }
 
+// Jouer un son de connexion cyberpunk
+function playConnectionSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Créer un son de "connexion établie" cyberpunk
+        const oscillator1 = audioContext.createOscillator();
+        const oscillator2 = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        const filter = audioContext.createBiquadFilter();
+        
+        // Configuration
+        oscillator1.type = 'sine';
+        oscillator2.type = 'triangle';
+        
+        // Fréquences ascendantes (connexion réussie)
+        oscillator1.frequency.setValueAtTime(200, audioContext.currentTime);
+        oscillator1.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.3);
+        
+        oscillator2.frequency.setValueAtTime(400, audioContext.currentTime);
+        oscillator2.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.3);
+        
+        // Filtre pour un son "digital"
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(150, audioContext.currentTime);
+        
+        // Enveloppe de gain
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        
+        // Connexions
+        oscillator1.connect(filter);
+        oscillator2.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Démarrer et arrêter
+        oscillator1.start(audioContext.currentTime);
+        oscillator2.start(audioContext.currentTime);
+        oscillator1.stop(audioContext.currentTime + 0.5);
+        oscillator2.stop(audioContext.currentTime + 0.5);
+        
+    } catch (error) {
+        console.log('Impossible de jouer le son de connexion cyberpunk:', error);
+    }
+}
+
 // Terminer un appel
 async function hangupCall() {
     if (currentCall) {
-        currentCall.disconnect();
+        try {
+            await currentCall.disconnect();
+            console.log('✅ Appel déconnecté avec succès');
+            NotificationSystem.info('CALL_HANGUP', 'Déconnexion manuelle - Ligne fermée', { duration: 3000 });
+        } catch (error) {
+            console.error('❌ Erreur lors de la déconnexion:', error);
+            NotificationSystem.error('CALL_ERROR', 'Erreur de déconnexion - Tentative de récupération', { duration: 5000 });
+        }
     }
     
-    if (currentCall && currentCall.parameters && currentCall.parameters.CallSid) {
+    if (incomingCall) {
         try {
-            await fetch('/api/hangup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    callSid: currentCall.parameters.CallSid
-                })
-            });
+            await incomingCall.reject();
+            console.log('✅ Appel entrant rejeté');
+            NotificationSystem.info('CALL_REJECT', 'Appel entrant rejeté - Ligne protégée', { duration: 3000 });
         } catch (error) {
-            console.error('Erreur lors de la fin d\'appel:', error);
+            console.error('❌ Erreur lors du rejet:', error);
         }
     }
     
@@ -749,6 +806,11 @@ function endCall() {
     if (callTimer) {
         clearInterval(callTimer);
         callTimer = null;
+    }
+    
+    // Notification de fin d'appel
+    if (currentCall) {
+        NotificationSystem.info('CALL_END', 'Connexion terminée - Ligne libérée', { duration: 3000 });
     }
     
     currentCall = null;
@@ -767,26 +829,32 @@ function updateCallUI(state) {
             callBtn.style.display = 'none';
             hangupBtn.style.display = 'flex';
             callInfoDiv.style.display = 'block';
-            callStatus.textContent = 'Appel en cours...';
+            callStatus.textContent = 'CONNECTING...';
             callBtn.classList.add('ringing');
             updateAudioControls(true);
+            // Notification cyberpunk pour l'appel en cours
+            NotificationSystem.info('CALL_INIT', 'Appel en cours - Connexion en cours...', { duration: 0 });
             break;
             
         case 'connected':
             callBtn.style.display = 'none';
             hangupBtn.style.display = 'flex';
             callInfoDiv.style.display = 'block';
-            callStatus.textContent = 'Connecté';
+            callStatus.textContent = 'CONNECTED';
             callBtn.classList.remove('ringing');
             updateAudioControls(true);
+            // Notification cyberpunk pour la connexion réussie
+            NotificationSystem.success('CALL_ACTIVE', 'Ligne connectée - Communication active', { duration: 4000 });
             break;
             
         case 'incoming':
             callBtn.style.display = 'none';
             hangupBtn.style.display = 'flex';
             callInfoDiv.style.display = 'block';
-            callStatus.textContent = 'Appel entrant';
+            callStatus.textContent = 'INCOMING_CALL';
             updateAudioControls(true);
+            // Notification cyberpunk pour l'appel entrant
+            NotificationSystem.warning('CALL_INCOMING', 'Appel entrant détecté - Ligne sollicitée', { duration: 0 });
             break;
             
         case 'idle':
@@ -796,6 +864,8 @@ function updateCallUI(state) {
             callInfoDiv.style.display = 'none';
             callBtn.classList.remove('ringing');
             updateAudioControls(false);
+            // Nettoyer les notifications d'appel persistantes
+            NotificationSystem.clear();
             break;
     }
 }
