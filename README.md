@@ -1,184 +1,210 @@
-# 📞 Softphone Twilio - Application Complète
+# 📞 Sim0n-Says Comm - Softphone Cyberpunk
 
-Un softphone moderne et fonctionnel basé sur Twilio Voice API avec support complet des appels entrants et sortants, audio bidirectionnel, et interface utilisateur moderne.
+Un softphone moderne avec interface cyberpunk, intégrant Twilio pour les appels VoIP et Tailwind CSS pour un design responsive.
 
-## 🎉 **Fonctionnalités Complètes**
+## ✨ Fonctionnalités
 
-- ✅ **Appels entrants** : Fonctionnent parfaitement avec audio bidirectionnel
-- ✅ **Appels sortants** : Fonctionnent même si device.state !== ready
-- ✅ **Audio bidirectionnel** : Pour les deux types d'appels
-- ✅ **Interface moderne** : Avec contrôles audio complets
-- ✅ **Configuration automatique** : Aucune configuration manuelle requise
-- ✅ **Contrôles audio** : Mute, pause, hold, transfer, enregistrement
-- ✅ **Gestion des périphériques** : Sélection automatique des entrées/sorties audio
-- ✅ **Historique des appels** : Suivi complet des appels
-- ✅ **Interface responsive** : Compatible mobile et desktop
+### 🎯 Interface Principale
+- **Terminal de communication** avec pavé numérique cyberpunk
+- **Design responsive** optimisé mobile/desktop
+- **Thème cyberpunk** avec animations et effets visuels
+- **Notifications en temps réel** avec système moderne
 
-## 🚀 **Installation Rapide**
+### 📞 Fonctionnalités d'Appel
+- **Appels sortants** via Twilio
+- **Appels entrants** avec modal d'acceptation/rejet
+- **Historique des appels** avec statistiques
+- **Contrôles audio** (mute, hold, speaker)
+- **Sons DTMF** et feedback tactile
+
+### 📖 Carnet d'Adresses
+- **Gestion des contacts** avec recherche
+- **Liste d'appels** avec navigation
+- **Export des données** en format texte
+- **Interface à onglets** responsive
+
+### 🔧 Configuration
+- **Paramètres Twilio** configurables
+- **Appareils audio** sélectionnables
+- **Interface d'administration** intégrée
+
+## 🚀 Installation
 
 ### Prérequis
-- Node.js (v14+)
-- Compte Twilio avec numéro de téléphone
-- NGROK (domaine statique recommandé)
+- Node.js 16+
+- Compte Twilio actif
+- Navigateur moderne avec support WebRTC
 
-### 1. Cloner le projet
-   ```bash
-git clone https://github.com/sim0n-says/Softphone.git
-cd Softphone
-   ```
-
-### 2. Installer les dépendances
-   ```bash
-   npm install
-   ```
-
-### 3. Configurer les variables d'environnement
-   ```bash
-   cp env.example .env
-# Éditer .env avec vos identifiants Twilio
-```
-
-### 4. Lancer l'application
+### Installation
 ```bash
-./start-auto.sh
+# Cloner le projet
+git clone <repository-url>
+cd Softphone_v2
+
+# Installer les dépendances
+npm install
+
+# Configurer l'environnement
+cp env.example .env
+# Éditer .env avec vos credentials Twilio
+
+# Construire les styles CSS
+npm run build:css
+
+# Démarrer le serveur
+npm start
 ```
 
-## 📋 **Configuration**
+## ⚙️ Configuration
 
-### Variables d'environnement requises (.env)
-   ```env
-# Twilio Configuration
-   TWILIO_ACCOUNT_SID=your_account_sid_here
-   TWILIO_AUTH_TOKEN=your_auth_token_here
-TWILIO_API_KEY=your_api_key_here
-TWILIO_API_SECRET=your_api_secret_here
-TWILIO_TWIML_APP_SID=your_twiml_app_sid_here
-TWILIO_PHONE_NUMBER=+18199754345
+### Variables d'Environnement (.env)
+```env
+# Configuration Twilio
+TWILIO_ACCOUNT_SID=your_account_sid
+TWILIO_AUTH_TOKEN=your_auth_token
+TWILIO_API_KEY=your_api_key
+TWILIO_API_SECRET=your_api_secret
+TWILIO_PHONE_NUMBER=your_twilio_number
+TWILIO_TWIML_APP_SID=your_twiml_app_sid
+TWILIO_CLIENT_IDENTITY=softphone-user
 
-# NGROK Configuration
-NGROK_URL=https://your-ngrok-url.ngrok-free.app
-
-# Server Configuration
-   PORT=3000
-   NODE_ENV=development
-   ```
-
-## 🎯 **Utilisation**
-
-### Démarrage automatique
-   ```bash
-./start-auto.sh
+# Configuration du serveur
+PORT=3000
+NODE_ENV=development
 ```
-
-Le script automatise :
-- ✅ Démarrage du serveur Node.js
-- ✅ Configuration NGROK avec domaine statique
-- ✅ Configuration automatique Twilio (TwiML App + Phone Number)
-- ✅ Test de la configuration
-- ✅ Interface web prête à l'emploi
-
-### Interface Web
-1. **Ouvrir** : Votre URL NGROK (ex: https://your-ngrok-url.ngrok-free.app)
-2. **Attendre** : Initialisation automatique (5-10 secondes)
-3. **Utiliser** : Interface complète de softphone
-
-## 🔧 **Architecture Technique**
-
-### Backend (Node.js + Express)
-- **server.js** : Serveur principal avec routes Twilio
-- **API Routes** :
-  - `/api/token` : Génération de tokens Twilio
-  - `/api/config` : Configuration automatique
-  - `/twiml/outgoing` : TwiML pour appels sortants
-  - `/handle_calls` : Gestion des appels entrants
-  - `/api/register-identity` : Enregistrement d'identité client
-
-### Frontend (HTML + JavaScript)
-- **public/index.html** : Interface utilisateur moderne
-- **public/app.js** : Logique client Twilio.Device
-- **Fonctionnalités** :
-  - Initialisation automatique Twilio.Device
-  - Gestion des appels entrants/sortants
-  - Contrôles audio complets
-  - Interface responsive
 
 ### Configuration Twilio
-- **TwiML App** : Pointée vers `/twiml/outgoing` pour appels sortants
-- **Phone Number** : Pointé vers `/handle_calls` pour appels entrants
-- **VoiceGrant** : Configuration pour appels entrants et sortants
+1. Créer une TwiML App dans la console Twilio
+2. Configurer l'URL webhook vers `http://your-domain/handle_calls`
+3. Assigner la TwiML App à votre numéro Twilio
 
-## 🎨 **Interface Utilisateur**
+## 🎨 Technologies
 
-### Fonctionnalités principales
-- 📞 **Clavier numérique** : Composition de numéros
-- 📱 **Boutons d'appel** : Appeler, raccrocher, accepter, rejeter
-- 🎛️ **Contrôles audio** : Mute, pause, hold, transfer, enregistrement
-- 📊 **Statut en temps réel** : État de connexion et appels
-- 📋 **Historique** : Liste des appels récents
-- ⚙️ **Paramètres** : Configuration audio et identité
+### Frontend
+- **Tailwind CSS** - Framework CSS utilitaire
+- **JavaScript ES6+** - Logique client moderne
+- **Socket.IO** - Communication temps réel
+- **Twilio SDK** - Intégration VoIP
 
-### Contrôles audio
-- **Mute** : Couper le microphone
-- **Pause** : Mettre en pause l'appel
-- **Hold** : Mettre en attente
-- **Transfer** : Transférer l'appel
-- **Enregistrement** : Enregistrer l'appel
-- **Haut-parleur** : Activer le haut-parleur
+### Backend
+- **Node.js** - Runtime JavaScript
+- **Express.js** - Framework web
+- **Socket.IO** - WebSocket server
+- **Twilio** - API VoIP
 
-## 🔍 **Dépannage**
+### Build Tools
+- **PostCSS** - Traitement CSS
+- **Autoprefixer** - Compatibilité navigateurs
+- **Tailwind CLI** - Génération CSS
 
-### Problèmes courants
+## 📁 Structure du Projet
 
-#### Appels sortants ne fonctionnent pas
-- Vérifier que le `Twilio.Device` est initialisé
-- Vérifier les logs de console pour les erreurs
-- S'assurer que l'identité est correctement enregistrée
-
-#### Appels entrants ne fonctionnent pas
-- Vérifier la configuration du numéro Twilio
-- S'assurer que `/handle_calls` est accessible
-- Vérifier que l'identité client est enregistrée
-
-#### Erreurs AudioContext
-- Autoriser l'accès au microphone
-- Actualiser la page et réessayer
-- Vérifier les permissions du navigateur
-
-### Logs utiles
-```bash
-# Vérifier les logs du serveur
-tail -f logs/server.log
-
-# Vérifier la configuration Twilio
-curl https://your-ngrok-url.ngrok-free.app/api/config
+```
+Softphone_v2/
+├── public/                    # Fichiers statiques
+│   ├── index.html            # Interface principale
+│   ├── app-tailwind.js       # Logique principale
+│   ├── phonebook-tailwind.js # Gestion carnet d'adresses
+│   ├── components/
+│   │   └── notification.js   # Système de notifications
+│   ├── tailwind.css          # Configuration Tailwind
+│   ├── cyberpunk-tailwind.css # Styles cyberpunk
+│   └── tailwind-built.css    # CSS généré
+├── server.js                 # Serveur Express
+├── tailwind.config.js        # Configuration Tailwind
+├── postcss.config.js         # Configuration PostCSS
+├── package.json              # Dépendances
+└── .env                      # Variables d'environnement
 ```
 
-## 📚 **Documentation**
+## 🎮 Utilisation
 
-- **QUICKSTART.md** : Guide de démarrage rapide
-- **DOCKER.md** : Instructions Docker
-- **archives/** : Documentation historique
+### Interface Principale
+1. **Composer un numéro** avec le pavé numérique
+2. **Cliquer sur CONNECT** pour passer l'appel
+3. **Utiliser les contrôles audio** pendant l'appel
+4. **Cliquer sur HANGUP** pour terminer
 
-## 🤝 **Contribution**
+### Carnet d'Adresses
+1. **Onglet CARNET** : Rechercher et appeler des contacts
+2. **Onglet LISTE** : Gérer une liste d'appels
+3. **Onglet HISTO** : Consulter l'historique des appels
 
-1. Fork le projet
-2. Créer une branche feature (`git checkout -b feature/AmazingFeature`)
-3. Commit les changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrir une Pull Request
+### Appels Entrants
+- **Modal d'appel** s'affiche automatiquement
+- **Cliquer ANSWER** pour accepter
+- **Cliquer REJECT** pour rejeter
 
-## 📄 **Licence**
+## 🔧 Scripts NPM
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+```bash
+# Développement
+npm run dev          # Démarrer avec nodemon
+npm run dev:full     # Démarrer avec build CSS automatique
+npm run build:css    # Construire les styles CSS
+npm run watch:css    # Surveiller les changements CSS
 
-## 🎉 **Statut du Projet**
+# Production
+npm start            # Démarrer le serveur
+npm run build        # Construire pour production
+```
 
-**✅ PROJET COMPLÈTEMENT FONCTIONNEL**
+## 🌐 Déploiement
 
-- ✅ Appels entrants : Fonctionnent parfaitement
-- ✅ Appels sortants : Fonctionnent parfaitement
-- ✅ Audio bidirectionnel : Fonctionne parfaitement
-- ✅ Interface moderne : Complète et responsive
-- ✅ Configuration automatique : Aucune intervention manuelle requise
+### Local avec ngrok
+```bash
+# Installer ngrok
+npm install -g ngrok
 
-**Le softphone Twilio est maintenant entièrement opérationnel !** 🚀 
+# Démarrer le serveur
+npm start
+
+# Exposer le serveur
+ngrok http 3000
+
+# Configurer Twilio avec l'URL ngrok
+```
+
+### Docker
+```bash
+# Construire l'image
+docker build -t softphone .
+
+# Démarrer le conteneur
+docker run -p 3000:3000 --env-file .env softphone
+```
+
+## 🐛 Dépannage
+
+### Problèmes Audio
+- Vérifier les permissions microphone
+- Cliquer sur le pavé numérique pour activer l'audio
+- Vérifier la sélection des appareils audio
+
+### Problèmes Twilio
+- Vérifier les credentials dans `.env`
+- Configurer correctement la TwiML App
+- Vérifier les webhooks Twilio
+
+### Problèmes CSS
+- Reconstruire les styles : `npm run build:css`
+- Vérifier la configuration Tailwind
+- Nettoyer le cache navigateur
+
+## 📄 Licence
+
+Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! N'hésitez pas à :
+- Signaler des bugs
+- Proposer des améliorations
+- Soumettre des pull requests
+
+## 📞 Support
+
+Pour toute question ou problème :
+- Ouvrir une issue sur GitHub
+- Consulter la documentation Twilio
+- Vérifier les logs du serveur 

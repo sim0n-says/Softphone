@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import des styles cyberpunk personnalisés */
+@import './cyberpunk-tailwind.css';
+
+/* Styles de base personnalisés */
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-cyber-dark to-cyber-darker font-cyber text-cyber-light;
+  }
+  
+  /* Scrollbar personnalisée */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-cyber-dark/50;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-cyber-green/30 rounded;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-cyber-green/50;
+  }
+  
+  /* Sélection de texte */
+  ::selection {
+    @apply bg-cyber-green/30 text-cyber-light;
+  }
+  
+  ::-moz-selection {
+    @apply bg-cyber-green/30 text-cyber-light;
+  }
+}
+
+/* Composants personnalisés */
+@layer components {
+  .cyber-button {
+    @apply bg-cyber-dark/80 border border-cyber-blue/30 rounded-lg p-3 
+           hover:bg-cyber-blue/20 hover:border-cyber-green/50 
+           transition-all duration-200 focus:outline-none focus:ring-2 
+           focus:ring-cyber-green/50 focus:ring-offset-2 focus:ring-offset-cyber-dark;
+  }
+  
+  .cyber-input {
+    @apply bg-transparent border-none text-cyber-light font-mono 
+           placeholder-cyber-gray/50 focus:outline-none focus:ring-0;
+  }
+  
+  .cyber-panel {
+    @apply bg-cyber-dark/50 border border-cyber-blue/30 rounded-lg overflow-hidden;
+  }
+  
+  .cyber-header {
+    @apply bg-cyber-blue/20 px-4 py-2 border-b border-cyber-blue/30;
+  }
+  
+  .cyber-status {
+    @apply px-3 py-1 rounded-full text-xs font-mono border transition-all duration-300;
+  }
+  
+  .cyber-status.online {
+    @apply bg-cyber-success/20 text-cyber-success border-cyber-success/30;
+  }
+  
+  .cyber-status.offline {
+    @apply bg-cyber-danger/20 text-cyber-danger border-cyber-danger/30;
+  }
+  
+  .cyber-status.connecting {
+    @apply bg-cyber-warning/20 text-cyber-warning border-cyber-warning/30 animate-loading-pulse;
+  }
+  
+  .dial-key {
+    @apply cyber-button text-center;
+  }
+  
+  .dial-key:active {
+    @apply scale-95 shadow-cyber;
+  }
+  
+  .tab-btn {
+    @apply flex-1 px-4 py-2 text-cyber-light hover:text-cyber-green 
+           transition-colors duration-200 border-r border-cyber-blue/30 
+           focus:outline-none focus:ring-2 focus:ring-cyber-green/50;
+  }
+  
+  .tab-btn.active {
+    @apply bg-cyber-panel border-b-2 border-cyber-green text-cyber-green;
+  }
+  
+  .glass-effect {
+    @apply bg-cyber-dark/70 backdrop-blur-md border border-cyber-green/20;
+  }
+}
+
+/* Utilitaires personnalisés */
+@layer utilities {
+  .text-shadow-neon {
+    text-shadow: 
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 15px currentColor,
+      0 0 20px currentColor;
+  }
+  
+  .box-shadow-cyber {
+    box-shadow: 
+      0 0 10px rgba(122, 155, 179, 0.3),
+      inset 0 0 10px rgba(122, 155, 179, 0.1);
+  }
+  
+  .animate-typing {
+    animation: typing 2s steps(40, end) infinite;
+  }
+  
+  .animate-blink {
+    animation: blink 1s infinite;
+  }
+  
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+  
+  @keyframes typing {
+    0% { width: 0; }
+    50% { width: 100%; }
+    100% { width: 0; }
+  }
+} 

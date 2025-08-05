@@ -10,12 +10,12 @@ const path = require('path');
 require('dotenv').config();
 
 // Système de logging des appels
-const CALL_LOG_FILE = path.join(__dirname, 'logs', 'call_log.json');
-const EXCHANGE_DB_FILE = path.join(__dirname, 'logs', 'exchange.db.json');
+const CALL_LOG_FILE = path.join(__dirname, 'data', 'call_log.json');
+const EXCHANGE_DB_FILE = path.join(__dirname, 'data', 'exchange.db.json');
 
-// Créer le dossier logs s'il n'existe pas
-if (!fs.existsSync(path.join(__dirname, 'logs'))) {
-  fs.mkdirSync(path.join(__dirname, 'logs'), { recursive: true });
+// Créer le dossier data s'il n'existe pas
+if (!fs.existsSync(path.join(__dirname, 'data'))) {
+  fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
 }
 
 // Fonction pour charger les logs existants
@@ -100,6 +100,21 @@ if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
     twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 } else {
     console.warn('⚠️  Variables d\'environnement Twilio non définies. Créez un fichier .env avec vos identifiants Twilio.');
+}
+
+// Fonction pour charger les contacts depuis le fichier JSON
+function loadContacts() {
+  try {
+    const contactsPath = path.join(__dirname, 'book', 'data_complete.json');
+    if (fs.existsSync(contactsPath)) {
+      const data = fs.readFileSync(contactsPath, 'utf8');
+      const jsonData = JSON.parse(data);
+      return jsonData.employees || [];
+    }
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des contacts:', error);
+  }
+  return [];
 }
 
 const app = express();
@@ -202,6 +217,17 @@ app.post('/api/test-log', (req, res) => {
   } catch (error) {
     console.error('❌ Erreur lors de la création du log de test:', error);
     res.status(500).json({ error: 'Erreur lors de la création du log de test' });
+  }
+});
+
+// Route pour obtenir les contacts du carnet d'adresses
+app.get('/api/contacts', (req, res) => {
+  try {
+    const contacts = loadContacts();
+    res.json(contacts);
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des contacts:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des contacts' });
   }
 });
 
@@ -608,7 +634,7 @@ app.post('/api/transfer', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 server.listen(PORT, () => {
   console.log(`🚀 Softphone Twilio démarré sur le port ${PORT}`);
