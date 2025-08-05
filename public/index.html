@@ -217,6 +217,14 @@
                             <i class="fas fa-history mr-2"></i>
                             <span class="hidden sm:inline">HISTO</span>
                             </button>
+                        <button class="tab-btn flex-1 px-4 py-2 text-cyber-light hover:text-cyber-green transition-colors duration-200" data-tab="sms">
+                            <i class="fas fa-comment mr-2"></i>
+                            <span class="hidden sm:inline">SMS</span>
+                            </button>
+                        <button class="tab-btn flex-1 px-4 py-2 text-cyber-light hover:text-cyber-green transition-colors duration-200" data-tab="mms">
+                            <i class="fas fa-image mr-2"></i>
+                            <span class="hidden sm:inline">MMS</span>
+                            </button>
                         </div>
                     
                             <!-- Contenu des onglets -->
@@ -324,6 +332,74 @@
                                         </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Onglet SMS -->
+                    <div class="tab-content h-full" id="sms-content">
+                        <div class="sms-container h-full flex flex-col">
+                            <!-- Barre d'outils SMS -->
+                            <div class="p-4 border-b border-cyber-blue/30">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-cyber-green font-mono text-sm">SMS_INTERFACE</span>
+                                    <div class="flex space-x-2">
+                                        <button id="new-sms-btn" class="cyber-button bg-cyber-success/20 border-cyber-success/30 text-cyber-success">
+                                            <i class="fas fa-plus mr-1"></i>
+                                            <span class="text-xs">NOUVEAU</span>
+                                        </button>
+                                        <button id="refresh-sms-btn" class="cyber-button bg-cyber-blue/20 border-cyber-blue/30 text-cyber-blue">
+                                            <i class="fas fa-sync-alt mr-1"></i>
+                                            <span class="text-xs">SYNC</span>
+                                        </button>
+                                        <button id="clear-sms-btn" class="cyber-button bg-cyber-danger/20 border-cyber-danger/30 text-cyber-danger">
+                                            <i class="fas fa-trash mr-1"></i>
+                                            <span class="text-xs">CLEAR</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Liste des SMS -->
+                            <div class="flex-1 overflow-y-auto p-4" id="sms-list">
+                                <div class="text-center text-cyber-gray">
+                                    <div class="animate-spin inline-block w-6 h-6 border-2 border-cyber-green border-t-transparent rounded-full mb-2"></div>
+                                    <p>Chargement des SMS...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Onglet MMS -->
+                    <div class="tab-content h-full" id="mms-content">
+                        <div class="mms-container h-full flex flex-col">
+                            <!-- Barre d'outils MMS -->
+                            <div class="p-4 border-b border-cyber-blue/30">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-cyber-green font-mono text-sm">MMS_INTERFACE</span>
+                                    <div class="flex space-x-2">
+                                        <button id="new-mms-btn" class="cyber-button bg-cyber-success/20 border-cyber-success/30 text-cyber-success">
+                                            <i class="fas fa-plus mr-1"></i>
+                                            <span class="text-xs">NOUVEAU</span>
+                                        </button>
+                                        <button id="refresh-mms-btn" class="cyber-button bg-cyber-blue/20 border-cyber-blue/30 text-cyber-blue">
+                                            <i class="fas fa-sync-alt mr-1"></i>
+                                            <span class="text-xs">SYNC</span>
+                                        </button>
+                                        <button id="clear-mms-btn" class="cyber-button bg-cyber-danger/20 border-cyber-danger/30 text-cyber-danger">
+                                            <i class="fas fa-trash mr-1"></i>
+                                            <span class="text-xs">CLEAR</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Liste des MMS -->
+                            <div class="flex-1 overflow-y-auto p-4" id="mms-list">
+                                <div class="text-center text-cyber-gray">
+                                    <div class="animate-spin inline-block w-6 h-6 border-2 border-cyber-green border-t-transparent rounded-full mb-2"></div>
+                                    <p>Chargement des MMS...</p>
                                 </div>
                             </div>
                         </div>
@@ -597,9 +673,110 @@
         </div>
     </div>
 
+    <!-- Modal de composition SMS -->
+    <div id="compose-sms-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" style="display: none;">
+        <div class="bg-cyber-dark/95 border border-cyber-blue/50 rounded-lg shadow-2xl max-w-md w-full">
+            <div class="bg-cyber-blue/20 border-b border-cyber-blue/30 px-6 py-4 rounded-t-lg">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-comment text-cyber-blue text-xl"></i>
+                        <span class="text-cyber-blue font-mono font-bold">COMPOSE_SMS</span>
+                    </div>
+                    <button onclick="messageManager.hideComposeSMSModal()" class="text-cyber-gray hover:text-cyber-light">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <form onsubmit="event.preventDefault(); messageManager.sendSMS()">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-cyber-gray text-sm mb-1">Destinataire *</label>
+                            <input type="tel" id="sms-to" required class="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded px-3 py-2 text-cyber-light focus:border-cyber-green focus:outline-none" placeholder="+1234567890">
+                        </div>
+                        <div>
+                            <label class="block text-cyber-gray text-sm mb-1">Message *</label>
+                            <textarea id="sms-body" required rows="4" class="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded px-3 py-2 text-cyber-light focus:border-cyber-green focus:outline-none resize-none" placeholder="Votre message..."></textarea>
+                            <div class="text-right text-cyber-gray text-xs mt-1">
+                                <span id="sms-char-count">0</span>/160
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3 mt-6">
+                        <button type="button" onclick="messageManager.hideComposeSMSModal()" class="flex-1 bg-cyber-gray/20 border border-cyber-gray/30 text-cyber-gray hover:bg-cyber-gray/30 transition-all duration-200 rounded-lg py-2">
+                            <span class="font-mono">CANCEL</span>
+                        </button>
+                        <button type="submit" class="flex-1 bg-cyber-success/20 border border-cyber-success/30 text-cyber-success hover:bg-cyber-success/30 transition-all duration-200 rounded-lg py-2">
+                            <span class="font-mono">SEND</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de composition MMS -->
+    <div id="compose-mms-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" style="display: none;">
+        <div class="bg-cyber-dark/95 border border-cyber-blue/50 rounded-lg shadow-2xl max-w-lg w-full">
+            <div class="bg-cyber-blue/20 border-b border-cyber-blue/30 px-6 py-4 rounded-t-lg">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-image text-cyber-blue text-xl"></i>
+                        <span class="text-cyber-blue font-mono font-bold">COMPOSE_MMS</span>
+                    </div>
+                    <button onclick="messageManager.hideComposeMMSModal()" class="text-cyber-gray hover:text-cyber-light">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <form onsubmit="event.preventDefault(); messageManager.sendMMS()">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-cyber-gray text-sm mb-1">Destinataire *</label>
+                            <input type="tel" id="mms-to" required class="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded px-3 py-2 text-cyber-light focus:border-cyber-green focus:outline-none" placeholder="+1234567890">
+                        </div>
+                        <div>
+                            <label class="block text-cyber-gray text-sm mb-1">Message (optionnel)</label>
+                            <textarea id="mms-body" rows="3" class="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded px-3 py-2 text-cyber-light focus:border-cyber-green focus:outline-none resize-none" placeholder="Votre message..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-cyber-gray text-sm mb-1">Fichier média *</label>
+                            <input type="file" id="mms-media" required accept="image/*,video/*,audio/*,.pdf,.doc,.txt" class="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded px-3 py-2 text-cyber-light focus:border-cyber-green focus:outline-none">
+                            <div class="text-cyber-gray text-xs mt-1">
+                                Formats supportés : Images, Vidéos, Audio, PDF, Documents (max 5MB)
+                            </div>
+                        </div>
+                        <div id="mms-preview" class="hidden">
+                            <label class="block text-cyber-gray text-sm mb-1">Aperçu</label>
+                            <div class="bg-cyber-dark/50 border border-cyber-blue/30 rounded p-3">
+                                <img id="mms-preview-img" class="max-w-full h-auto max-h-32 mx-auto" style="display: none;">
+                                <video id="mms-preview-video" class="max-w-full h-auto max-h-32 mx-auto" controls style="display: none;"></video>
+                                <audio id="mms-preview-audio" class="w-full" controls style="display: none;"></audio>
+                                <div id="mms-preview-file" class="text-center text-cyber-gray" style="display: none;">
+                                    <i class="fas fa-file text-2xl mb-2"></i>
+                                    <div class="text-sm" id="mms-file-name"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3 mt-6">
+                        <button type="button" onclick="messageManager.hideComposeMMSModal()" class="flex-1 bg-cyber-gray/20 border border-cyber-gray/30 text-cyber-gray hover:bg-cyber-gray/30 transition-all duration-200 rounded-lg py-2">
+                            <span class="font-mono">CANCEL</span>
+                        </button>
+                        <button type="submit" class="flex-1 bg-cyber-success/20 border border-cyber-success/30 text-cyber-success hover:bg-cyber-success/30 transition-all duration-200 rounded-lg py-2">
+                            <span class="font-mono">SEND</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="components/notification.js"></script>
     <script src="app-tailwind.js"></script>
     <script src="phonebook-tailwind.js"></script>
+    <script src="messages-tailwind.js"></script>
 </body>
 </html> 

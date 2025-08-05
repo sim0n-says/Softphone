@@ -14,6 +14,11 @@ require('dotenv').config();
 const CALL_LOG_FILE = path.join(__dirname, 'data', 'call_log.json');
 const EXCHANGE_DB_FILE = path.join(__dirname, 'data', 'exchange.db.json');
 
+// Système de gestion des SMS/MMS
+const SMS_LOG_FILE = path.join(__dirname, 'data', 'sms_log.json');
+const MMS_LOG_FILE = path.join(__dirname, 'data', 'mms_log.json');
+const MESSAGES_FOLDER = path.join(__dirname, 'data', 'messages');
+
 // Configuration multer pour l'upload de fichiers
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -29,9 +34,44 @@ const upload = multer({
   }
 });
 
-// Créer le dossier data s'il n'existe pas
+// Configuration multer pour les fichiers MMS
+const mmsUpload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, MESSAGES_FOLDER);
+    },
+    filename: (req, file, cb) => {
+      const timestamp = Date.now();
+      const randomId = Math.random().toString(36).substr(2, 9);
+      cb(null, `mms_${timestamp}_${randomId}_${file.originalname}`);
+    }
+  }),
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB max pour les MMS
+  },
+  fileFilter: (req, file, cb) => {
+    // Accepter les images, vidéos, audios et documents
+    const allowedMimes = [
+      'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+      'video/mp4', 'video/avi', 'video/mov', 'video/wmv',
+      'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/m4a',
+      'application/pdf', 'text/plain', 'application/msword'
+    ];
+    
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Type de fichier non supporté pour MMS.'), false);
+    }
+  }
+});
+
+// Créer les dossiers nécessaires
 if (!fs.existsSync(path.join(__dirname, 'data'))) {
   fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
+}
+if (!fs.existsSync(MESSAGES_FOLDER)) {
+  fs.mkdirSync(MESSAGES_FOLDER, { recursive: true });
 }
 
 // Fonction pour charger les logs existants
@@ -142,6 +182,138 @@ function saveContacts(contacts) {
     console.error('❌ Erreur lors de la sauvegarde des contacts:', error);
     throw error;
   }
+}
+
+// === FONCTIONS SMS/MMS ===
+
+// Fonction pour charger les SMS
+function loadSMSLogs() {
+  try {
+    if (fs.existsSync(SMS_LOG_FILE)) {
+      const data = fs.readFileSync(SMS_LOG_FILE, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des SMS:', error);
+  }
+  return [];
+}
+
+// Fonction pour sauvegarder les SMS
+function saveSMSLogs(smsLogs) {
+  try {
+    fs.writeFileSync(SMS_LOG_FILE, JSON.stringify(smsLogs, null, 2), 'utf8');
+  } catch (error) {
+    console.error('❌ Erreur lors de la sauvegarde des SMS:', error);
+  }
+}
+
+// Fonction pour ajouter un SMS
+function addSMSLog(smsData) {
+  const logs = loadSMSLogs();
+  const logEntry = {
+    id: smsData.sid || `sms_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    timestamp: new Date().toISOString(),
+    direction: smsData.direction || 'unknown',
+    from: smsData.from || 'unknown',
+    to: smsData.to || 'unknown',
+    body: smsData.body || '',
+    status: smsData.status || 'unknown',
+    clientIdentity: smsData.clientIdentity || 'unknown'
+  };
+  
+  logs.unshift(logEntry); // Ajouter au début
+  
+  // Garder seulement les 1000 derniers SMS
+  if (logs.length > 1000) {
+    logs.splice(1000);
+  }
+  
+  saveSMSLogs(logs);
+  
+  // Notifier les clients via Socket.IO
+  io.emit('sms-log-updated', { logs });
+  
+  return logEntry;
+}
+
+// Fonction pour charger les MMS
+function loadMMSLogs() {
+  try {
+    if (fs.existsSync(MMS_LOG_FILE)) {
+      const data = fs.readFileSync(MMS_LOG_FILE, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des MMS:', error);
+  }
+  return [];
+}
+
+// Fonction pour sauvegarder les MMS
+function saveMMSLogs(mmsLogs) {
+  try {
+    fs.writeFileSync(MMS_LOG_FILE, JSON.stringify(mmsLogs, null, 2), 'utf8');
+  } catch (error) {
+    console.error('❌ Erreur lors de la sauvegarde des MMS:', error);
+  }
+}
+
+// Fonction pour ajouter un MMS
+function addMMSLog(mmsData) {
+  const logs = loadMMSLogs();
+  const logEntry = {
+    id: mmsData.sid || `mms_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    timestamp: new Date().toISOString(),
+    direction: mmsData.direction || 'unknown',
+    from: mmsData.from || 'unknown',
+    to: mmsData.to || 'unknown',
+    body: mmsData.body || '',
+    mediaUrl: mmsData.mediaUrl || '',
+    mediaType: mmsData.mediaType || '',
+    fileName: mmsData.fileName || '',
+    status: mmsData.status || 'unknown',
+    clientIdentity: mmsData.clientIdentity || 'unknown'
+  };
+  
+  logs.unshift(logEntry); // Ajouter au début
+  
+  // Garder seulement les 500 derniers MMS (plus volumineux)
+  if (logs.length > 500) {
+    logs.splice(500);
+  }
+  
+  saveMMSLogs(logs);
+  
+  // Notifier les clients via Socket.IO
+  io.emit('mms-log-updated', { logs });
+  
+  return logEntry;
+}
+
+// Fonction pour obtenir les statistiques des messages
+function getMessageStatistics() {
+  const smsLogs = loadSMSLogs();
+  const mmsLogs = loadMMSLogs();
+  
+  const stats = {
+    sms: {
+      total: smsLogs.length,
+      inbound: smsLogs.filter(log => log.direction === 'inbound').length,
+      outbound: smsLogs.filter(log => log.direction === 'outbound').length,
+      delivered: smsLogs.filter(log => log.status === 'delivered').length,
+      failed: smsLogs.filter(log => log.status === 'failed').length
+    },
+    mms: {
+      total: mmsLogs.length,
+      inbound: mmsLogs.filter(log => log.direction === 'inbound').length,
+      outbound: mmsLogs.filter(log => log.direction === 'outbound').length,
+      delivered: mmsLogs.filter(log => log.status === 'delivered').length,
+      failed: mmsLogs.filter(log => log.status === 'failed').length
+    }
+  };
+  
+  return stats;
 }
 
 const app = express();
@@ -522,6 +694,173 @@ app.get('/api/call-history', (req, res) => {
   res.json(callHistory);
 });
 
+// === ROUTES SMS/MMS ===
+
+// Route pour obtenir les logs SMS
+app.get('/api/sms-logs', (req, res) => {
+  try {
+    const logs = loadSMSLogs();
+    const stats = getMessageStatistics();
+    res.json({
+      logs: logs,
+      statistics: stats.sms,
+      total: logs.length
+    });
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des SMS:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des SMS' });
+  }
+});
+
+// Route pour obtenir les logs MMS
+app.get('/api/mms-logs', (req, res) => {
+  try {
+    const logs = loadMMSLogs();
+    const stats = getMessageStatistics();
+    res.json({
+      logs: logs,
+      statistics: stats.mms,
+      total: logs.length
+    });
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des MMS:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des MMS' });
+  }
+});
+
+// Route pour envoyer un SMS
+app.post('/api/send-sms', async (req, res) => {
+  try {
+    const { to, body, from } = req.body;
+    
+    if (!to || !body) {
+      return res.status(400).json({ error: 'Numéro de destination et message requis' });
+    }
+    
+    if (!twilioClient) {
+      return res.status(500).json({ error: 'Client Twilio non configuré' });
+    }
+    
+    const message = await twilioClient.messages.create({
+      body: body,
+      from: from || process.env.TWILIO_PHONE_NUMBER,
+      to: to
+    });
+    
+    // Ajouter au log
+    const smsData = {
+      sid: message.sid,
+      direction: 'outbound',
+      from: from || process.env.TWILIO_PHONE_NUMBER,
+      to: to,
+      body: body,
+      status: message.status,
+      clientIdentity: currentClientIdentity || 'softphone-user'
+    };
+    
+    addSMSLog(smsData);
+    
+    res.json({ 
+      success: true, 
+      message: 'SMS envoyé avec succès',
+      sid: message.sid,
+      status: message.status
+    });
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'envoi du SMS:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'envoi du SMS' });
+  }
+});
+
+// Route pour envoyer un MMS
+app.post('/api/send-mms', mmsUpload.single('media'), async (req, res) => {
+  try {
+    const { to, body, from } = req.body;
+    const mediaFile = req.file;
+    
+    if (!to || !mediaFile) {
+      return res.status(400).json({ error: 'Numéro de destination et fichier média requis' });
+    }
+    
+    if (!twilioClient) {
+      return res.status(500).json({ error: 'Client Twilio non configuré' });
+    }
+    
+    // Construire l'URL du média
+    const mediaUrl = `${req.protocol}://${req.get('host')}/api/media/${mediaFile.filename}`;
+    
+    const message = await twilioClient.messages.create({
+      body: body || '',
+      from: from || process.env.TWILIO_PHONE_NUMBER,
+      to: to,
+      mediaUrl: [mediaUrl]
+    });
+    
+    // Ajouter au log
+    const mmsData = {
+      sid: message.sid,
+      direction: 'outbound',
+      from: from || process.env.TWILIO_PHONE_NUMBER,
+      to: to,
+      body: body || '',
+      mediaUrl: mediaUrl,
+      mediaType: mediaFile.mimetype,
+      fileName: mediaFile.originalname,
+      status: message.status,
+      clientIdentity: currentClientIdentity || 'softphone-user'
+    };
+    
+    addMMSLog(mmsData);
+    
+    res.json({ 
+      success: true, 
+      message: 'MMS envoyé avec succès',
+      sid: message.sid,
+      status: message.status,
+      mediaUrl: mediaUrl
+    });
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'envoi du MMS:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'envoi du MMS' });
+  }
+});
+
+// Route pour servir les fichiers média
+app.get('/api/media/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(MESSAGES_FOLDER, filename);
+  
+  if (fs.existsSync(filePath)) {
+    res.sendFile(filePath);
+  } else {
+    res.status(404).json({ error: 'Fichier non trouvé' });
+  }
+});
+
+// Route pour effacer les logs SMS
+app.delete('/api/sms-logs', (req, res) => {
+  try {
+    saveSMSLogs([]);
+    io.emit('sms-log-updated', { logs: [] });
+    res.json({ success: true, message: 'Logs SMS effacés avec succès' });
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'effacement des logs SMS:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'effacement des logs SMS' });
+  }
+});
+
+// Route pour effacer les logs MMS
+app.delete('/api/mms-logs', (req, res) => {
+  try {
+    saveMMSLogs([]);
+    io.emit('mms-log-updated', { logs: [] });
+    res.json({ success: true, message: 'Logs MMS effacés avec succès' });
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'effacement des logs MMS:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'effacement des logs MMS' });
+  }
+});
+
 // Callback pour les statuts d'appel
 app.post('/api/call-status', (req, res) => {
   const { CallSid, CallStatus, CallDuration, From, To, Direction } = req.body;
@@ -657,6 +996,96 @@ app.post('/handle_calls', (req, res) => {
 
   res.type('text/xml');
   res.send(response.toString());
+});
+
+// === WEBHOOKS SMS/MMS ===
+
+// Webhook pour les SMS entrants
+app.post('/handle_sms', (req, res) => {
+  console.log('📱 SMS reçu:', req.body);
+  
+  const { To, From, Body, MessageSid, MessageStatus } = req.body;
+  
+  // Ajouter au log des SMS
+  const smsData = {
+    sid: MessageSid,
+    direction: 'inbound',
+    from: From,
+    to: To,
+    body: Body,
+    status: MessageStatus || 'received',
+    clientIdentity: 'softphone-user'
+  };
+  
+  addSMSLog(smsData);
+  
+  // Notifier les clients via Socket.IO
+  io.emit('incoming-sms', smsData);
+  
+  // Répondre avec un TwiML vide (pas de réponse automatique)
+  const twiml = new twilio.twiml.MessagingResponse();
+  res.type('text/xml');
+  res.send(twiml.toString());
+});
+
+// Webhook pour les MMS entrants
+app.post('/handle_mms', (req, res) => {
+  console.log('📷 MMS reçu:', req.body);
+  
+  const { To, From, Body, MessageSid, MessageStatus, NumMedia, MediaUrl0, MediaContentType0 } = req.body;
+  
+  // Ajouter au log des MMS
+  const mmsData = {
+    sid: MessageSid,
+    direction: 'inbound',
+    from: From,
+    to: To,
+    body: Body || '',
+    mediaUrl: MediaUrl0 || '',
+    mediaType: MediaContentType0 || '',
+    fileName: `mms_${MessageSid}`,
+    status: MessageStatus || 'received',
+    clientIdentity: 'softphone-user'
+  };
+  
+  addMMSLog(mmsData);
+  
+  // Notifier les clients via Socket.IO
+  io.emit('incoming-mms', mmsData);
+  
+  // Répondre avec un TwiML vide (pas de réponse automatique)
+  const twiml = new twilio.twiml.MessagingResponse();
+  res.type('text/xml');
+  res.send(twiml.toString());
+});
+
+// Webhook pour les statuts de messages
+app.post('/message-status', (req, res) => {
+  console.log('📊 Statut message reçu:', req.body);
+  
+  const { MessageSid, MessageStatus, To, From } = req.body;
+  
+  // Mettre à jour le statut dans les logs
+  const smsLogs = loadSMSLogs();
+  const mmsLogs = loadMMSLogs();
+  
+  // Chercher dans les SMS
+  const smsIndex = smsLogs.findIndex(log => log.id === MessageSid);
+  if (smsIndex !== -1) {
+    smsLogs[smsIndex].status = MessageStatus;
+    saveSMSLogs(smsLogs);
+    io.emit('sms-status-update', { messageSid: MessageSid, status: MessageStatus });
+  }
+  
+  // Chercher dans les MMS
+  const mmsIndex = mmsLogs.findIndex(log => log.id === MessageSid);
+  if (mmsIndex !== -1) {
+    mmsLogs[mmsIndex].status = MessageStatus;
+    saveMMSLogs(mmsLogs);
+    io.emit('mms-status-update', { messageSid: MessageSid, status: MessageStatus });
+  }
+  
+  res.sendStatus(200);
 });
 
 // Route pour gérer les appels sortants via Twilio.Device
