@@ -1171,7 +1171,13 @@ app.get('/', (req, res) => {
 app.get('/api/config', (req, res) => {
   res.json({
     defaultPhoneNumber: process.env.TWILIO_PHONE_NUMBER || '+18199754345',
-    twilioConfigured: !!twilioClient
+    twilioConfigured: !!twilioClient,
+    webhooks: {
+      calls: `${process.env.NGROK_URL || 'https://apt-buzzard-leading.ngrok-free.app'}/handle_calls`,
+      sms: `${process.env.NGROK_URL || 'https://apt-buzzard-leading.ngrok-free.app'}/handle_sms`,
+      mms: `${process.env.NGROK_URL || 'https://apt-buzzard-leading.ngrok-free.app'}/handle_mms`,
+      status: `${process.env.NGROK_URL || 'https://apt-buzzard-leading.ngrok-free.app'}/message-status`
+    }
   });
 });
 

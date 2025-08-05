@@ -90,10 +90,11 @@ if [ -n "$TWIML_APP_SID" ]; then
     fi
 fi
 
-# Configurer le numéro de téléphone pour les appels entrants
+# Configurer le numéro de téléphone pour les appels entrants, SMS et MMS
 PHONE_NUMBER="+18199754345"
 PHONE_SID=$(twilio api:core:incoming-phone-numbers:list --phone-number="$PHONE_NUMBER" --no-header --properties=sid 2>/dev/null | grep -v "SID" | tr -d ' ')
 if [ -n "$PHONE_SID" ]; then
+    # Configuration pour les appels entrants
     twilio api:core:incoming-phone-numbers:update \
         --sid="$PHONE_SID" \
         --voice-url="$NGROK_URL/handle_calls" \
@@ -102,8 +103,45 @@ if [ -n "$PHONE_SID" ]; then
     if [ $? -eq 0 ]; then
         echo "✅ Numéro $PHONE_NUMBER configuré pour les appels entrants: $NGROK_URL/handle_calls"
     else
-        echo "⚠️  Impossible de configurer le numéro $PHONE_NUMBER"
+        echo "⚠️  Impossible de configurer les appels entrants pour $PHONE_NUMBER"
     fi
+    
+    # Configuration pour les SMS entrants
+    twilio api:core:incoming-phone-numbers:update \
+        --sid="$PHONE_SID" \
+        --sms-url="$NGROK_URL/handle_sms" \
+        --sms-method=POST > /dev/null 2>&1
+    
+    if [ $? -eq 0 ]; then
+        echo "✅ Numéro $PHONE_NUMBER configuré pour les SMS entrants: $NGROK_URL/handle_sms"
+    else
+        echo "⚠️  Impossible de configurer les SMS entrants pour $PHONE_NUMBER"
+    fi
+    
+    # Configuration pour les MMS entrants
+    twilio api:core:incoming-phone-numbers:update \
+        --sid="$PHONE_SID" \
+        --mms-url="$NGROK_URL/handle_mms" \
+        --mms-method=POST > /dev/null 2>&1
+    
+    if [ $? -eq 0 ]; then
+        echo "✅ Numéro $PHONE_NUMBER configuré pour les MMS entrants: $NGROK_URL/handle_mms"
+    else
+        echo "⚠️  Impossible de configurer les MMS entrants pour $PHONE_NUMBER"
+    fi
+    
+    # Configuration des webhooks de statut pour les messages
+    twilio api:core:incoming-phone-numbers:update \
+        --sid="$PHONE_SID" \
+        --status-callback-url="$NGROK_URL/message-status" \
+        --status-callback-method=POST > /dev/null 2>&1
+    
+    if [ $? -eq 0 ]; then
+        echo "✅ Webhooks de statut configurés pour $PHONE_NUMBER: $NGROK_URL/message-status"
+    else
+        echo "⚠️  Impossible de configurer les webhooks de statut pour $PHONE_NUMBER"
+    fi
+    
 else
     echo "⚠️  Numéro $PHONE_NUMBER non trouvé"
 fi
@@ -118,6 +156,22 @@ else
     echo "⚠️  API de configuration non accessible"
 fi
 
+# Tester les webhooks SMS et MMS
+echo "🧪 Test des webhooks SMS et MMS..."
+SMS_WEBHOOK_TEST=$(curl -s -X POST "$NGROK_URL/handle_sms" -H "Content-Type: application/x-www-form-urlencoded" -d "To=$PHONE_NUMBER&From=+1234567890&Body=Test&MessageSid=test_sms_$(date +%s)" 2>/dev/null)
+if [ $? -eq 0 ]; then
+    echo "✅ Webhook SMS fonctionnel"
+else
+    echo "⚠️  Webhook SMS non accessible"
+fi
+
+MMS_WEBHOOK_TEST=$(curl -s -X POST "$NGROK_URL/handle_mms" -H "Content-Type: application/x-www-form-urlencoded" -d "To=$PHONE_NUMBER&From=+1234567890&Body=Test&MessageSid=test_mms_$(date +%s)&NumMedia=0" 2>/dev/null)
+if [ $? -eq 0 ]; then
+    echo "✅ Webhook MMS fonctionnel"
+else
+    echo "⚠️  Webhook MMS non accessible"
+fi
+
 # Afficher les informations finales
 echo ""
 echo "🎉 Softphone Twilio prêt avec configuration automatique !"
@@ -125,11 +179,17 @@ echo "========================================================"
 echo "📱 Interface locale: http://localhost:3000"
 echo "🌍 Interface publique: $NGROK_URL"
 echo "📞 Numéro Twilio: +18199754345"
-echo "🔧 Webhook: $NGROK_URL/handle_calls"
+echo ""
+echo "🔧 Webhooks configurés :"
+echo "   📞 Appels: $NGROK_URL/handle_calls"
+echo "   📱 SMS: $NGROK_URL/handle_sms"
+echo "   📷 MMS: $NGROK_URL/handle_mms"
+echo "   📊 Statuts: $NGROK_URL/message-status"
 echo ""
 echo "🎯 Configuration automatique activée :"
 echo "   - Identité générée automatiquement"
 echo "   - Numéro configuré automatiquement"
+echo "   - Webhooks SMS/MMS configurés automatiquement"
 echo "   - Aucune configuration manuelle requise"
 echo ""
 echo "📋 Instructions :"
@@ -137,6 +197,8 @@ echo "1. Ouvrez http://localhost:3000 dans votre navigateur"
 echo "2. L'identité sera configurée automatiquement"
 echo "3. Testez un appel sortant"
 echo "4. Appelez +18199754345 pour tester les appels entrants"
+echo "5. Envoyez un SMS à +18199754345 pour tester les SMS entrants"
+echo "6. Envoyez un MMS à +18199754345 pour tester les MMS entrants"
 echo ""
 echo "🛑 Pour arrêter: Ctrl+C"
 
