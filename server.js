@@ -1176,15 +1176,22 @@ app.get('/', (req, res) => {
 
 // Route pour obtenir la configuration par défaut
 app.get('/api/config', (req, res) => {
+  const baseUrl = process.env.NGROK_URL || 'https://apt-buzzard-leading.ngrok-free.app';
   res.json({
     defaultPhoneNumber: process.env.TWILIO_PHONE_NUMBER || '+18199754345',
     twilioConfigured: !!twilioClient,
     webhooks: {
-      calls: `${process.env.NGROK_URL || 'https://apt-buzzard-leading.ngrok-free.app'}/handle_calls`,
-      sms: `${process.env.NGROK_URL || 'https://apt-buzzard-leading.ngrok-free.app'}/handle_sms`,
-      mms: `${process.env.NGROK_URL || 'https://apt-buzzard-leading.ngrok-free.app'}/handle_mms`,
-      status: `${process.env.NGROK_URL || 'https://apt-buzzard-leading.ngrok-free.app'}/message-status`
-    }
+      calls: `${baseUrl}/handle_calls`,
+      sms: `${baseUrl}/handle_sms`,
+      mms: `${baseUrl}/handle_mms`,
+      status: `${baseUrl}/message-status`
+    },
+    capabilities: {
+      sms: true,
+      mms: true,
+      voice: true
+    },
+    status: 'configured'
   });
 });
 
