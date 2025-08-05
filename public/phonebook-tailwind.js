@@ -103,9 +103,18 @@ class PhoneBookManager {
         try {
             const response = await fetch('/api/contacts');
             if (response.ok) {
-                this.contacts = await response.json();
-                this.filteredContacts = [...this.contacts];
-                console.log('📖 Contacts chargés:', this.contacts.length);
+                            this.contacts = await response.json();
+            this.filteredContacts = [...this.contacts];
+            console.log('📖 Contacts chargés:', this.contacts.length);
+            
+            // Ajouter quelques contacts de test à la call-list si elle est vide
+            if (this.callList.length === 0 && this.contacts.length > 0) {
+                console.log('📋 Ajout de contacts de test à la call-list');
+                this.addToCallList(this.contacts[0].nom_complet, this.contacts[0].telephone);
+                if (this.contacts.length > 1) {
+                    this.addToCallList(this.contacts[1].nom_complet, this.contacts[1].telephone);
+                }
+            }
             } else {
                 console.error('Erreur lors du chargement des contacts');
                 this.contacts = [];
@@ -122,10 +131,19 @@ class PhoneBookManager {
                 { nom_complet: 'Charlie Wilson', telephone: '+1888999000', organisation: 'Support LLC', titre: 'Support' }
             ];
             this.filteredContacts = [...this.contacts];
+            
+            // Ajouter quelques contacts de test à la call-list si elle est vide
+            if (this.callList.length === 0) {
+                console.log('📋 Ajout de contacts de test à la call-list (mode test)');
+                this.addToCallList(this.contacts[0].nom_complet, this.contacts[0].telephone);
+                this.addToCallList(this.contacts[1].nom_complet, this.contacts[1].telephone);
+            }
         }
     }
     
     setupEventListeners() {
+        console.log('🔧 Configuration des événements...');
+        
         // Recherche dans le carnet d'adresses
         const searchInput = document.getElementById('phonebook-search');
         if (searchInput) {
@@ -134,6 +152,9 @@ class PhoneBookManager {
                 this.filterContacts();
                 this.renderPhoneBook();
             });
+            console.log('✅ Événement de recherche attaché');
+        } else {
+            console.log('❌ Input de recherche non trouvé');
         }
         
         // Boutons de navigation de la liste d'appels
@@ -142,10 +163,44 @@ class PhoneBookManager {
         const callBtn = document.getElementById('call-list-call');
         const removeBtn = document.getElementById('call-list-remove');
         
-        if (prevBtn) prevBtn.addEventListener('click', () => this.previousCall());
-        if (nextBtn) nextBtn.addEventListener('click', () => this.nextCall());
-        if (callBtn) callBtn.addEventListener('click', () => this.callCurrentContact());
-        if (removeBtn) removeBtn.addEventListener('click', () => this.removeCurrentFromList());
+        console.log('🔍 Boutons call-list trouvés:', {
+            prev: !!prevBtn,
+            next: !!nextBtn,
+            call: !!callBtn,
+            remove: !!removeBtn
+        });
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                console.log('⬅️ Bouton précédent cliqué');
+                this.previousCall();
+            });
+            console.log('✅ Événement précédent attaché');
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                console.log('➡️ Bouton suivant cliqué');
+                this.nextCall();
+            });
+            console.log('✅ Événement suivant attaché');
+        }
+        
+        if (callBtn) {
+            callBtn.addEventListener('click', () => {
+                console.log('📞 Bouton appeler cliqué');
+                this.callCurrentContact();
+            });
+            console.log('✅ Événement appeler attaché');
+        }
+        
+        if (removeBtn) {
+            removeBtn.addEventListener('click', () => {
+                console.log('🗑️ Bouton supprimer cliqué');
+                this.removeCurrentFromList();
+            });
+            console.log('✅ Événement supprimer attaché');
+        }
         
         // Gestion des onglets avec maintien des dimensions
         const tabBtns = document.querySelectorAll('.tab-btn');
@@ -481,29 +536,43 @@ class PhoneBookManager {
     }
     
     previousCall() {
+        console.log('⬅️ Fonction previousCall appelée, index actuel:', this.currentCallIndex);
         if (this.currentCallIndex > 0) {
             this.currentCallIndex--;
+            console.log('✅ Index mis à jour:', this.currentCallIndex);
             this.renderCallList();
+        } else {
+            console.log('❌ Impossible de reculer (déjà au début)');
         }
     }
     
     nextCall() {
+        console.log('➡️ Fonction nextCall appelée, index actuel:', this.currentCallIndex);
         if (this.currentCallIndex < this.callList.length - 1) {
             this.currentCallIndex++;
+            console.log('✅ Index mis à jour:', this.currentCallIndex);
             this.renderCallList();
+        } else {
+            console.log('❌ Impossible d\'avancer (déjà à la fin)');
         }
     }
     
     callCurrentContact() {
+        console.log('📞 Fonction callCurrentContact appelée, index actuel:', this.currentCallIndex);
         if (this.currentCallIndex >= 0 && this.currentCallIndex < this.callList.length) {
             const contact = this.callList[this.currentCallIndex];
+            console.log('✅ Contact sélectionné:', contact);
             this.callContact(contact.telephone);
+        } else {
+            console.log('❌ Aucun contact sélectionné ou index invalide');
         }
     }
     
     removeCurrentFromList() {
+        console.log('🗑️ Fonction removeCurrentFromList appelée, index actuel:', this.currentCallIndex);
         if (this.currentCallIndex >= 0 && this.currentCallIndex < this.callList.length) {
             const removedContact = this.callList.splice(this.currentCallIndex, 1)[0];
+            console.log('✅ Contact supprimé:', removedContact);
             
             // Ajuster l'index
             if (this.currentCallIndex >= this.callList.length) {
@@ -515,6 +584,8 @@ class PhoneBookManager {
             if (typeof showNotification !== 'undefined') {
                 showNotification.info(`${removedContact.nom_complet} retiré de la liste`, 2000);
             }
+        } else {
+            console.log('❌ Aucun contact à supprimer ou index invalide');
         }
     }
     
@@ -579,8 +650,22 @@ let phoneBookManager;
 // Attendre le chargement du DOM
 document.addEventListener('DOMContentLoaded', () => {
     // Attendre un peu que tous les autres scripts soient chargés
-    setTimeout(() => {
+    setTimeout(async () => {
         phoneBookManager = new PhoneBookManager();
+        await phoneBookManager.init();
         console.log('📱 PhoneBookManager initialisé avec système d\'onglets uniformes');
+        
+        // Vérifier que les boutons sont bien attachés
+        const prevBtn = document.getElementById('call-list-prev');
+        const nextBtn = document.getElementById('call-list-next');
+        const callBtn = document.getElementById('call-list-call');
+        const removeBtn = document.getElementById('call-list-remove');
+        
+        console.log('🔍 Vérification des boutons call-list:', {
+            prev: !!prevBtn,
+            next: !!nextBtn,
+            call: !!callBtn,
+            remove: !!removeBtn
+        });
     }, 500);
 }); 
