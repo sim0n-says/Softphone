@@ -20,7 +20,7 @@
 </head>
 <body class="bg-gradient-to-br from-cyber-dark to-cyber-darker font-cyber text-cyber-light overflow-y-auto lg:overflow-hidden min-h-screen">
     <div class="flex flex-col h-screen">
-        <!-- Header flottant avec effet holographique -->
+            <!-- Header flottant avec effet holographique -->
         <header class="bg-cyber-dark/80 backdrop-blur-sm border-b border-cyber-blue/30 p-4 shadow-lg">
             <div class="flex justify-between items-center">
                 <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
@@ -47,8 +47,8 @@
                         <i class="fas fa-cog text-lg"></i>
                     </button>
                 </div>
-            </div>
-        </header>
+                </div>
+            </header>
 
         <!-- Zone principale avec layout responsive -->
         <main class="flex-1 flex flex-col lg:flex-row gap-4 p-4 overflow-y-auto lg:overflow-hidden">
@@ -58,10 +58,10 @@
                 <div class="h-full flex flex-col">
                     <div class="bg-cyber-blue/20 px-4 py-2 border-b border-cyber-blue/30 sticky top-0 z-10">
                         <span class="text-cyber-green font-mono text-sm block w-full text-center sm:text-left">/DIAL/EXCHANGE.interface</span>
-                    </div>
-                    
+                        </div>
+                        
                     <div class="flex-1 flex flex-col p-4 space-y-4">
-                        <!-- Display holographique -->
+                            <!-- Display holographique -->
                         <div class="relative bg-cyber-dark/80 border border-cyber-green/30 rounded-lg p-4 min-h-[120px]">
                             <div class="absolute inset-0 bg-gradient-to-b from-transparent via-cyber-green/5 to-transparent animate-scan-lines pointer-events-none"></div>
                             <div class="relative z-10">
@@ -69,7 +69,7 @@
                                     <input type="text" id="phone-number" placeholder="[TARGET_LINE]" maxlength="20" 
                                            class="w-full bg-transparent border-none text-cyber-light text-2xl font-mono placeholder-cyber-gray/50 focus:outline-none focus:ring-0">
                                     <div class="h-0.5 bg-gradient-to-r from-cyber-green to-transparent mt-2"></div>
-                                </div>
+                                        </div>
                                 <div id="call-info" class="hidden space-y-2">
                                     <div class="flex justify-between text-sm">
                                         <span class="text-cyber-gray">LINE_STATUS:</span>
@@ -79,152 +79,152 @@
                                         <span class="text-cyber-gray">DURATION:</span>
                                         <span id="call-duration" class="text-cyber-green font-mono">00:00</span>
                                     </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Matrice de contrôle du pavé numérique -->
+                            <!-- Matrice de contrôle du pavé numérique -->
                         <div class="grid grid-cols-3 gap-3">
-                            <!-- Rangée 1: 1, 2, 3 -->
+                                    <!-- Rangée 1: 1, 2, 3 -->
                             <button class="dial-key bg-cyber-dark/80 border border-cyber-blue/30 rounded-lg p-4 hover:bg-cyber-blue/20 hover:border-cyber-green/50 transition-all duration-200" data-number="1">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold text-cyber-light">1</div>
                                 </div>
-                            </button>
+                                    </button>
                             <button class="dial-key bg-cyber-dark/80 border border-cyber-blue/30 rounded-lg p-4 hover:bg-cyber-blue/20 hover:border-cyber-green/50 transition-all duration-200" data-number="2">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold text-cyber-light">2</div>
                                     <div class="text-xs text-cyber-gray mt-1">ABC</div>
                                 </div>
-                            </button>
+                                    </button>
                             <button class="dial-key bg-cyber-dark/80 border border-cyber-blue/30 rounded-lg p-4 hover:bg-cyber-blue/20 hover:border-cyber-green/50 transition-all duration-200" data-number="3">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold text-cyber-light">3</div>
                                     <div class="text-xs text-cyber-gray mt-1">DEF</div>
                                 </div>
-                            </button>
-                            
-                            <!-- Rangée 2: 4, 5, 6 -->
+                                    </button>
+                                    
+                                    <!-- Rangée 2: 4, 5, 6 -->
                             <button class="dial-key bg-cyber-dark/80 border border-cyber-blue/30 rounded-lg p-4 hover:bg-cyber-blue/20 hover:border-cyber-green/50 transition-all duration-200" data-number="4">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold text-cyber-light">4</div>
                                     <div class="text-xs text-cyber-gray mt-1">GHI</div>
                                 </div>
-                            </button>
+                                    </button>
                             <button class="dial-key bg-cyber-dark/80 border border-cyber-blue/30 rounded-lg p-4 hover:bg-cyber-blue/20 hover:border-cyber-green/50 transition-all duration-200" data-number="5">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold text-cyber-light">5</div>
                                     <div class="text-xs text-cyber-gray mt-1">JKL</div>
                                 </div>
-                            </button>
+                                    </button>
                             <button class="dial-key bg-cyber-dark/80 border border-cyber-blue/30 rounded-lg p-4 hover:bg-cyber-blue/20 hover:border-cyber-green/50 transition-all duration-200" data-number="6">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold text-cyber-light">6</div>
                                     <div class="text-xs text-cyber-gray mt-1">MNO</div>
                                 </div>
-                            </button>
-                            
-                            <!-- Rangée 3: 7, 8, 9 -->
+                                    </button>
+                                    
+                                    <!-- Rangée 3: 7, 8, 9 -->
                             <button class="dial-key bg-cyber-dark/80 border border-cyber-blue/30 rounded-lg p-4 hover:bg-cyber-blue/20 hover:border-cyber-green/50 transition-all duration-200" data-number="7">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold text-cyber-light">7</div>
                                     <div class="text-xs text-cyber-gray mt-1">PQRS</div>
                                 </div>
-                            </button>
+                                    </button>
                             <button class="dial-key bg-cyber-dark/80 border border-cyber-blue/30 rounded-lg p-4 hover:bg-cyber-blue/20 hover:border-cyber-green/50 transition-all duration-200" data-number="8">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold text-cyber-light">8</div>
                                     <div class="text-xs text-cyber-gray mt-1">TUV</div>
                                 </div>
-                            </button>
+                                    </button>
                             <button class="dial-key bg-cyber-dark/80 border border-cyber-blue/30 rounded-lg p-4 hover:bg-cyber-blue/20 hover:border-cyber-green/50 transition-all duration-200" data-number="9">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold text-cyber-light">9</div>
                                     <div class="text-xs text-cyber-gray mt-1">WXYZ</div>
                                 </div>
-                            </button>
-                            
-                            <!-- Rangée 4: *, 0, # -->
+                                    </button>
+                                    
+                                    <!-- Rangée 4: *, 0, # -->
                             <button class="dial-key bg-cyber-dark/80 border border-cyber-blue/30 rounded-lg p-4 hover:bg-cyber-blue/20 hover:border-cyber-green/50 transition-all duration-200" data-number="*">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold text-cyber-light">*</div>
                                     <div class="text-xs text-cyber-gray mt-1">STAR</div>
                                 </div>
-                            </button>
+                                    </button>
                             <button class="dial-key bg-cyber-dark/80 border border-cyber-blue/30 rounded-lg p-4 hover:bg-cyber-blue/20 hover:border-cyber-green/50 transition-all duration-200" data-number="0">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold text-cyber-light">0</div>
                                     <div class="text-xs text-cyber-gray mt-1">OPER</div>
                                 </div>
-                            </button>
+                                    </button>
                             <button class="dial-key bg-cyber-dark/80 border border-cyber-blue/30 rounded-lg p-4 hover:bg-cyber-blue/20 hover:border-cyber-green/50 transition-all duration-200" data-number="#">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold text-cyber-light">#</div>
                                     <div class="text-xs text-cyber-gray mt-1">POUND</div>
                                 </div>
                             </button>
-                        </div>
+                            </div>
 
-                        <!-- Panneau de contrôle principal -->
+                            <!-- Panneau de contrôle principal -->
                         <div class="flex space-x-3">
                             <button id="call-btn" class="flex-1 bg-cyber-success/20 border border-cyber-success/30 rounded-lg p-3 hover:bg-cyber-success/30 transition-all duration-200">
                                 <div class="flex items-center justify-center space-x-2">
                                     <i class="fas fa-phone text-cyber-success"></i>
                                     <span class="text-cyber-success font-mono text-sm">CONNECT</span>
-                                </div>
-                            </button>
+                                    </div>
+                                </button>
                             <button id="clear-btn" class="flex-1 bg-cyber-gray/20 border border-cyber-gray/30 rounded-lg p-3 hover:bg-cyber-gray/30 transition-all duration-200">
                                 <div class="flex items-center justify-center space-x-2">
                                     <i class="fas fa-backspace text-cyber-gray"></i>
                                     <span class="text-cyber-gray font-mono text-sm">CLEAR</span>
-                                </div>
-                            </button>
+                                    </div>
+                                </button>
                             <button id="hangup-btn" class="flex-1 bg-cyber-danger/20 border border-cyber-danger/30 rounded-lg p-3 hover:bg-cyber-danger/30 transition-all duration-200 hidden">
                                 <div class="flex items-center justify-center space-x-2">
                                     <i class="fas fa-phone-slash text-cyber-danger"></i>
                                     <span class="text-cyber-danger font-mono text-sm">HANGUP</span>
-                                </div>
-                            </button>
+                                    </div>
+                                </button>
+                        </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
             <!-- Panneau latéral droit -->
             <aside class="w-full lg:w-80 bg-cyber-dark/50 border border-cyber-blue/30 rounded-lg overflow-hidden min-h-[300px] lg:min-h-0">
                 <div class="h-full flex flex-col">
-                    <!-- En-tête dynamique -->
+                            <!-- En-tête dynamique -->
                     <div class="bg-cyber-blue/20 px-4 py-2 border-b border-cyber-blue/30">
                         <div class="flex justify-between items-center">
                             <h3 class="text-cyber-green font-mono text-sm" id="dynamic-title">/PHONEBOOK.db.interface</h3>
                             <div id="dynamic-controls" class="flex space-x-1">
-                                <!-- Les contrôles seront injectés dynamiquement -->
+                                    <!-- Les contrôles seront injectés dynamiquement -->
+                                </div>
                             </div>
-                        </div>
                     </div>
                     
-                    <!-- Onglets de navigation -->
+                                                    <!-- Onglets de navigation -->
                     <div class="flex bg-cyber-dark/30 border-b border-cyber-blue/30">
                         <button class="tab-btn flex-1 px-4 py-2 text-cyber-light hover:text-cyber-green transition-colors duration-200 border-r border-cyber-blue/30 active" data-tab="phonebook">
                             <i class="fas fa-address-book mr-2"></i>
                             <span class="hidden sm:inline">CARNET</span>
-                        </button>
+                            </button>
                         <button class="tab-btn flex-1 px-4 py-2 text-cyber-light hover:text-cyber-green transition-colors duration-200 border-r border-cyber-blue/30" data-tab="call-list">
                             <i class="fas fa-list mr-2"></i>
                             <span class="hidden sm:inline">LISTE</span>
-                        </button>
+                            </button>
                         <button class="tab-btn flex-1 px-4 py-2 text-cyber-light hover:text-cyber-green transition-colors duration-200" data-tab="history">
                             <i class="fas fa-history mr-2"></i>
                             <span class="hidden sm:inline">HISTO</span>
-                        </button>
-                    </div>
+                            </button>
+                        </div>
                     
-                    <!-- Contenu des onglets -->
+                            <!-- Contenu des onglets -->
                     <div class="flex-1 overflow-hidden">
                         <!-- Onglet Carnet d'adresses -->
                         <div class="tab-content active h-full" id="phonebook-content">
                             <div class="phonebook-container h-full flex flex-col">
-                                <!-- Barre de recherche -->
+                                    <!-- Barre de recherche -->
                                 <div class="p-4 border-b border-cyber-blue/30">
                                     <div class="relative">
                                         <input type="text" id="phonebook-search" 
@@ -232,31 +232,31 @@
                                                placeholder="Rechercher un contact...">
                                         <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-cyber-gray"></i>
                                     </div>
-                                </div>
-                                
+                                    </div>
+                                    
                                 <!-- Liste des contacts -->
                                 <div class="flex-1 overflow-y-auto p-4" id="phonebook-list">
                                     <div class="text-center text-cyber-gray">
                                         <div class="animate-spin inline-block w-6 h-6 border-2 border-cyber-green border-t-transparent rounded-full mb-2"></div>
-                                        <p>Chargement des contacts...</p>
+                                            <p>Chargement des contacts...</p>
+                                    </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
                         <!-- Onglet Liste d'appels -->
                         <div class="tab-content h-full" id="call-list-content">
                             <div class="call-list-container h-full flex flex-col">
-                                <!-- Informations de la liste -->
+                                    <!-- Informations de la liste -->
                                 <div class="p-4 border-b border-cyber-blue/30" id="call-list-info">
                                     <span class="text-cyber-gray">Liste vide</span>
-                                </div>
-                                
-                                <!-- Contact courant -->
+                                    </div>
+                                    
+                                    <!-- Contact courant -->
                                 <div class="flex-1 overflow-y-auto p-4" id="call-list">
                                     <div class="text-center text-cyber-gray">
                                         <i class="fas fa-list text-2xl mb-2"></i>
-                                        <p>Aucun contact dans la liste</p>
+                                            <p>Aucun contact dans la liste</p>
                                     </div>
                                 </div>
                                 
@@ -281,34 +281,34 @@
                                         <span class="text-xs">RETIRER</span>
                                     </button>
                                 </div>
+                                </div>
                             </div>
-                        </div>
 
                         <!-- Onglet Historique -->
                         <div class="tab-content h-full" id="history-content">
                             <div class="data-stream-container h-full flex flex-col">
-                                <!-- Statistiques des appels -->
+                                    <!-- Statistiques des appels -->
                                 <div class="p-4 border-b border-cyber-blue/30" id="call-stats">
                                     <div class="grid grid-cols-2 gap-4 text-center">
-                                        <div class="stat-item">
+                                            <div class="stat-item">
                                             <span class="block text-cyber-gray text-xs">TOTAL</span>
                                             <span class="block text-cyber-green text-lg font-mono" id="total-calls">0</span>
-                                        </div>
-                                        <div class="stat-item">
+                                            </div>
+                                            <div class="stat-item">
                                             <span class="block text-cyber-gray text-xs">ENTRANTS</span>
                                             <span class="block text-cyber-green text-lg font-mono" id="inbound-calls">0</span>
-                                        </div>
-                                        <div class="stat-item">
+                                            </div>
+                                            <div class="stat-item">
                                             <span class="block text-cyber-gray text-xs">SORTANTS</span>
                                             <span class="block text-cyber-green text-lg font-mono" id="outbound-calls">0</span>
-                                        </div>
-                                        <div class="stat-item">
+                                            </div>
+                                            <div class="stat-item">
                                             <span class="block text-cyber-gray text-xs">DURÉE MOY</span>
                                             <span class="block text-cyber-green text-lg font-mono" id="avg-duration">0s</span>
                                         </div>
+                                        </div>
                                     </div>
-                                </div>
-                                
+                                    
                                 <!-- Logs des appels -->
                                 <div class="flex-1 overflow-y-auto" id="call-logs">
                                     <div class="p-4 border-b border-cyber-blue/30">
@@ -316,133 +316,133 @@
                                             <span class="text-cyber-green font-mono text-sm">TRANSMISSION_LOG.db</span>
                                             <span class="text-cyber-gray text-xs" id="logs-count">0 entrées</span>
                                         </div>
-                                    </div>
+                                                </div>
                                     <div class="p-4" id="logs-container">
                                         <div class="text-center text-cyber-gray">
                                             <div class="animate-spin inline-block w-6 h-6 border-2 border-cyber-green border-t-transparent rounded-full mb-2"></div>
-                                            <p>NO_CALLS_LOGGED</p>
+                                                <p>NO_CALLS_LOGGED</p>
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </aside>
-        </main>
-    </div>
+                </aside>
+            </main>
+        </div>
 
-    <!-- Système de notifications -->
+        <!-- Système de notifications -->
     <div id="phreaking-notifications" class="fixed top-4 right-4 z-50 space-y-2">
-        <!-- Les notifications seront ajoutées dynamiquement ici -->
-    </div>
+            <!-- Les notifications seront ajoutées dynamiquement ici -->
+        </div>
 
-    <!-- Éléments flottants -->
-    <div class="floating-controls">
-        <button id="mic-access-btn" class="quantum-button alert" style="display: none;">
-            <i class="fas fa-microphone-slash"></i>
-            <span class="quantum-label">ENABLE_MIC</span>
-        </button>
-    </div>
+        <!-- Éléments flottants -->
+        <div class="floating-controls">
+            <button id="mic-access-btn" class="quantum-button alert" style="display: none;">
+                <i class="fas fa-microphone-slash"></i>
+                <span class="quantum-label">ENABLE_MIC</span>
+            </button>
+        </div>
 
     <!-- Modal de configuration -->
     <div id="settings-modal" class="phreaking-modal" style="display: none;">
-        <div class="modal-terminal">
-            <div class="terminal-header">
-                <span class="close phreaking-close">&times;</span>
-                <div class="header-text">
-                    <span class="terminal-prompt">root@exchange:~/config#</span>
-                </div>
-            </div>
-            <div class="terminal-content">
-                <div class="config-banner">
-                    <span class="config-icon">📞</span>
-                    <span class="config-text">SWITCH_CONFIGURATION</span>
-                </div>
-                
-                <!-- Section Configuration de base -->
-                <form id="settings-form" class="config-form">
-                    <div class="config-group">
-                        <label class="config-label">CALLER_ID:</label>
-                        <div class="cyber-input-full">
-                            <input type="text" id="identity" placeholder="Enter caller identity" required>
-                        </div>
+            <div class="modal-terminal">
+                <div class="terminal-header">
+                    <span class="close phreaking-close">&times;</span>
+                    <div class="header-text">
+                        <span class="terminal-prompt">root@exchange:~/config#</span>
                     </div>
-                    <div class="config-group">
-                        <label class="config-label">SOURCE_LINE:</label>
-                        <div class="cyber-input-full">
-                            <input type="text" id="from-number" placeholder="+1234567890" required>
-                        </div>
-                    </div>
-                    <button type="submit" class="config-submit cyber-button">
-                        <span class="submit-text">APPLY_CONFIG</span>
-                    </button>
-                </form>
-                
-                <!-- Section Contrôles audio -->
-                <div class="config-section">
+                </div>
+                <div class="terminal-content">
                     <div class="config-banner">
-                        <span class="config-icon">🎛️</span>
-                        <span class="config-text">AUDIO_SWITCH.interface</span>
+                        <span class="config-icon">📞</span>
+                        <span class="config-text">SWITCH_CONFIGURATION</span>
                     </div>
                     
-                    <!-- Contrôles audio -->
-                    <div class="audio-controls-panel" id="audio-controls">
-                        <div class="audio-matrix">
-                            <div class="matrix-row">
-                                <button id="mute-btn" class="matrix-node" title="Mute Line">
-                                    <i class="fas fa-microphone"></i>
-                                    <span class="node-label">MIC</span>
-                                </button>
-                                <button id="hold-btn" class="matrix-node" title="Hold Line">
-                                    <i class="fas fa-pause"></i>
-                                    <span class="node-label">HOLD</span>
-                                </button>
-                            </div>
-                            <div class="matrix-row">
-                                <button id="speaker-btn" class="matrix-node" title="Speaker">
-                                    <i class="fas fa-volume-up"></i>
-                                    <span class="node-label">SPK</span>
-                                </button>
-                                <button id="record-btn" class="matrix-node cyber-glitch-4" title="Tap Line">
-                                    <i class="fas fa-circle"></i>
-                                    <span class="node-label">TAP</span>
-                                </button>
-                            </div>
-                            <div class="matrix-row">
-                                <button id="dtmf-sequence-btn" class="matrix-node" title="DTMF Sequence" style="display: none;">
-                                    <i class="fas fa-keyboard"></i>
-                                    <span class="node-label">DTMF</span>
-                                </button>
-                                <button id="redial-btn" class="matrix-node" title="Rappeler le dernier numéro" style="display: none;">
-                                    <i class="fas fa-redo"></i>
-                                    <span class="node-label">REDIAL</span>
-                                </button>
+                    <!-- Section Configuration de base -->
+                    <form id="settings-form" class="config-form">
+                        <div class="config-group">
+                            <label class="config-label">CALLER_ID:</label>
+                            <div class="cyber-input-full">
+                                <input type="text" id="identity" placeholder="Enter caller identity" required>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Sélecteurs audio -->
-                    <div class="audio-settings-panel" id="audio-settings">
-                        <div class="device-selectors">
-                            <div class="selector-group">
-                                <label class="device-label">INPUT_LINE</label>
-                                <select id="input-device">
-                                    <option value="">Scanning...</option>
-                                </select>
+                        <div class="config-group">
+                            <label class="config-label">SOURCE_LINE:</label>
+                            <div class="cyber-input-full">
+                                <input type="text" id="from-number" placeholder="+1234567890" required>
                             </div>
-                            <div class="selector-group">
-                                <label class="device-label">OUTPUT_LINE</label>
-                                <select id="output-device">
-                                    <option value="">Scanning...</option>
-                                </select>
+                        </div>
+                        <button type="submit" class="config-submit cyber-button">
+                            <span class="submit-text">APPLY_CONFIG</span>
+                        </button>
+                    </form>
+                    
+                    <!-- Section Contrôles audio -->
+                    <div class="config-section">
+                        <div class="config-banner">
+                            <span class="config-icon">🎛️</span>
+                            <span class="config-text">AUDIO_SWITCH.interface</span>
+                        </div>
+                        
+                        <!-- Contrôles audio -->
+                        <div class="audio-controls-panel" id="audio-controls">
+                            <div class="audio-matrix">
+                                <div class="matrix-row">
+                                    <button id="mute-btn" class="matrix-node" title="Mute Line">
+                                        <i class="fas fa-microphone"></i>
+                                        <span class="node-label">MIC</span>
+                                    </button>
+                                    <button id="hold-btn" class="matrix-node" title="Hold Line">
+                                        <i class="fas fa-pause"></i>
+                                        <span class="node-label">HOLD</span>
+                                    </button>
+                                </div>
+                                <div class="matrix-row">
+                                    <button id="speaker-btn" class="matrix-node" title="Speaker">
+                                        <i class="fas fa-volume-up"></i>
+                                        <span class="node-label">SPK</span>
+                                    </button>
+                                    <button id="record-btn" class="matrix-node cyber-glitch-4" title="Tap Line">
+                                        <i class="fas fa-circle"></i>
+                                        <span class="node-label">TAP</span>
+                                    </button>
+                                </div>
+                                <div class="matrix-row">
+                                    <button id="dtmf-sequence-btn" class="matrix-node" title="DTMF Sequence" style="display: none;">
+                                        <i class="fas fa-keyboard"></i>
+                                        <span class="node-label">DTMF</span>
+                                    </button>
+                                    <button id="redial-btn" class="matrix-node" title="Rappeler le dernier numéro" style="display: none;">
+                                        <i class="fas fa-redo"></i>
+                                        <span class="node-label">REDIAL</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sélecteurs audio -->
+                        <div class="audio-settings-panel" id="audio-settings">
+                            <div class="device-selectors">
+                                <div class="selector-group">
+                                    <label class="device-label">INPUT_LINE</label>
+                                    <select id="input-device">
+                                        <option value="">Scanning...</option>
+                                    </select>
+                                </div>
+                                <div class="selector-group">
+                                    <label class="device-label">OUTPUT_LINE</label>
+                                    <select id="output-device">
+                                        <option value="">Scanning...</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Modal d'appel entrant -->
     <div id="incoming-call-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" style="display: none;">
@@ -453,7 +453,7 @@
                     <i class="fas fa-phone-volume text-cyber-green text-xl animate-pulse"></i>
                     <span class="text-cyber-green font-mono font-bold">INCOMING_CALL</span>
                 </div>
-            </div>
+                    </div>
             
             <!-- Contenu du modal -->
             <div class="p-6 space-y-6">
@@ -470,15 +470,15 @@
                         <div class="flex items-center justify-center space-x-2">
                             <i class="fas fa-phone text-lg"></i>
                             <span class="font-mono font-bold">ANSWER</span>
-                        </div>
-                    </button>
+                    </div>
+                        </button>
                     <button id="btn-reject-call" onclick="rejectIncomingCall()" 
                             class="flex-1 bg-cyber-danger/20 border border-cyber-danger/30 text-cyber-danger hover:bg-cyber-danger/30 transition-all duration-200 rounded-lg py-3 px-4">
                         <div class="flex items-center justify-center space-x-2">
                             <i class="fas fa-phone-slash text-lg"></i>
                             <span class="font-mono font-bold">REJECT</span>
                         </div>
-                    </button>
+                        </button>
                 </div>
             </div>
         </div>

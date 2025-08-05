@@ -16,7 +16,6 @@ class PhoneBookManager {
     }
     
     async init() {
-        console.log('🚀 Initialisation du PhoneBookManager...');
         await this.loadContacts();
         this.setupEventListeners();
         this.renderPhoneBook();
@@ -25,8 +24,6 @@ class PhoneBookManager {
         
         // Initialiser l'en-tête dynamique pour l'onglet actif
         this.updateDynamicHeader('phonebook');
-        
-        console.log('✅ PhoneBookManager initialisé avec succès');
     }
     
     // Nouvelle fonction pour initialiser le système d'onglets uniformes
@@ -207,9 +204,14 @@ class PhoneBookManager {
         
         // Gestion des onglets avec maintien des dimensions
         const tabBtns = document.querySelectorAll('.tab-btn');
+        console.log('🔍 Onglets trouvés:', tabBtns.length);
+        
         tabBtns.forEach(btn => {
+            const tabName = btn.getAttribute('data-tab');
+            console.log(`🔧 Attachement événement pour onglet: ${tabName}`);
+            
             btn.addEventListener('click', () => {
-                const tabName = btn.getAttribute('data-tab');
+                console.log(`🖱️ Clic sur onglet: ${tabName}`);
                 this.switchTab(tabName);
             });
         });
@@ -292,8 +294,6 @@ class PhoneBookManager {
     }
     
     renderCallList() {
-        console.log('🔄 Rendu de la call-list, index:', this.currentCallIndex, 'taille:', this.callList.length);
-        
         const container = document.getElementById('call-list');
         const infoContainer = document.getElementById('call-list-info');
         const prevBtn = document.getElementById('call-list-prev');
@@ -301,10 +301,7 @@ class PhoneBookManager {
         const callBtn = document.getElementById('call-list-call');
         const removeBtn = document.getElementById('call-list-remove');
         
-        if (!container) {
-            console.log('❌ Container call-list non trouvé');
-            return;
-        }
+        if (!container) return;
         
         // Mettre à jour les informations
         if (infoContainer) {
@@ -339,46 +336,28 @@ class PhoneBookManager {
             `;
         }
         
-        // Mettre à jour les boutons avec gestion d'état plus robuste
-        const prevDisabled = this.currentCallIndex <= 0 || this.callList.length === 0;
-        const nextDisabled = this.currentCallIndex >= this.callList.length - 1 || this.callList.length === 0;
-        const callDisabled = this.callList.length === 0 || this.currentCallIndex < 0;
-        const removeDisabled = this.callList.length === 0 || this.currentCallIndex < 0;
-        
-        console.log('🔘 États des boutons:', {
-            prev: prevDisabled,
-            next: nextDisabled,
-            call: callDisabled,
-            remove: removeDisabled
-        });
-        
+        // Mettre à jour les boutons
         if (prevBtn) {
-            prevBtn.disabled = prevDisabled;
-            prevBtn.classList.toggle('opacity-50', prevDisabled);
-            console.log('✅ Bouton précédent mis à jour');
+            prevBtn.disabled = this.currentCallIndex <= 0 || this.callList.length === 0;
+            prevBtn.classList.toggle('opacity-50', prevBtn.disabled);
         }
         if (nextBtn) {
-            nextBtn.disabled = nextDisabled;
-            nextBtn.classList.toggle('opacity-50', nextDisabled);
-            console.log('✅ Bouton suivant mis à jour');
+            nextBtn.disabled = this.currentCallIndex >= this.callList.length - 1 || this.callList.length === 0;
+            nextBtn.classList.toggle('opacity-50', nextBtn.disabled);
         }
         if (callBtn) {
-            callBtn.disabled = callDisabled;
-            callBtn.classList.toggle('opacity-50', callDisabled);
-            console.log('✅ Bouton appeler mis à jour');
+            callBtn.disabled = this.callList.length === 0 || this.currentCallIndex < 0;
+            callBtn.classList.toggle('opacity-50', callBtn.disabled);
         }
         if (removeBtn) {
-            removeBtn.disabled = removeDisabled;
-            removeBtn.classList.toggle('opacity-50', removeDisabled);
-            console.log('✅ Bouton supprimer mis à jour');
+            removeBtn.disabled = this.callList.length === 0 || this.currentCallIndex < 0;
+            removeBtn.classList.toggle('opacity-50', removeBtn.disabled);
         }
         
         // Maintenir les dimensions après le rendu
         setTimeout(() => {
             this.uniformizePanelDimensions();
         }, 50);
-        
-        console.log('✅ Rendu de la call-list terminé');
     }
     
     // Fonction améliorée pour changer d'onglet avec structure unifiée
@@ -386,11 +365,16 @@ class PhoneBookManager {
         console.log(`🔄 Changement d'onglet vers: ${tabName}`);
         
         // Désactiver tous les onglets et contenus
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+        const allTabs = document.querySelectorAll('.tab-btn');
+        const allContents = document.querySelectorAll('.tab-content');
+        
+        console.log(`🗑️ Désactivation de ${allTabs.length} onglets et ${allContents.length} contenus`);
+        
+        allTabs.forEach(btn => {
             btn.classList.remove('active');
         });
         
-        document.querySelectorAll('.tab-content').forEach(content => {
+        allContents.forEach(content => {
             content.classList.remove('active');
         });
         
@@ -398,9 +382,20 @@ class PhoneBookManager {
         const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
         const activeContent = document.getElementById(`${tabName}-content`);
         
+        console.log(`🔍 Éléments trouvés:`, {
+            activeBtn: !!activeBtn,
+            activeContent: !!activeContent,
+            tabName: tabName
+        });
+        
         if (activeBtn && activeContent) {
             activeBtn.classList.add('active');
             activeContent.classList.add('active');
+            
+            console.log(`✅ Classes ajoutées:`, {
+                btnClasses: activeBtn.className,
+                contentClasses: activeContent.className
+            });
             
             // Mettre à jour l'en-tête dynamique
             this.updateDynamicHeader(tabName);
@@ -528,12 +523,9 @@ class PhoneBookManager {
     }
     
     addToCallList(name, phone) {
-        console.log('➕ Ajout à la call-list:', name, phone);
-        
         // Vérifier si le contact n'est pas déjà dans la liste
         const exists = this.callList.some(contact => contact.telephone === phone);
         if (exists) {
-            console.log('⚠️ Contact déjà dans la liste');
             if (typeof showNotification !== 'undefined') {
                 showNotification.warning('Contact déjà dans la liste', 2000);
             }
@@ -542,12 +534,10 @@ class PhoneBookManager {
         
         // Ajouter le contact
         this.callList.push({ nom_complet: name, telephone: phone });
-        console.log('✅ Contact ajouté, nouvelle taille:', this.callList.length);
         
         // Si c'est le premier contact, le sélectionner
         if (this.callList.length === 1) {
             this.currentCallIndex = 0;
-            console.log('🎯 Premier contact sélectionné, index:', this.currentCallIndex);
         }
         
         this.renderCallList();
@@ -557,15 +547,13 @@ class PhoneBookManager {
         }
         
         // Animer l'ajout
-        const item = document.querySelector('.contact-item');
+        const item = document.querySelector('.call-list-item');
         if (item) {
             item.classList.add('highlight');
             setTimeout(() => {
                 item.classList.remove('highlight');
             }, 500);
         }
-        
-        console.log('✅ Ajout terminé, index actuel:', this.currentCallIndex);
     }
     
     previousCall() {
