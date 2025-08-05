@@ -197,28 +197,7 @@ app.delete('/api/call-logs', (req, res) => {
   }
 });
 
-// Route de test pour ajouter un log d'appel
-app.post('/api/test-log', (req, res) => {
-  try {
-    const testCallData = {
-      sid: `test_${Date.now()}`,
-      from: '+1234567890',
-      to: '+0987654321',
-      status: 'completed',
-      startTime: new Date(Date.now() - 30000), // 30 secondes ago
-      endTime: new Date(),
-      duration: 30000,
-      direction: 'outbound',
-      clientIdentity: 'test-user'
-    };
-    
-    const logEntry = addCallLog(testCallData);
-    res.json({ success: true, log: logEntry });
-  } catch (error) {
-    console.error('❌ Erreur lors de la création du log de test:', error);
-    res.status(500).json({ error: 'Erreur lors de la création du log de test' });
-  }
-});
+
 
 // Route pour obtenir les contacts du carnet d'adresses
 app.get('/api/contacts', (req, res) => {

@@ -383,15 +383,6 @@ class PhoneBookManager {
             case 'history':
                 titleElement.textContent = '/EXCHANGE.db.interface';
                 controlsElement.innerHTML = `
-                    <button onclick="forceLoadLogs()" class="p-1.5 bg-cyber-success/10 border border-cyber-success/20 text-cyber-success hover:bg-cyber-success/20 rounded text-xs transition-all duration-200" title="Force Load">
-                        <i class="fas fa-download"></i>
-                    </button>
-                    <button onclick="testAPIDirect()" class="p-1.5 bg-cyber-warning/10 border border-cyber-warning/20 text-cyber-warning hover:bg-cyber-warning/20 rounded text-xs transition-all duration-200" title="Test API Direct">
-                        <i class="fas fa-code"></i>
-                    </button>
-                    <button id="test-log-btn" class="p-1.5 bg-cyber-danger/10 border border-cyber-danger/20 text-cyber-danger hover:bg-cyber-danger/20 rounded text-xs transition-all duration-200" title="Test Log">
-                        <i class="fas fa-bug"></i>
-                    </button>
                     <button id="refresh-logs" class="p-1.5 bg-cyber-green/10 border border-cyber-green/20 text-cyber-green hover:bg-cyber-green/20 rounded text-xs transition-all duration-200" title="Actualiser">
                         <i class="fas fa-sync-alt"></i>
                     </button>
@@ -421,7 +412,21 @@ class PhoneBookManager {
         if (clearCallListBtn) clearCallListBtn.addEventListener('click', () => this.clearCallList());
         if (exportCallListBtn) exportCallListBtn.addEventListener('click', () => this.exportCallList());
         
-        // Les boutons de l'historique sont gérés par app.js
+        // Boutons de l'historique (gérés par app-tailwind.js)
+        const refreshLogsBtn = document.getElementById('refresh-logs');
+        const clearLogsBtn = document.getElementById('clear-logs');
+        
+        if (refreshLogsBtn) refreshLogsBtn.addEventListener('click', () => {
+            if (typeof loadCallHistory !== 'undefined') {
+                loadCallHistory();
+            }
+        });
+        
+        if (clearLogsBtn) clearLogsBtn.addEventListener('click', () => {
+            if (typeof clearCallLogs !== 'undefined') {
+                clearCallLogs();
+            }
+        });
     }
     
     callContact(phone) {

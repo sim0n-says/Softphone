@@ -1032,6 +1032,66 @@ function formatDuration(durationMs) {
 }
 
 /**
+ * Effacer les logs d'appels
+ */
+async function clearCallLogs() {
+    console.log('🗑️ Effacement des logs d\'appels...');
+    try {
+        const response = await fetch('/api/call-logs', {
+            method: 'DELETE'
+        });
+        const data = await response.json();
+        
+        if (response.ok) {
+            console.log('✅ Logs effacés avec succès');
+            
+            // Vider l'affichage
+            const container = document.getElementById('logs-container');
+            const countElement = document.getElementById('logs-count');
+            
+            if (container) {
+                container.innerHTML = `
+                    <div class="text-center text-cyber-gray py-8">
+                        <div class="loading-pulse mb-4">
+                            <span class="inline-block w-2 h-2 bg-cyber-green rounded-full mx-1"></span>
+                            <span class="inline-block w-2 h-2 bg-cyber-green rounded-full mx-1"></span>
+                            <span class="inline-block w-2 h-2 bg-cyber-green rounded-full mx-1"></span>
+                        </div>
+                        <p>NO_CALLS_LOGGED</p>
+                    </div>
+                `;
+            }
+            
+            if (countElement) {
+                countElement.textContent = '0 entrées';
+            }
+            
+            // Réinitialiser les statistiques
+            updateCallStats({
+                total: 0,
+                inbound: 0,
+                outbound: 0,
+                averageDuration: 0
+            });
+            
+            if (typeof showNotification !== 'undefined') {
+                showNotification.success('Historique effacé', 2000);
+            }
+        } else {
+            console.error('Erreur lors de l\'effacement des logs:', data.error);
+            if (typeof showNotification !== 'undefined') {
+                showNotification.error('Impossible d\'effacer l\'historique', 3000);
+            }
+        }
+    } catch (error) {
+        console.error('Erreur lors de l\'effacement des logs:', error);
+        if (typeof showNotification !== 'undefined') {
+            showNotification.error('Erreur de connexion', 3000);
+        }
+    }
+}
+
+/**
  * Charger les logs d'appels (comme dans l'ancienne version)
  */
 async function loadCallLogs() {
