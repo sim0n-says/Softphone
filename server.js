@@ -7,11 +7,27 @@ const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
+const multer = require('multer');
 require('dotenv').config();
 
 // Système de logging des appels
 const CALL_LOG_FILE = path.join(__dirname, 'data', 'call_log.json');
 const EXCHANGE_DB_FILE = path.join(__dirname, 'data', 'exchange.db.json');
+
+// Configuration multer pour l'upload de fichiers
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB max
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/json' || file.mimetype === 'text/vcard') {
+      cb(null, true);
+    } else {
+      cb(new Error('Format de fichier non supporté. Utilisez JSON ou vCard.'), false);
+    }
+  }
+});
 
 // Créer le dossier data s'il n'existe pas
 if (!fs.existsSync(path.join(__dirname, 'data'))) {
@@ -105,16 +121,27 @@ if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
 // Fonction pour charger les contacts depuis le fichier JSON
 function loadContacts() {
   try {
-    const contactsPath = path.join(__dirname, 'book', 'data_complete.json');
-    if (fs.existsSync(contactsPath)) {
-      const data = fs.readFileSync(contactsPath, 'utf8');
-      const jsonData = JSON.parse(data);
-      return jsonData.employees || [];
+    const contactsFile = path.join(__dirname, 'data', 'contacts.json');
+    if (fs.existsSync(contactsFile)) {
+      const data = fs.readFileSync(contactsFile, 'utf8');
+      return JSON.parse(data);
     }
   } catch (error) {
     console.error('❌ Erreur lors du chargement des contacts:', error);
   }
   return [];
+}
+
+// Fonction pour sauvegarder les contacts
+function saveContacts(contacts) {
+  try {
+    const contactsFile = path.join(__dirname, 'data', 'contacts.json');
+    fs.writeFileSync(contactsFile, JSON.stringify(contacts, null, 2), 'utf8');
+    console.log(`✅ ${contacts.length} contacts sauvegardés`);
+  } catch (error) {
+    console.error('❌ Erreur lors de la sauvegarde des contacts:', error);
+    throw error;
+  }
 }
 
 const app = express();
@@ -207,6 +234,151 @@ app.get('/api/contacts', (req, res) => {
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des contacts:', error);
     res.status(500).json({ error: 'Erreur lors de la récupération des contacts' });
+  }
+});
+
+// Route pour ajouter un contact
+app.post('/api/contacts', (req, res) => {
+  try {
+    const { nom, prenom, telephone, titre, organisation, email } = req.body;
+    
+    if (!nom || !telephone) {
+      return res.status(400).json({ error: 'Nom et téléphone sont requis' });
+    }
+    
+    const contacts = loadContacts();
+    const newContact = {
+      nom: nom,
+      prenom: prenom || '',
+      telephone: telephone,
+      titre: titre || '',
+      organisation: organisation || '',
+      email: email || '',
+      nom_complet: `${prenom || ''} ${nom}`.trim(),
+      date_ajout: new Date().toISOString()
+    };
+    
+    contacts.push(newContact);
+    saveContacts(contacts);
+    
+    res.json({ success: true, contact: newContact });
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'ajout du contact:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'ajout du contact' });
+  }
+});
+
+// Route pour supprimer un contact
+app.delete('/api/contacts/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const contacts = loadContacts();
+    
+    const contactIndex = contacts.findIndex(c => 
+      c.telephone === id || c.nom_complet === id
+    );
+    
+    if (contactIndex === -1) {
+      return res.status(404).json({ error: 'Contact non trouvé' });
+    }
+    
+    const removedContact = contacts.splice(contactIndex, 1)[0];
+    saveContacts(contacts);
+    
+    res.json({ success: true, contact: removedContact });
+  } catch (error) {
+    console.error('❌ Erreur lors de la suppression du contact:', error);
+    res.status(500).json({ error: 'Erreur lors de la suppression du contact' });
+  }
+});
+
+// Route pour importer des contacts depuis un fichier JSON
+app.post('/api/contacts/import', upload.single('file'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Aucun fichier fourni' });
+    }
+    
+    const fileContent = req.file.buffer.toString();
+    const data = JSON.parse(fileContent);
+    
+    let contactsToImport = [];
+    
+    // Gérer différents formats de fichiers
+    if (data.employees) {
+      // Format du fichier data_complete.json
+      contactsToImport = data.employees.map(emp => ({
+        nom: emp.nom,
+        prenom: emp.prenom,
+        telephone: emp.telephone,
+        titre: emp.titre,
+        organisation: emp.organisation,
+        nom_complet: emp.nom_complet,
+        date_ajout: new Date().toISOString()
+      }));
+    } else if (Array.isArray(data)) {
+      // Format tableau simple
+      contactsToImport = data;
+    } else {
+      return res.status(400).json({ error: 'Format de fichier non supporté' });
+    }
+    
+    const currentContacts = loadContacts();
+    const newContacts = [...currentContacts, ...contactsToImport];
+    saveContacts(newContacts);
+    
+    res.json({ 
+      success: true, 
+      imported: contactsToImport.length,
+      total: newContacts.length
+    });
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'import:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'import des contacts' });
+  }
+});
+
+// Route pour exporter les contacts
+app.get('/api/contacts/export', (req, res) => {
+  try {
+    const contacts = loadContacts();
+    const format = req.query.format || 'json';
+    
+    if (format === 'vcard') {
+      const vcardContent = contacts.map(contact => {
+        return `BEGIN:VCARD
+VERSION:3.0
+FN:${contact.nom_complet}
+N:${contact.nom};${contact.prenom};;;
+TEL:${contact.telephone}
+ORG:${contact.organisation}
+TITLE:${contact.titre}
+EMAIL:${contact.email || ''}
+END:VCARD`;
+      }).join('\n\n');
+      
+      res.setHeader('Content-Type', 'text/vcard');
+      res.setHeader('Content-Disposition', 'attachment; filename=contacts.vcf');
+      res.send(vcardContent);
+    } else {
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename=contacts.json');
+      res.json(contacts);
+    }
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'export:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'export des contacts' });
+  }
+});
+
+// Route pour vider tous les contacts
+app.delete('/api/contacts', (req, res) => {
+  try {
+    saveContacts([]);
+    res.json({ success: true, message: 'Tous les contacts ont été supprimés' });
+  } catch (error) {
+    console.error('❌ Erreur lors de la suppression de tous les contacts:', error);
+    res.status(500).json({ error: 'Erreur lors de la suppression des contacts' });
   }
 });
 

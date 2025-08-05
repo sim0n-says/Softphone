@@ -217,11 +217,17 @@ class PhoneBookManager {
         });
         
         // Boutons supplémentaires
-        const refreshContactsBtn = document.getElementById('refresh-contacts');
+        const addContactBtn = document.getElementById('add-contact');
+        const importContactsBtn = document.getElementById('import-contacts');
+        const exportContactsBtn = document.getElementById('export-contacts');
+        const clearContactsBtn = document.getElementById('clear-contacts');
         const clearCallListBtn = document.getElementById('clear-call-list');
         const exportCallListBtn = document.getElementById('export-call-list');
         
-        if (refreshContactsBtn) refreshContactsBtn.addEventListener('click', () => this.refreshContacts());
+        if (addContactBtn) addContactBtn.addEventListener('click', () => this.showAddContactModal());
+        if (importContactsBtn) importContactsBtn.addEventListener('click', () => this.showImportModal());
+        if (exportContactsBtn) exportContactsBtn.addEventListener('click', () => this.exportContacts());
+        if (clearContactsBtn) clearContactsBtn.addEventListener('click', () => this.clearContacts());
         if (clearCallListBtn) clearCallListBtn.addEventListener('click', () => this.clearCallList());
         if (exportCallListBtn) exportCallListBtn.addEventListener('click', () => this.exportCallList());
     }
@@ -285,6 +291,10 @@ class PhoneBookManager {
                     <button class="cyber-button bg-cyber-blue/20 border-cyber-blue/30 text-cyber-green hover:bg-cyber-blue/30" 
                             onclick="phoneBookManager.addToCallList('${contact.nom_complet}', '${contact.telephone}')" title="Ajouter à la liste">
                         <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="cyber-button bg-cyber-danger/20 border-cyber-danger/30 text-cyber-danger hover:bg-cyber-danger/30" 
+                            onclick="phoneBookManager.deleteContact('${contact.telephone}')" title="Supprimer">
+                        <i class="fas fa-trash"></i>
                     </button>
                 </div>
             </div>
@@ -438,8 +448,17 @@ class PhoneBookManager {
             case 'phonebook':
                 titleElement.textContent = '/PHONEBOOK.db.interface';
                 controlsElement.innerHTML = `
-                    <button id="refresh-contacts" class="p-1.5 bg-cyber-green/10 border border-cyber-green/20 text-cyber-green hover:bg-cyber-green/20 rounded text-xs transition-all duration-200" title="Actualiser">
-                        <i class="fas fa-sync-alt"></i>
+                    <button id="add-contact" class="p-1.5 bg-cyber-success/10 border border-cyber-success/20 text-cyber-success hover:bg-cyber-success/20 rounded text-xs transition-all duration-200" title="Ajouter contact">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button id="import-contacts" class="p-1.5 bg-cyber-blue/10 border border-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue/20 rounded text-xs transition-all duration-200" title="Importer">
+                        <i class="fas fa-upload"></i>
+                    </button>
+                    <button id="export-contacts" class="p-1.5 bg-cyber-warning/10 border border-cyber-warning/20 text-cyber-warning hover:bg-cyber-warning/20 rounded text-xs transition-all duration-200" title="Exporter">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button id="clear-contacts" class="p-1.5 bg-cyber-danger/10 border border-cyber-danger/20 text-cyber-danger hover:bg-cyber-danger/20 rounded text-xs transition-all duration-200" title="Vider">
+                        <i class="fas fa-trash"></i>
                     </button>
                 `;
                 break;
@@ -661,6 +680,204 @@ class PhoneBookManager {
         
         if (typeof showNotification !== 'undefined') {
             showNotification.success('Liste exportée', 2000);
+        }
+    }
+
+    // === NOUVELLES FONCTIONNALITÉS DE GESTION DES CONTACTS ===
+
+    showAddContactModal() {
+        const modal = document.getElementById('add-contact-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            // Réinitialiser le formulaire
+            const form = modal.querySelector('form');
+            if (form) form.reset();
+        }
+    }
+
+    hideAddContactModal() {
+        const modal = document.getElementById('add-contact-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    async addContact(contactData) {
+        try {
+            const response = await fetch('/api/contacts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(contactData)
+            });
+
+            const result = await response.json();
+            
+            if (response.ok) {
+                await this.loadContacts();
+                this.filterContacts();
+                this.renderPhoneBook();
+                
+                if (typeof showNotification !== 'undefined') {
+                    showNotification.success('Contact ajouté avec succès', 2000);
+                }
+                
+                this.hideAddContactModal();
+            } else {
+                throw new Error(result.error || 'Erreur lors de l\'ajout du contact');
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de l\'ajout du contact:', error);
+            if (typeof showNotification !== 'undefined') {
+                showNotification.error(error.message, 3000);
+            }
+        }
+    }
+
+    async deleteContact(contactId) {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer ce contact ?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/contacts/${encodeURIComponent(contactId)}`, {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+            
+            if (response.ok) {
+                await this.loadContacts();
+                this.filterContacts();
+                this.renderPhoneBook();
+                
+                if (typeof showNotification !== 'undefined') {
+                    showNotification.success('Contact supprimé', 2000);
+                }
+            } else {
+                throw new Error(result.error || 'Erreur lors de la suppression');
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de la suppression:', error);
+            if (typeof showNotification !== 'undefined') {
+                showNotification.error(error.message, 3000);
+            }
+        }
+    }
+
+    showImportModal() {
+        const modal = document.getElementById('import-contacts-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+
+    hideImportModal() {
+        const modal = document.getElementById('import-contacts-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    async importContacts(file) {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('/api/contacts/import', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            
+            if (response.ok) {
+                await this.loadContacts();
+                this.filterContacts();
+                this.renderPhoneBook();
+                
+                if (typeof showNotification !== 'undefined') {
+                    showNotification.success(`${result.imported} contacts importés (${result.total} total)`, 3000);
+                }
+                
+                this.hideImportModal();
+            } else {
+                throw new Error(result.error || 'Erreur lors de l\'import');
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de l\'import:', error);
+            if (typeof showNotification !== 'undefined') {
+                showNotification.error(error.message, 3000);
+            }
+        }
+    }
+
+    async exportContacts(format = 'json') {
+        // Si aucun format spécifié, demander à l'utilisateur
+        if (!format) {
+            const choice = confirm('Exporter en format JSON ?\nOK = JSON, Annuler = vCard');
+            format = choice ? 'json' : 'vcard';
+        }
+        
+        try {
+            const response = await fetch(`/api/contacts/export?format=${format}`);
+            
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `contacts-${new Date().toISOString().split('T')[0]}.${format === 'vcard' ? 'vcf' : 'json'}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                URL.revokeObjectURL(url);
+                
+                if (typeof showNotification !== 'undefined') {
+                    showNotification.success(`Contacts exportés en ${format.toUpperCase()}`, 2000);
+                }
+            } else {
+                throw new Error('Erreur lors de l\'export');
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de l\'export:', error);
+            if (typeof showNotification !== 'undefined') {
+                showNotification.error(error.message, 3000);
+            }
+        }
+    }
+
+    async clearContacts() {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer TOUS les contacts ? Cette action est irréversible.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/contacts', {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+            
+            if (response.ok) {
+                await this.loadContacts();
+                this.filterContacts();
+                this.renderPhoneBook();
+                
+                if (typeof showNotification !== 'undefined') {
+                    showNotification.success('Tous les contacts ont été supprimés', 2000);
+                }
+            } else {
+                throw new Error(result.error || 'Erreur lors de la suppression');
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de la suppression:', error);
+            if (typeof showNotification !== 'undefined') {
+                showNotification.error(error.message, 3000);
+            }
         }
     }
 }
