@@ -217,13 +217,9 @@
                             <i class="fas fa-history mr-2"></i>
                             <span class="hidden sm:inline">HISTO</span>
                             </button>
-                        <button class="tab-btn flex-1 px-4 py-2 text-cyber-light hover:text-cyber-green transition-colors duration-200" data-tab="sms">
-                            <i class="fas fa-comment mr-2"></i>
-                            <span class="hidden sm:inline">SMS</span>
-                            </button>
-                        <button class="tab-btn flex-1 px-4 py-2 text-cyber-light hover:text-cyber-green transition-colors duration-200" data-tab="mms">
-                            <i class="fas fa-image mr-2"></i>
-                            <span class="hidden sm:inline">MMS</span>
+                        <button class="tab-btn flex-1 px-4 py-2 text-cyber-light hover:text-cyber-green transition-colors duration-200" data-tab="messages">
+                            <i class="fas fa-envelope mr-2"></i>
+                            <span class="hidden sm:inline">MESSAGES</span>
                             </button>
                         </div>
                     
@@ -337,27 +333,31 @@
                         </div>
                     </div>
 
-                    <!-- Onglet SMS - Boîte de réception -->
-                    <div class="tab-content h-full" id="sms-content">
-                        <div class="sms-container h-full flex flex-col">
-                            <!-- En-tête de la boîte de réception -->
+                    <!-- Onglet Messages (SMS + MMS) -->
+                    <div class="tab-content h-full" id="messages-content">
+                        <div class="messages-container h-full flex flex-col">
+                            <!-- En-tête avec onglets SMS/MMS -->
                             <div class="p-4 border-b border-cyber-blue/30">
                                 <div class="flex justify-between items-center">
                                     <div class="flex items-center space-x-3">
-                                        <i class="fas fa-inbox text-cyber-green"></i>
-                                        <span class="text-cyber-green font-mono text-sm">SMS_INBOX.db</span>
-                                        <span class="text-cyber-gray text-xs" id="sms-count">(0 messages)</span>
+                                        <i class="fas fa-envelope text-cyber-green"></i>
+                                        <span class="text-cyber-green font-mono text-sm">MESSAGES_INBOX.db</span>
+                                        <span class="text-cyber-gray text-xs" id="messages-count">(0 messages)</span>
                                     </div>
                                     <div class="flex space-x-2">
                                         <button id="new-sms-btn" class="cyber-button bg-cyber-success/20 border-cyber-success/30 text-cyber-success">
                                             <i class="fas fa-plus mr-1"></i>
-                                            <span class="text-xs">NOUVEAU</span>
+                                            <span class="text-xs">SMS</span>
                                         </button>
-                                        <button id="refresh-sms-btn" class="cyber-button bg-cyber-blue/20 border-cyber-blue/30 text-cyber-blue">
+                                        <button id="new-mms-btn" class="cyber-button bg-cyber-warning/20 border-cyber-warning/30 text-cyber-warning">
+                                            <i class="fas fa-image mr-1"></i>
+                                            <span class="text-xs">MMS</span>
+                                        </button>
+                                        <button id="refresh-messages-btn" class="cyber-button bg-cyber-blue/20 border-cyber-blue/30 text-cyber-blue">
                                             <i class="fas fa-sync-alt mr-1"></i>
                                             <span class="text-xs">SYNC</span>
                                         </button>
-                                        <button id="clear-sms-btn" class="cyber-button bg-cyber-danger/20 border-cyber-danger/30 text-cyber-danger">
+                                        <button id="clear-messages-btn" class="cyber-button bg-cyber-danger/20 border-cyber-danger/30 text-cyber-danger">
                                             <i class="fas fa-trash mr-1"></i>
                                             <span class="text-xs">CLEAR</span>
                                         </button>
@@ -371,13 +371,13 @@
                                 <div class="w-1/3 border-r border-cyber-blue/30 flex flex-col">
                                     <div class="p-3 border-b border-cyber-blue/30">
                                         <div class="relative">
-                                            <input type="text" id="sms-search" 
+                                            <input type="text" id="messages-search" 
                                                    class="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded px-3 py-2 text-cyber-light text-sm focus:border-cyber-green focus:outline-none" 
                                                    placeholder="Rechercher une conversation...">
                                             <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-cyber-gray text-sm"></i>
                                         </div>
                                     </div>
-                                    <div class="flex-1 overflow-y-auto" id="sms-conversations">
+                                    <div class="flex-1 overflow-y-auto" id="messages-conversations">
                                         <div class="text-center text-cyber-gray py-8">
                                             <i class="fas fa-comments text-2xl mb-2"></i>
                                             <p class="text-sm">Aucune conversation</p>
@@ -388,7 +388,7 @@
                                 <!-- Zone de conversation -->
                                 <div class="flex-1 flex flex-col">
                                     <!-- En-tête de la conversation -->
-                                    <div class="p-3 border-b border-cyber-blue/30" id="sms-conversation-header">
+                                    <div class="p-3 border-b border-cyber-blue/30" id="messages-conversation-header">
                                         <div class="text-center text-cyber-gray">
                                             <i class="fas fa-comment text-lg"></i>
                                             <p class="text-sm mt-1">Sélectionnez une conversation</p>
@@ -396,7 +396,7 @@
                                     </div>
                                     
                                     <!-- Messages de la conversation -->
-                                    <div class="flex-1 overflow-y-auto p-3" id="sms-messages">
+                                    <div class="flex-1 overflow-y-auto p-3" id="messages-content-area">
                                         <div class="text-center text-cyber-gray py-8">
                                             <i class="fas fa-comment-dots text-2xl mb-2"></i>
                                             <p class="text-sm">Aucun message</p>
@@ -404,56 +404,22 @@
                                     </div>
                                     
                                     <!-- Zone de saisie -->
-                                    <div class="p-3 border-t border-cyber-blue/30" id="sms-input-area" style="display: none;">
+                                    <div class="p-3 border-t border-cyber-blue/30" id="messages-input-area" style="display: none;">
                                         <div class="flex space-x-2">
                                             <div class="flex-1 relative">
-                                                <textarea id="sms-reply-input" 
+                                                <textarea id="messages-reply-input" 
                                                           class="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded px-3 py-2 text-cyber-light text-sm resize-none focus:border-cyber-green focus:outline-none" 
                                                           rows="2" 
                                                           placeholder="Tapez votre message..."></textarea>
                                                 <div class="absolute bottom-1 right-2 text-cyber-gray text-xs">
-                                                    <span id="sms-reply-count">0</span>/160
+                                                    <span id="messages-reply-count">0</span>/160
                                                 </div>
                                             </div>
-                                            <button id="sms-send-btn" class="cyber-button bg-cyber-success/20 border-cyber-success/30 text-cyber-success px-4">
+                                            <button id="messages-send-btn" class="cyber-button bg-cyber-success/20 border-cyber-success/30 text-cyber-success px-4">
                                                 <i class="fas fa-paper-plane"></i>
                                             </button>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Onglet MMS -->
-                    <div class="tab-content h-full" id="mms-content">
-                        <div class="mms-container h-full flex flex-col">
-                            <!-- Barre d'outils MMS -->
-                            <div class="p-4 border-b border-cyber-blue/30">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-cyber-green font-mono text-sm">MMS_INTERFACE</span>
-                                    <div class="flex space-x-2">
-                                        <button id="new-mms-btn" class="cyber-button bg-cyber-success/20 border-cyber-success/30 text-cyber-success">
-                                            <i class="fas fa-plus mr-1"></i>
-                                            <span class="text-xs">NOUVEAU</span>
-                                        </button>
-                                        <button id="refresh-mms-btn" class="cyber-button bg-cyber-blue/20 border-cyber-blue/30 text-cyber-blue">
-                                            <i class="fas fa-sync-alt mr-1"></i>
-                                            <span class="text-xs">SYNC</span>
-                                        </button>
-                                        <button id="clear-mms-btn" class="cyber-button bg-cyber-danger/20 border-cyber-danger/30 text-cyber-danger">
-                                            <i class="fas fa-trash mr-1"></i>
-                                            <span class="text-xs">CLEAR</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Liste des MMS -->
-                            <div class="flex-1 overflow-y-auto p-4" id="mms-list">
-                                <div class="text-center text-cyber-gray">
-                                    <div class="animate-spin inline-block w-6 h-6 border-2 border-cyber-green border-t-transparent rounded-full mb-2"></div>
-                                    <p>Chargement des MMS...</p>
                                 </div>
                             </div>
                         </div>

@@ -477,38 +477,24 @@ class PhoneBookManager {
                 console.log('✅ Boutons phonebook créés');
                 break;
                 
-            case 'sms':
-                console.log('📱 Création des boutons pour l\'onglet SMS');
-                titleElement.textContent = '/SMS_INTERFACE.db';
+            case 'messages':
+                console.log('📱 Création des boutons pour l\'onglet Messages');
+                titleElement.textContent = '/MESSAGES_INTERFACE.db';
                 controlsElement.innerHTML = `
                     <button id="new-sms-btn" class="p-1.5 bg-cyber-success/10 border border-cyber-success/20 text-cyber-success hover:bg-cyber-success/20 rounded text-xs transition-all duration-200" title="Nouveau SMS">
                         <i class="fas fa-plus"></i>
                     </button>
-                    <button id="refresh-sms-btn" class="p-1.5 bg-cyber-blue/10 border border-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue/20 rounded text-xs transition-all duration-200" title="Actualiser">
+                    <button id="new-mms-btn" class="p-1.5 bg-cyber-warning/10 border border-cyber-warning/20 text-cyber-warning hover:bg-cyber-warning/20 rounded text-xs transition-all duration-200" title="Nouveau MMS">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <button id="refresh-messages-btn" class="p-1.5 bg-cyber-blue/10 border border-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue/20 rounded text-xs transition-all duration-200" title="Actualiser">
                         <i class="fas fa-sync-alt"></i>
                     </button>
-                    <button id="clear-sms-btn" class="p-1.5 bg-cyber-danger/10 border border-cyber-danger/20 text-cyber-danger hover:bg-cyber-danger/20 rounded text-xs transition-all duration-200" title="Vider">
+                    <button id="clear-messages-btn" class="p-1.5 bg-cyber-danger/10 border border-cyber-danger/20 text-cyber-danger hover:bg-cyber-danger/20 rounded text-xs transition-all duration-200" title="Vider">
                         <i class="fas fa-trash"></i>
                     </button>
                 `;
-                console.log('✅ Boutons SMS créés');
-                break;
-                
-            case 'mms':
-                console.log('📷 Création des boutons pour l\'onglet MMS');
-                titleElement.textContent = '/MMS_INTERFACE.db';
-                controlsElement.innerHTML = `
-                    <button id="new-mms-btn" class="p-1.5 bg-cyber-success/10 border border-cyber-success/20 text-cyber-success hover:bg-cyber-success/20 rounded text-xs transition-all duration-200" title="Nouveau MMS">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                    <button id="refresh-mms-btn" class="p-1.5 bg-cyber-blue/10 border border-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue/20 rounded text-xs transition-all duration-200" title="Actualiser">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                    <button id="clear-mms-btn" class="p-1.5 bg-cyber-danger/10 border border-cyber-danger/20 text-cyber-danger hover:bg-cyber-danger/20 rounded text-xs transition-all duration-200" title="Vider">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                `;
-                console.log('✅ Boutons MMS créés');
+                console.log('✅ Boutons Messages créés');
                 break;
                 
             case 'call-list':
@@ -578,10 +564,11 @@ class PhoneBookManager {
             console.log('❌ Bouton clear-contacts non trouvé');
         }
         
-        // Boutons SMS
+        // Boutons Messages (panneau unifié)
         const newSMSBtn = document.getElementById('new-sms-btn');
-        const refreshSMSBtn = document.getElementById('refresh-sms-btn');
-        const clearSMSBtn = document.getElementById('clear-sms-btn');
+        const newMMSBtn = document.getElementById('new-mms-btn');
+        const refreshMessagesBtn = document.getElementById('refresh-messages-btn');
+        const clearMessagesBtn = document.getElementById('clear-messages-btn');
         
         if (newSMSBtn) {
             console.log('✅ Bouton new-sms-btn trouvé');
@@ -594,33 +581,6 @@ class PhoneBookManager {
             console.log('❌ Bouton new-sms-btn non trouvé');
         }
         
-        if (refreshSMSBtn) {
-            console.log('✅ Bouton refresh-sms-btn trouvé');
-            refreshSMSBtn.addEventListener('click', () => {
-                if (typeof messageManager !== 'undefined') {
-                    messageManager.loadSMSLogs();
-                }
-            });
-        } else {
-            console.log('❌ Bouton refresh-sms-btn non trouvé');
-        }
-        
-        if (clearSMSBtn) {
-            console.log('✅ Bouton clear-sms-btn trouvé');
-            clearSMSBtn.addEventListener('click', () => {
-                if (typeof messageManager !== 'undefined') {
-                    messageManager.clearSMSLogs();
-                }
-            });
-        } else {
-            console.log('❌ Bouton clear-sms-btn non trouvé');
-        }
-        
-        // Boutons MMS
-        const newMMSBtn = document.getElementById('new-mms-btn');
-        const refreshMMSBtn = document.getElementById('refresh-mms-btn');
-        const clearMMSBtn = document.getElementById('clear-mms-btn');
-        
         if (newMMSBtn) {
             console.log('✅ Bouton new-mms-btn trouvé');
             newMMSBtn.addEventListener('click', () => {
@@ -632,26 +592,26 @@ class PhoneBookManager {
             console.log('❌ Bouton new-mms-btn non trouvé');
         }
         
-        if (refreshMMSBtn) {
-            console.log('✅ Bouton refresh-mms-btn trouvé');
-            refreshMMSBtn.addEventListener('click', () => {
+        if (refreshMessagesBtn) {
+            console.log('✅ Bouton refresh-messages-btn trouvé');
+            refreshMessagesBtn.addEventListener('click', () => {
                 if (typeof messageManager !== 'undefined') {
-                    messageManager.loadMMSLogs();
+                    messageManager.refreshAllMessages();
                 }
             });
         } else {
-            console.log('❌ Bouton refresh-mms-btn non trouvé');
+            console.log('❌ Bouton refresh-messages-btn non trouvé');
         }
         
-        if (clearMMSBtn) {
-            console.log('✅ Bouton clear-mms-btn trouvé');
-            clearMMSBtn.addEventListener('click', () => {
+        if (clearMessagesBtn) {
+            console.log('✅ Bouton clear-messages-btn trouvé');
+            clearMessagesBtn.addEventListener('click', () => {
                 if (typeof messageManager !== 'undefined') {
-                    messageManager.clearMMSLogs();
+                    messageManager.clearAllMessages();
                 }
             });
         } else {
-            console.log('❌ Bouton clear-mms-btn non trouvé');
+            console.log('❌ Bouton clear-messages-btn non trouvé');
         }
         
         // Boutons de la liste d'appels

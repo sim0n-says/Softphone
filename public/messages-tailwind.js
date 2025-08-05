@@ -3,9 +3,10 @@ class MessageManager {
     constructor() {
         this.smsLogs = [];
         this.mmsLogs = [];
-        this.currentTab = 'sms';
+        this.currentTab = 'messages';
         this.conversations = new Map(); // Map pour organiser les conversations
         this.currentConversation = null; // Conversation actuellement sélectionnée
+        this.currentMessageType = 'sms'; // Type de message actuel (sms ou mms)
     }
 
     async init() {
@@ -19,8 +20,7 @@ class MessageManager {
         this.setupEventListeners();
         
         // Afficher les messages
-        this.renderSMSList();
-        this.renderMMSList();
+        this.renderMessagesList();
         
         // Configurer les événements Socket.IO
         this.setupSocketIO();
@@ -33,7 +33,7 @@ class MessageManager {
         socket.on('incoming-sms', (smsData) => {
             console.log('📱 Nouveau SMS reçu:', smsData);
             this.smsLogs.unshift(smsData);
-            this.renderSMSList();
+            this.renderMessagesList();
             
             // Si c'est dans la conversation active, la mettre à jour
             if (this.currentConversation && 
@@ -51,7 +51,7 @@ class MessageManager {
         socket.on('incoming-mms', (mmsData) => {
             console.log('📷 Nouveau MMS reçu:', mmsData);
             this.mmsLogs.unshift(mmsData);
-            this.renderMMSList();
+            this.renderMessagesList();
             
             if (typeof showNotification !== 'undefined') {
                 showNotification.info(`Nouveau MMS de ${mmsData.from}`, 3000);
@@ -74,26 +74,19 @@ class MessageManager {
     }
 
     setupEventListeners() {
-        // Boutons SMS
+        // Boutons du panneau unifié
         const newSMSBtn = document.getElementById('new-sms-btn');
-        const refreshSMSBtn = document.getElementById('refresh-sms-btn');
-        const clearSMSBtn = document.getElementById('clear-sms-btn');
+        const newMMSBtn = document.getElementById('new-mms-btn');
+        const refreshMessagesBtn = document.getElementById('refresh-messages-btn');
+        const clearMessagesBtn = document.getElementById('clear-messages-btn');
 
         if (newSMSBtn) newSMSBtn.addEventListener('click', () => this.showComposeSMSModal());
-        if (refreshSMSBtn) refreshSMSBtn.addEventListener('click', () => this.loadSMSLogs());
-        if (clearSMSBtn) clearSMSBtn.addEventListener('click', () => this.clearSMSLogs());
-
-        // Boutons MMS
-        const newMMSBtn = document.getElementById('new-mms-btn');
-        const refreshMMSBtn = document.getElementById('refresh-mms-btn');
-        const clearMMSBtn = document.getElementById('clear-mms-btn');
-
         if (newMMSBtn) newMMSBtn.addEventListener('click', () => this.showComposeMMSModal());
-        if (refreshMMSBtn) refreshMMSBtn.addEventListener('click', () => this.loadMMSLogs());
-        if (clearMMSBtn) clearMMSBtn.addEventListener('click', () => this.clearMMSLogs());
+        if (refreshMessagesBtn) refreshMessagesBtn.addEventListener('click', () => this.refreshAllMessages());
+        if (clearMessagesBtn) clearMessagesBtn.addEventListener('click', () => this.clearAllMessages());
 
-        // Événements de la boîte de réception SMS
-        this.setupSMSInboxEvents();
+        // Événements de la boîte de réception unifiée
+        this.setupMessagesInboxEvents();
 
         // Événements des modals
         this.setupModalEvents();
@@ -187,6 +180,42 @@ class MessageManager {
         }
     }
 
+    // Nouvelles fonctions pour le panneau unifié
+    async refreshAllMessages() {
+        await this.loadSMSLogs();
+        await this.loadMMSLogs();
+        this.renderMessagesList();
+    }
+
+    async clearAllMessages() {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer tous les messages ?')) {
+            return;
+        }
+        await this.clearSMSLogs();
+        await this.clearMMSLogs();
+        this.renderMessagesList();
+    }
+
+    renderMessagesList() {
+        // Organiser les SMS en conversations
+        this.organizeConversations();
+        
+        // Rendre la liste des conversations
+        this.renderConversations();
+        
+        // Mettre à jour le compteur
+        this.updateMessagesCount();
+    }
+
+    updateMessagesCount() {
+        const countElement = document.getElementById('messages-count');
+        if (countElement) {
+            const totalMessages = this.smsLogs.length + this.mmsLogs.length;
+            const unreadCount = Array.from(this.conversations.values()).reduce((sum, conv) => sum + conv.unreadCount, 0);
+            countElement.textContent = `(${totalMessages} messages${unreadCount > 0 ? `, ${unreadCount} non lus` : ''})`;
+        }
+    }
+
     renderSMSList() {
         // Organiser les SMS en conversations
         this.organizeConversations();
@@ -233,7 +262,7 @@ class MessageManager {
     }
 
     renderConversations() {
-        const container = document.getElementById('sms-conversations');
+        const container = document.getElementById('messages-conversations');
         if (!container) return;
 
         if (this.conversations.size === 0) {
@@ -299,14 +328,14 @@ class MessageManager {
         this.renderConversations();
         
         // Afficher la zone de saisie
-        document.getElementById('sms-input-area').style.display = 'block';
+        document.getElementById('messages-input-area').style.display = 'block';
     }
 
     renderConversation() {
         if (!this.currentConversation) return;
 
         // Mettre à jour l'en-tête
-        const header = document.getElementById('sms-conversation-header');
+        const header = document.getElementById('messages-conversation-header');
         if (header) {
             header.innerHTML = `
                 <div class="flex items-center justify-between">
@@ -328,7 +357,7 @@ class MessageManager {
         }
 
         // Rendre les messages
-        const messagesContainer = document.getElementById('sms-messages');
+        const messagesContainer = document.getElementById('messages-content-area');
         if (messagesContainer) {
             messagesContainer.innerHTML = this.currentConversation.messages.map(msg => this.createMessageElement(msg)).join('');
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -364,7 +393,7 @@ class MessageManager {
     }
 
     filterConversations(searchTerm) {
-        const container = document.getElementById('sms-conversations');
+        const container = document.getElementById('messages-conversations');
         if (!container) return;
 
         if (!searchTerm) {
@@ -593,7 +622,7 @@ class MessageManager {
     async sendReply() {
         if (!this.currentConversation) return;
 
-        const input = document.getElementById('sms-reply-input');
+        const input = document.getElementById('messages-reply-input');
         const body = input.value.trim();
 
         if (!body) {
@@ -634,7 +663,7 @@ class MessageManager {
                 
                 // Vider l'input
                 input.value = '';
-                document.getElementById('sms-reply-count').textContent = '0';
+                document.getElementById('messages-reply-count').textContent = '0';
                 
                 if (typeof showNotification !== 'undefined') {
                     showNotification.success('Message envoyé', 2000);
@@ -680,14 +709,14 @@ class MessageManager {
         // Si c'était la conversation active, la désélectionner
         if (this.currentConversation && this.currentConversation.phoneNumber === phoneNumber) {
             this.currentConversation = null;
-            document.getElementById('sms-input-area').style.display = 'none';
-            document.getElementById('sms-conversation-header').innerHTML = `
+            document.getElementById('messages-input-area').style.display = 'none';
+            document.getElementById('messages-conversation-header').innerHTML = `
                 <div class="text-center text-cyber-gray">
                     <i class="fas fa-comment text-lg"></i>
                     <p class="text-sm mt-1">Sélectionnez une conversation</p>
                 </div>
             `;
-            document.getElementById('sms-messages').innerHTML = `
+            document.getElementById('messages-content-area').innerHTML = `
                 <div class="text-center text-cyber-gray py-8">
                     <i class="fas fa-comment-dots text-2xl mb-2"></i>
                     <p class="text-sm">Aucun message</p>

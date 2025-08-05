@@ -1003,12 +1003,15 @@ app.post('/handle_calls', (req, res) => {
 // Webhook pour les SMS entrants
 app.post('/handle_sms', (req, res) => {
   console.log('📱 SMS reçu:', req.body);
+  console.log('📱 Headers:', req.headers);
   
   const { To, From, Body, MessageSid, MessageStatus } = req.body;
   
+  console.log('📱 Données extraites:', { To, From, Body, MessageSid, MessageStatus });
+  
   // Ajouter au log des SMS
   const smsData = {
-    sid: MessageSid,
+    sid: MessageSid || `sms_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     direction: 'inbound',
     from: From,
     to: To,
@@ -1017,10 +1020,14 @@ app.post('/handle_sms', (req, res) => {
     clientIdentity: 'softphone-user'
   };
   
+  console.log('📱 SMS data à sauvegarder:', smsData);
+  
   addSMSLog(smsData);
   
   // Notifier les clients via Socket.IO
   io.emit('incoming-sms', smsData);
+  
+  console.log('📱 SMS traité et notifié aux clients');
   
   // Répondre avec un TwiML vide (pas de réponse automatique)
   const twiml = new twilio.twiml.MessagingResponse();
