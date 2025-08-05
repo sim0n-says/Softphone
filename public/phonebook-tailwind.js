@@ -16,6 +16,8 @@ class PhoneBookManager {
     }
     
     async init() {
+        console.log('🚀 Début de l\'initialisation du PhoneBookManager');
+        
         await this.loadContacts();
         this.setupEventListeners();
         this.renderPhoneBook();
@@ -23,7 +25,10 @@ class PhoneBookManager {
         this.initializeTabSystem();
         
         // Initialiser l'en-tête dynamique pour l'onglet actif
+        console.log('🔧 Initialisation de l\'en-tête dynamique pour phonebook');
         this.updateDynamicHeader('phonebook');
+        
+        console.log('✅ Initialisation du PhoneBookManager terminée');
     }
     
     // Nouvelle fonction pour initialiser le système d'onglets uniformes
@@ -439,13 +444,21 @@ class PhoneBookManager {
 
     // Mettre à jour l'en-tête dynamique selon l'onglet
     updateDynamicHeader(tabName) {
+        console.log(`🔄 Mise à jour de l'en-tête dynamique pour l'onglet: ${tabName}`);
+        
         const titleElement = document.getElementById('dynamic-title');
         const controlsElement = document.getElementById('dynamic-controls');
         
-        if (!titleElement || !controlsElement) return;
+        if (!titleElement || !controlsElement) {
+            console.log('❌ Éléments dynamic-title ou dynamic-controls non trouvés');
+            return;
+        }
+        
+        console.log('✅ Éléments trouvés, mise à jour en cours...');
         
         switch (tabName) {
             case 'phonebook':
+                console.log('📖 Création des boutons pour l\'onglet phonebook');
                 titleElement.textContent = '/PHONEBOOK.db.interface';
                 controlsElement.innerHTML = `
                     <button id="add-contact" class="p-1.5 bg-cyber-success/10 border border-cyber-success/20 text-cyber-success hover:bg-cyber-success/20 rounded text-xs transition-all duration-200" title="Ajouter contact">
@@ -461,6 +474,7 @@ class PhoneBookManager {
                         <i class="fas fa-trash"></i>
                     </button>
                 `;
+                console.log('✅ Boutons phonebook créés');
                 break;
                 
             case 'call-list':
@@ -494,10 +508,40 @@ class PhoneBookManager {
 
     // Réattacher les événements pour les contrôles dynamiques
     reattachControlEvents() {
-        // Boutons du carnet d'adresses
-        const refreshContactsBtn = document.getElementById('refresh-contacts');
-        if (refreshContactsBtn) {
-            refreshContactsBtn.addEventListener('click', () => this.refreshContacts());
+        console.log('🔧 Réattachement des événements de contrôle...');
+        
+        // Boutons de gestion des contacts
+        const addContactBtn = document.getElementById('add-contact');
+        const importContactsBtn = document.getElementById('import-contacts');
+        const exportContactsBtn = document.getElementById('export-contacts');
+        const clearContactsBtn = document.getElementById('clear-contacts');
+        
+        if (addContactBtn) {
+            console.log('✅ Bouton add-contact trouvé');
+            addContactBtn.addEventListener('click', () => this.showAddContactModal());
+        } else {
+            console.log('❌ Bouton add-contact non trouvé');
+        }
+        
+        if (importContactsBtn) {
+            console.log('✅ Bouton import-contacts trouvé');
+            importContactsBtn.addEventListener('click', () => this.showImportModal());
+        } else {
+            console.log('❌ Bouton import-contacts non trouvé');
+        }
+        
+        if (exportContactsBtn) {
+            console.log('✅ Bouton export-contacts trouvé');
+            exportContactsBtn.addEventListener('click', () => this.exportContacts());
+        } else {
+            console.log('❌ Bouton export-contacts non trouvé');
+        }
+        
+        if (clearContactsBtn) {
+            console.log('✅ Bouton clear-contacts trouvé');
+            clearContactsBtn.addEventListener('click', () => this.clearContacts());
+        } else {
+            console.log('❌ Bouton clear-contacts non trouvé');
         }
         
         // Boutons de la liste d'appels
@@ -522,9 +566,12 @@ class PhoneBookManager {
                 clearCallLogs();
             }
         });
+        
+        console.log('🔧 Réattachement des événements terminé');
     }
     
     callContact(phone) {
+        console.log('📞 Appel du contact:', phone);
         // Remplir le champ numéro et déclencher l'appel
         const phoneInput = document.getElementById('phone-number');
         if (phoneInput) {
@@ -538,13 +585,18 @@ class PhoneBookManager {
             
             // Focus sur l'input
             phoneInput.focus();
+            console.log('✅ Numéro de téléphone rempli:', phone);
+        } else {
+            console.log('❌ Champ phone-number non trouvé');
         }
     }
     
     addToCallList(name, phone) {
+        console.log('➕ Ajout à la liste d\'appels:', name, phone);
         // Vérifier si le contact n'est pas déjà dans la liste
         const exists = this.callList.some(contact => contact.telephone === phone);
         if (exists) {
+            console.log('⚠️ Contact déjà dans la liste');
             if (typeof showNotification !== 'undefined') {
                 showNotification.warning('Contact déjà dans la liste', 2000);
             }
@@ -553,6 +605,7 @@ class PhoneBookManager {
         
         // Ajouter le contact
         this.callList.push({ nom_complet: name, telephone: phone });
+        console.log('✅ Contact ajouté, liste mise à jour:', this.callList.length, 'contacts');
         
         // Si c'est le premier contact, le sélectionner
         if (this.callList.length === 1) {
@@ -686,12 +739,16 @@ class PhoneBookManager {
     // === NOUVELLES FONCTIONNALITÉS DE GESTION DES CONTACTS ===
 
     showAddContactModal() {
+        console.log('📝 Ouverture du modal d\'ajout de contact');
         const modal = document.getElementById('add-contact-modal');
         if (modal) {
             modal.style.display = 'flex';
             // Réinitialiser le formulaire
             const form = modal.querySelector('form');
             if (form) form.reset();
+            console.log('✅ Modal d\'ajout affiché');
+        } else {
+            console.log('❌ Modal add-contact-modal non trouvé');
         }
     }
 
@@ -767,9 +824,13 @@ class PhoneBookManager {
     }
 
     showImportModal() {
+        console.log('📤 Ouverture du modal d\'import');
         const modal = document.getElementById('import-contacts-modal');
         if (modal) {
             modal.style.display = 'flex';
+            console.log('✅ Modal d\'import affiché');
+        } else {
+            console.log('❌ Modal import-contacts-modal non trouvé');
         }
     }
 
@@ -891,6 +952,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(async () => {
         phoneBookManager = new PhoneBookManager();
         await phoneBookManager.init();
+        
+        // Rendre l'objet global pour les appels onclick
+        window.phoneBookManager = phoneBookManager;
+        
         console.log('📱 PhoneBookManager initialisé avec système d\'onglets uniformes');
         
         // Vérifier que les boutons sont bien attachés

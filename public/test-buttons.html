@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Boutons Carnet</title>
+    <style>
+        body { font-family: monospace; background: #000; color: #0f0; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 10px; border: 1px solid #0f0; }
+        .button { margin: 5px; padding: 10px; background: #333; border: 1px solid #0f0; color: #0f0; cursor: pointer; }
+        .found { color: #0f0; }
+        .not-found { color: #f00; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Test des Boutons du Carnet</h1>
+    
+    <div class="test-section">
+        <h2>Boutons de Gestion des Contacts</h2>
+        <div id="contact-buttons-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Boutons de la Liste d'Appels</h2>
+        <div id="call-list-buttons-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Modals</h2>
+        <div id="modals-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Actions de Test</h2>
+        <button class="button" onclick="testButtons()">🔍 Vérifier les Boutons</button>
+        <button class="button" onclick="testModals()">📝 Tester les Modals</button>
+        <button class="button" onclick="testPhoneBookManager()">📱 Tester PhoneBookManager</button>
+    </div>
+    
+    <div id="results"></div>
+
+    <script>
+        function testButtons() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h3>Résultats de la vérification:</h3>';
+            
+            // Boutons de gestion des contacts
+            const contactButtons = [
+                'add-contact',
+                'import-contacts', 
+                'export-contacts',
+                'clear-contacts'
+            ];
+            
+            results.innerHTML += '<h4>Boutons de gestion des contacts:</h4>';
+            contactButtons.forEach(id => {
+                const btn = document.getElementById(id);
+                const status = btn ? `<span class="found">✅ Trouvé: ${id}</span>` : `<span class="not-found">❌ Non trouvé: ${id}</span>`;
+                results.innerHTML += `<div>${status}</div>`;
+            });
+            
+            // Boutons de la liste d'appels
+            const callListButtons = [
+                'call-list-prev',
+                'call-list-next',
+                'call-list-call',
+                'call-list-remove',
+                'clear-call-list',
+                'export-call-list'
+            ];
+            
+            results.innerHTML += '<h4>Boutons de la liste d\'appels:</h4>';
+            callListButtons.forEach(id => {
+                const btn = document.getElementById(id);
+                const status = btn ? `<span class="found">✅ Trouvé: ${id}</span>` : `<span class="not-found">❌ Non trouvé: ${id}</span>`;
+                results.innerHTML += `<div>${status}</div>`;
+            });
+        }
+        
+        function testModals() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h3>Test des Modals:</h3>';
+            
+            const modals = [
+                'add-contact-modal',
+                'import-contacts-modal',
+                'incoming-call-modal'
+            ];
+            
+            modals.forEach(id => {
+                const modal = document.getElementById(id);
+                const status = modal ? `<span class="found">✅ Modal trouvé: ${id}</span>` : `<span class="not-found">❌ Modal non trouvé: ${id}</span>`;
+                results.innerHTML += `<div>${status}</div>`;
+            });
+        }
+        
+        function testPhoneBookManager() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h3>Test PhoneBookManager:</h3>';
+            
+            if (typeof window.phoneBookManager !== 'undefined') {
+                results.innerHTML += '<span class="found">✅ PhoneBookManager disponible globalement</span>';
+                results.innerHTML += `<div>Méthodes disponibles: ${Object.getOwnPropertyNames(Object.getPrototypeOf(window.phoneBookManager)).join(', ')}</div>`;
+            } else {
+                results.innerHTML += '<span class="not-found">❌ PhoneBookManager non disponible globalement</span>';
+            }
+        }
+        
+        // Test automatique au chargement
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testButtons();
+                testModals();
+                testPhoneBookManager();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 
