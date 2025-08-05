@@ -337,13 +337,17 @@
                         </div>
                     </div>
 
-                    <!-- Onglet SMS -->
+                    <!-- Onglet SMS - Boîte de réception -->
                     <div class="tab-content h-full" id="sms-content">
                         <div class="sms-container h-full flex flex-col">
-                            <!-- Barre d'outils SMS -->
+                            <!-- En-tête de la boîte de réception -->
                             <div class="p-4 border-b border-cyber-blue/30">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-cyber-green font-mono text-sm">SMS_INTERFACE</span>
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-inbox text-cyber-green"></i>
+                                        <span class="text-cyber-green font-mono text-sm">SMS_INBOX.db</span>
+                                        <span class="text-cyber-gray text-xs" id="sms-count">(0 messages)</span>
+                                    </div>
                                     <div class="flex space-x-2">
                                         <button id="new-sms-btn" class="cyber-button bg-cyber-success/20 border-cyber-success/30 text-cyber-success">
                                             <i class="fas fa-plus mr-1"></i>
@@ -361,11 +365,61 @@
                                 </div>
                             </div>
                             
-                            <!-- Liste des SMS -->
-                            <div class="flex-1 overflow-y-auto p-4" id="sms-list">
-                                <div class="text-center text-cyber-gray">
-                                    <div class="animate-spin inline-block w-6 h-6 border-2 border-cyber-green border-t-transparent rounded-full mb-2"></div>
-                                    <p>Chargement des SMS...</p>
+                            <!-- Interface de la boîte de réception -->
+                            <div class="flex-1 flex">
+                                <!-- Liste des conversations -->
+                                <div class="w-1/3 border-r border-cyber-blue/30 flex flex-col">
+                                    <div class="p-3 border-b border-cyber-blue/30">
+                                        <div class="relative">
+                                            <input type="text" id="sms-search" 
+                                                   class="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded px-3 py-2 text-cyber-light text-sm focus:border-cyber-green focus:outline-none" 
+                                                   placeholder="Rechercher une conversation...">
+                                            <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-cyber-gray text-sm"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 overflow-y-auto" id="sms-conversations">
+                                        <div class="text-center text-cyber-gray py-8">
+                                            <i class="fas fa-comments text-2xl mb-2"></i>
+                                            <p class="text-sm">Aucune conversation</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Zone de conversation -->
+                                <div class="flex-1 flex flex-col">
+                                    <!-- En-tête de la conversation -->
+                                    <div class="p-3 border-b border-cyber-blue/30" id="sms-conversation-header">
+                                        <div class="text-center text-cyber-gray">
+                                            <i class="fas fa-comment text-lg"></i>
+                                            <p class="text-sm mt-1">Sélectionnez une conversation</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Messages de la conversation -->
+                                    <div class="flex-1 overflow-y-auto p-3" id="sms-messages">
+                                        <div class="text-center text-cyber-gray py-8">
+                                            <i class="fas fa-comment-dots text-2xl mb-2"></i>
+                                            <p class="text-sm">Aucun message</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Zone de saisie -->
+                                    <div class="p-3 border-t border-cyber-blue/30" id="sms-input-area" style="display: none;">
+                                        <div class="flex space-x-2">
+                                            <div class="flex-1 relative">
+                                                <textarea id="sms-reply-input" 
+                                                          class="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded px-3 py-2 text-cyber-light text-sm resize-none focus:border-cyber-green focus:outline-none" 
+                                                          rows="2" 
+                                                          placeholder="Tapez votre message..."></textarea>
+                                                <div class="absolute bottom-1 right-2 text-cyber-gray text-xs">
+                                                    <span id="sms-reply-count">0</span>/160
+                                                </div>
+                                            </div>
+                                            <button id="sms-send-btn" class="cyber-button bg-cyber-success/20 border-cyber-success/30 text-cyber-success px-4">
+                                                <i class="fas fa-paper-plane"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

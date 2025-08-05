@@ -4,6 +4,8 @@ class MessageManager {
         this.smsLogs = [];
         this.mmsLogs = [];
         this.currentTab = 'sms';
+        this.conversations = new Map(); // Map pour organiser les conversations
+        this.currentConversation = null; // Conversation actuellement sélectionnée
     }
 
     async init() {
@@ -33,6 +35,13 @@ class MessageManager {
             this.smsLogs.unshift(smsData);
             this.renderSMSList();
             
+            // Si c'est dans la conversation active, la mettre à jour
+            if (this.currentConversation && 
+                (smsData.from === this.currentConversation.phoneNumber || 
+                 smsData.to === this.currentConversation.phoneNumber)) {
+                this.renderConversation();
+            }
+            
             if (typeof showNotification !== 'undefined') {
                 showNotification.info(`Nouveau SMS de ${smsData.from}`, 3000);
             }
@@ -52,6 +61,11 @@ class MessageManager {
         // Écouter les mises à jour de statut
         socket.on('sms-status-update', (data) => {
             this.updateSMSStatus(data.messageSid, data.status);
+            
+            // Mettre à jour l'affichage si nécessaire
+            if (this.currentConversation) {
+                this.renderConversation();
+            }
         });
 
         socket.on('mms-status-update', (data) => {
@@ -78,8 +92,48 @@ class MessageManager {
         if (refreshMMSBtn) refreshMMSBtn.addEventListener('click', () => this.loadMMSLogs());
         if (clearMMSBtn) clearMMSBtn.addEventListener('click', () => this.clearMMSLogs());
 
+        // Événements de la boîte de réception SMS
+        this.setupSMSInboxEvents();
+
         // Événements des modals
         this.setupModalEvents();
+    }
+
+    setupSMSInboxEvents() {
+        // Recherche de conversations
+        const smsSearch = document.getElementById('sms-search');
+        if (smsSearch) {
+            smsSearch.addEventListener('input', (e) => {
+                this.filterConversations(e.target.value);
+            });
+        }
+
+        // Zone de saisie de réponse
+        const smsReplyInput = document.getElementById('sms-reply-input');
+        if (smsReplyInput) {
+            smsReplyInput.addEventListener('input', (e) => {
+                const count = e.target.value.length;
+                const countElement = document.getElementById('sms-reply-count');
+                if (countElement) {
+                    countElement.textContent = count;
+                    countElement.className = count > 160 ? 'text-cyber-danger' : 'text-cyber-gray';
+                }
+            });
+
+            // Envoi avec Entrée
+            smsReplyInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendReply();
+                }
+            });
+        }
+
+        // Bouton d'envoi
+        const smsSendBtn = document.getElementById('sms-send-btn');
+        if (smsSendBtn) {
+            smsSendBtn.addEventListener('click', () => this.sendReply());
+        }
     }
 
     setupModalEvents() {
@@ -134,20 +188,208 @@ class MessageManager {
     }
 
     renderSMSList() {
-        const container = document.getElementById('sms-list');
+        // Organiser les SMS en conversations
+        this.organizeConversations();
+        
+        // Rendre la liste des conversations
+        this.renderConversations();
+        
+        // Mettre à jour le compteur
+        this.updateSMSCount();
+    }
+
+    organizeConversations() {
+        this.conversations.clear();
+        
+        this.smsLogs.forEach(sms => {
+            // Déterminer la clé de conversation (numéro de téléphone)
+            const conversationKey = sms.direction === 'inbound' ? sms.from : sms.to;
+            
+            if (!this.conversations.has(conversationKey)) {
+                this.conversations.set(conversationKey, {
+                    phoneNumber: conversationKey,
+                    messages: [],
+                    lastMessage: null,
+                    unreadCount: 0
+                });
+            }
+            
+            const conversation = this.conversations.get(conversationKey);
+            conversation.messages.push(sms);
+            
+            // Trier les messages par timestamp
+            conversation.messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            
+            // Mettre à jour le dernier message
+            if (!conversation.lastMessage || new Date(sms.timestamp) > new Date(conversation.lastMessage.timestamp)) {
+                conversation.lastMessage = sms;
+            }
+            
+            // Compter les messages non lus (entrants)
+            if (sms.direction === 'inbound' && sms.status !== 'read') {
+                conversation.unreadCount++;
+            }
+        });
+    }
+
+    renderConversations() {
+        const container = document.getElementById('sms-conversations');
         if (!container) return;
 
-        if (this.smsLogs.length === 0) {
+        if (this.conversations.size === 0) {
             container.innerHTML = `
                 <div class="text-center text-cyber-gray py-8">
-                    <i class="fas fa-comment text-4xl mb-4"></i>
-                    <p>Aucun SMS</p>
+                    <i class="fas fa-comments text-2xl mb-2"></i>
+                    <p class="text-sm">Aucune conversation</p>
                 </div>
             `;
             return;
         }
 
-        container.innerHTML = this.smsLogs.map(sms => this.createSMSElement(sms)).join('');
+        // Trier les conversations par dernier message
+        const sortedConversations = Array.from(this.conversations.values())
+            .sort((a, b) => new Date(b.lastMessage.timestamp) - new Date(a.lastMessage.timestamp));
+
+        container.innerHTML = sortedConversations.map(conv => this.createConversationElement(conv)).join('');
+    }
+
+    createConversationElement(conversation) {
+        const lastMessage = conversation.lastMessage;
+        const isActive = this.currentConversation && this.currentConversation.phoneNumber === conversation.phoneNumber;
+        const unreadClass = conversation.unreadCount > 0 ? 'border-cyber-green/50 bg-cyber-green/10' : 'border-cyber-blue/30';
+        const activeClass = isActive ? 'bg-cyber-blue/20' : '';
+        
+        return `
+            <div class="conversation-item p-3 border-b ${unreadClass} ${activeClass} hover:bg-cyber-blue/10 transition-all duration-200 cursor-pointer" 
+                 onclick="messageManager.selectConversation('${conversation.phoneNumber}')">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-cyber-light font-mono text-sm truncate">${conversation.phoneNumber}</span>
+                            ${conversation.unreadCount > 0 ? `<span class="bg-cyber-green text-cyber-dark text-xs px-2 py-1 rounded-full">${conversation.unreadCount}</span>` : ''}
+                        </div>
+                        <div class="text-cyber-gray text-xs mt-1 truncate">
+                            ${lastMessage.body.length > 50 ? lastMessage.body.substring(0, 50) + '...' : lastMessage.body}
+                        </div>
+                    </div>
+                    <div class="text-cyber-gray text-xs ml-2">
+                        ${this.formatTimestamp(lastMessage.timestamp)}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    selectConversation(phoneNumber) {
+        this.currentConversation = this.conversations.get(phoneNumber);
+        if (!this.currentConversation) return;
+
+        // Marquer comme lu
+        this.currentConversation.unreadCount = 0;
+        this.currentConversation.messages.forEach(msg => {
+            if (msg.direction === 'inbound') {
+                msg.status = 'read';
+            }
+        });
+
+        // Rendre la conversation
+        this.renderConversation();
+        
+        // Mettre à jour la liste des conversations
+        this.renderConversations();
+        
+        // Afficher la zone de saisie
+        document.getElementById('sms-input-area').style.display = 'block';
+    }
+
+    renderConversation() {
+        if (!this.currentConversation) return;
+
+        // Mettre à jour l'en-tête
+        const header = document.getElementById('sms-conversation-header');
+        if (header) {
+            header.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-user text-cyber-green"></i>
+                        <span class="text-cyber-light font-mono text-sm">${this.currentConversation.phoneNumber}</span>
+                        <span class="text-cyber-gray text-xs">(${this.currentConversation.messages.length} messages)</span>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="messageManager.callContact('${this.currentConversation.phoneNumber}')" class="cyber-button bg-cyber-success/20 border-cyber-success/30 text-cyber-success p-2">
+                            <i class="fas fa-phone"></i>
+                        </button>
+                        <button onclick="messageManager.deleteConversation('${this.currentConversation.phoneNumber}')" class="cyber-button bg-cyber-danger/20 border-cyber-danger/30 text-cyber-danger p-2">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Rendre les messages
+        const messagesContainer = document.getElementById('sms-messages');
+        if (messagesContainer) {
+            messagesContainer.innerHTML = this.currentConversation.messages.map(msg => this.createMessageElement(msg)).join('');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    }
+
+    createMessageElement(message) {
+        const isInbound = message.direction === 'inbound';
+        const alignment = isInbound ? 'justify-start' : 'justify-end';
+        const bgColor = isInbound ? 'bg-cyber-blue/20' : 'bg-cyber-green/20';
+        const borderColor = isInbound ? 'border-cyber-blue/30' : 'border-cyber-green/30';
+        
+        return `
+            <div class="flex ${alignment} mb-3">
+                <div class="max-w-xs ${bgColor} border ${borderColor} rounded-lg p-3">
+                    <div class="text-cyber-light text-sm">${message.body}</div>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-cyber-gray text-xs">${this.formatTimestamp(message.timestamp)}</span>
+                        <span class="text-cyber-gray text-xs">${message.status}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    updateSMSCount() {
+        const countElement = document.getElementById('sms-count');
+        if (countElement) {
+            const totalMessages = this.smsLogs.length;
+            const unreadCount = Array.from(this.conversations.values()).reduce((sum, conv) => sum + conv.unreadCount, 0);
+            countElement.textContent = `(${totalMessages} messages${unreadCount > 0 ? `, ${unreadCount} non lus` : ''})`;
+        }
+    }
+
+    filterConversations(searchTerm) {
+        const container = document.getElementById('sms-conversations');
+        if (!container) return;
+
+        if (!searchTerm) {
+            this.renderConversations();
+            return;
+        }
+
+        const filteredConversations = Array.from(this.conversations.values())
+            .filter(conv => 
+                conv.phoneNumber.includes(searchTerm) ||
+                conv.messages.some(msg => msg.body.toLowerCase().includes(searchTerm.toLowerCase()))
+            )
+            .sort((a, b) => new Date(b.lastMessage.timestamp) - new Date(a.lastMessage.timestamp));
+
+        if (filteredConversations.length === 0) {
+            container.innerHTML = `
+                <div class="text-center text-cyber-gray py-8">
+                    <i class="fas fa-search text-2xl mb-2"></i>
+                    <p class="text-sm">Aucune conversation trouvée</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = filteredConversations.map(conv => this.createConversationElement(conv)).join('');
     }
 
     renderMMSList() {
@@ -345,6 +587,118 @@ class MessageManager {
             if (typeof showNotification !== 'undefined') {
                 showNotification.error(error.message, 3000);
             }
+        }
+    }
+
+    async sendReply() {
+        if (!this.currentConversation) return;
+
+        const input = document.getElementById('sms-reply-input');
+        const body = input.value.trim();
+
+        if (!body) {
+            if (typeof showNotification !== 'undefined') {
+                showNotification.error('Le message ne peut pas être vide', 3000);
+            }
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/send-sms', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    to: this.currentConversation.phoneNumber, 
+                    body: body 
+                })
+            });
+
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Ajouter à la liste locale
+                const smsData = {
+                    id: result.sid,
+                    direction: 'outbound',
+                    from: 'softphone-user',
+                    to: this.currentConversation.phoneNumber,
+                    body: body,
+                    status: result.status,
+                    timestamp: new Date().toISOString()
+                };
+                
+                this.smsLogs.unshift(smsData);
+                this.renderSMSList();
+                
+                // Vider l'input
+                input.value = '';
+                document.getElementById('sms-reply-count').textContent = '0';
+                
+                if (typeof showNotification !== 'undefined') {
+                    showNotification.success('Message envoyé', 2000);
+                }
+            } else {
+                throw new Error(result.error || 'Erreur lors de l\'envoi');
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de l\'envoi de la réponse:', error);
+            if (typeof showNotification !== 'undefined') {
+                showNotification.error(error.message, 3000);
+            }
+        }
+    }
+
+    callContact(phoneNumber) {
+        // Remplir le champ numéro et déclencher l'appel
+        const phoneInput = document.getElementById('phone-number');
+        if (phoneInput) {
+            phoneInput.value = phoneNumber;
+            phoneInput.setAttribute('data-text', phoneNumber);
+            
+            // Notification
+            if (typeof showNotification !== 'undefined') {
+                showNotification.success(`Numéro sélectionné: ${phoneNumber}`, 2000);
+            }
+            
+            // Focus sur l'input
+            phoneInput.focus();
+        }
+    }
+
+    async deleteConversation(phoneNumber) {
+        if (!confirm(`Êtes-vous sûr de vouloir supprimer la conversation avec ${phoneNumber} ?`)) {
+            return;
+        }
+
+        // Supprimer tous les SMS de cette conversation
+        this.smsLogs = this.smsLogs.filter(sms => 
+            sms.from !== phoneNumber && sms.to !== phoneNumber
+        );
+        
+        // Si c'était la conversation active, la désélectionner
+        if (this.currentConversation && this.currentConversation.phoneNumber === phoneNumber) {
+            this.currentConversation = null;
+            document.getElementById('sms-input-area').style.display = 'none';
+            document.getElementById('sms-conversation-header').innerHTML = `
+                <div class="text-center text-cyber-gray">
+                    <i class="fas fa-comment text-lg"></i>
+                    <p class="text-sm mt-1">Sélectionnez une conversation</p>
+                </div>
+            `;
+            document.getElementById('sms-messages').innerHTML = `
+                <div class="text-center text-cyber-gray py-8">
+                    <i class="fas fa-comment-dots text-2xl mb-2"></i>
+                    <p class="text-sm">Aucun message</p>
+                </div>
+            `;
+        }
+        
+        this.renderSMSList();
+        
+        if (typeof showNotification !== 'undefined') {
+            showNotification.success('Conversation supprimée', 2000);
         }
     }
 
